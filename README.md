@@ -34,6 +34,7 @@ config 模式下，所有配置以配置文件为准，即配置文件的优先�
 
 ```yaml
 nwa:
+    cmd: "add"
     holder: "B1NARY-GR0UP"
     year: "2023"
     license: "Apache-2.0"
