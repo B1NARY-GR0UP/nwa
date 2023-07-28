@@ -23,29 +23,23 @@ import (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:     "add",
+	Short:   "",
+	Long:    ``,
+	GroupID: common,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("add called")
+		// 校验路径参数，即 args 代表添加的路径
+		// 查看是否设置了 tmpl，如果设置了则忽略 holder year license 参数
+		// 查看 holder year license 参数，如果没有设置则使用默认值
+		// 加载对应的 license 模板并使用 holder 和 year 参数渲染
+		// 查看 skip 参数，和 args 一起决定需要进行修改的文件路径（列表）
+		// 查看是否使用 mute 参数，没有启用则日志输出修改文件列表
+		// 将文件修改任务添加到 chan 中
+		// 使用 worker pool 消费任务
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(addCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	setupCommonCmd(addCmd)
 }

@@ -17,27 +17,32 @@ package cmd
 
 import (
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
+const (
+	Name    = "NWA"
+	version = "dev"
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "nwa",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Use:   Name,
+	Short: "A More Powerful License Header Management Tool",
+	Long: `
+███╗   ██╗██╗    ██╗ █████╗ 
+████╗  ██║██║    ██║██╔══██╗
+██╔██╗ ██║██║ █╗ ██║███████║
+██║╚██╗██║██║███╗██║██╔══██║
+██║ ╚████║╚███╔███╔╝██║  ██║
+╚═╝  ╚═══╝ ╚══╝╚══╝ ╚═╝  ╚═╝
+`,
+	Version: version,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// Execute executes the root command
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -46,13 +51,47 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	rootCmd.SetVersionTemplate("{{.Version}}")
+	rootCmd.AddGroup(&cobra.Group{
+		ID:    common,
+		Title: "Common Mode Commands:",
+	}, &cobra.Group{
+		ID:    config,
+		Title: "Config Mode Commands:",
+	})
+}
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nwa.yaml)")
+const (
+	common = "common"
+	config = "config"
+)
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+var (
+	mute    bool
+	holder  string
+	year    int
+	license string
+	skip    string
+	tmpl    string
+)
+
+func setupCommonCmd(common *cobra.Command) {
+	rootCmd.AddCommand(common)
+
+	common.Flags().BoolVarP(&mute, "mute", "m", false, "mute mode")
+	common.Flags().StringVarP(&holder, "copyright", "c", "[copyright holder]", "copyright holder")
+	common.Flags().IntVarP(&year, "year", "y", time.Now().Year(), "copyright year")
+	common.Flags().StringVarP(&license, "license", "l", "apache", "license type")
+	// Note: use spaces to separate sections and use double quotation to enclose all the sections
+	common.Flags().StringVarP(&skip, "skip", "s", "", "skip file")
+	common.Flags().StringVarP(&tmpl, "tmpl", "t", "", "template file path")
+
+	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
+	common.MarkFlagsMutuallyExclusive("year", "tmpl")
+	common.MarkFlagsMutuallyExclusive("license", "tmpl")
+	common.MarkFlagsMutuallyExclusive("ignore", "tmpl")
+}
+
+func setupConfigCmd(config *cobra.Command) {
+	rootCmd.AddCommand(config)
 }
