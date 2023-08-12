@@ -36,7 +36,7 @@ Local Flags (add, update, remove):
 nwa:
   cmd: "add"
   holder: "RHINE LAB.LLC."
-  year: 2023
+  year: "2023"
   license: "apache"
   mute: false
   path: ["server/*.go"]

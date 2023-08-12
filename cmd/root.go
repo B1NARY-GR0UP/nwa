@@ -16,20 +16,18 @@
 package cmd
 
 import (
-	"os"
-	"time"
-
 	"github.com/spf13/cobra"
+	"os"
 )
 
 const (
-	Name    = "NWA"
+	name    = "nwa"
 	version = "dev"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   Name,
+	Use:   name,
 	Short: "A More Powerful License Header Management Tool",
 	Long: `
 ███╗   ██╗██╗    ██╗ █████╗ 
@@ -51,7 +49,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.SetVersionTemplate("{{.Version}}")
+	rootCmd.SetVersionTemplate("{{ .Version }}")
 	rootCmd.AddGroup(&cobra.Group{
 		ID:    common,
 		Title: "Common Mode Commands:",
@@ -61,35 +59,35 @@ func init() {
 	})
 }
 
+// TODO: nwa check??
 const (
 	common = "common"
 	config = "config"
 )
 
 var (
-	mute    bool
-	holder  string
-	year    int
-	license string
-	skip    string
-	tmpl    string
+	MuteF    bool
+	HolderF  string
+	YearF    string
+	LicenseF string
+	TmplF    string
+	SkipF    []string
 )
 
 func setupCommonCmd(common *cobra.Command) {
 	rootCmd.AddCommand(common)
 
-	common.Flags().BoolVarP(&mute, "mute", "m", false, "mute mode")
-	common.Flags().StringVarP(&holder, "copyright", "c", "[copyright holder]", "copyright holder")
-	common.Flags().IntVarP(&year, "year", "y", time.Now().Year(), "copyright year")
-	common.Flags().StringVarP(&license, "license", "l", "apache", "license type")
-	// Note: use spaces to separate sections and use double quotation to enclose all the sections
-	common.Flags().StringVarP(&skip, "skip", "s", "", "skip file")
-	common.Flags().StringVarP(&tmpl, "tmpl", "t", "", "template file path")
+	common.Flags().BoolVarP(&MuteF, "mute", "m", defaultConfig.Nwa.Mute, "mute mode")
+	common.Flags().StringVarP(&HolderF, "copyright", "c", defaultConfig.Nwa.Holder, "copyright holder")
+	common.Flags().StringVarP(&YearF, "year", "y", defaultConfig.Nwa.Year, "copyright year")
+	common.Flags().StringVarP(&LicenseF, "license", "l", defaultConfig.Nwa.License, "license type")
+	common.Flags().StringVarP(&TmplF, "tmpl", "t", defaultConfig.Nwa.Tmpl, "template file path")
+	common.Flags().StringSliceVarP(&SkipF, "skip", "s", defaultConfig.Nwa.Skip, "skip file")
 
 	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
 	common.MarkFlagsMutuallyExclusive("year", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
-	common.MarkFlagsMutuallyExclusive("ignore", "tmpl")
+	common.MarkFlagsMutuallyExclusive("skip", "tmpl")
 }
 
 func setupConfigCmd(config *cobra.Command) {

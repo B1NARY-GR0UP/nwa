@@ -27,7 +27,9 @@ var updateCmd = &cobra.Command{
 	Short:   "",
 	Long:    ``,
 	GroupID: common,
+	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// 校验路径参数，看存不存在，即 args 代表添加的路径
 		fmt.Println("update called")
 	},
 }

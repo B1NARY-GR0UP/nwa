@@ -17,10 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"time"
 )
 
 // configCmd represents the config command
@@ -29,6 +28,7 @@ var configCmd = &cobra.Command{
 	Short:   "",
 	Long:    ``,
 	GroupID: config,
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("config called")
 		// 校验路径参数，即 args 代表配置文件的路径
@@ -54,7 +54,7 @@ type Config struct {
 type NwaConfig struct {
 	Cmd     string   `yaml:"cmd"`
 	Holder  string   `yaml:"holder"`
-	Year    int      `yaml:"year"`
+	Year    string   `yaml:"year"`
 	License string   `yaml:"license"`
 	Mute    bool     `yaml:"mute"`
 	Path    []string `yaml:"path"`
@@ -64,12 +64,12 @@ type NwaConfig struct {
 
 var defaultConfig = &Config{Nwa: NwaConfig{
 	Cmd:     "add",
-	Holder:  "[copyright holder]",
-	Year:    time.Now().Year(),
+	Holder:  "<COPYRIGHT HOLDER>",
+	Year:    fmt.Sprint(time.Now().Year()),
 	License: "apache",
 	Mute:    false,
-	Path:    []string{""},
-	Skip:    []string{""},
+	Path:    []string{},
+	Skip:    []string{},
 	Tmpl:    "",
 }}
 

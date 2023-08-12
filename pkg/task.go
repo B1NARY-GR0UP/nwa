@@ -13,27 +13,17 @@
 // limitations under the License.
 //
 
-package cmd
+package pkg
 
-import (
-	"fmt"
+import "github.com/B1NARY-GR0UP/violin"
 
-	"github.com/spf13/cobra"
-)
+const Max = 500
 
-// removeCmd represents the remove command
-var removeCmd = &cobra.Command{
-	Use:     "remove",
-	Short:   "",
-	Long:    ``,
-	GroupID: common,
-	Args:    cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		// 校验路径参数，看存不存在，即 args 代表添加的路径
-		fmt.Println("remove called")
-	},
-}
+var taskC = make(chan func(), Max)
 
-func init() {
-	setupCommonCmd(removeCmd)
+func ExecuteTasks() {
+	v := violin.New(violin.WithWaitingQueueSize(Max))
+	defer v.Shutdown()
+	v.ConsumeWait(taskC)
+	close(taskC)
 }
