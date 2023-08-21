@@ -87,7 +87,6 @@ func setupCommonCmd(common *cobra.Command) {
 	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
 	common.MarkFlagsMutuallyExclusive("year", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
-	common.MarkFlagsMutuallyExclusive("skip", "tmpl")
 }
 
 func setupConfigCmd(config *cobra.Command) {
