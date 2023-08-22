@@ -16,9 +16,12 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
-
+	"github.com/B1NARY-GR0UP/nwa/pkg"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // removeCmd represents the remove command
@@ -26,11 +29,42 @@ var removeCmd = &cobra.Command{
 	Use:     "remove",
 	Short:   "",
 	Long:    ``,
-	GroupID: common,
+	GroupID: pkg.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// 校验路径参数，看存不存在，即 args 代表添加的路径
 		fmt.Println("remove called")
+		// validate skip pattern
+		for _, s := range SkipF {
+			if !doublestar.ValidatePattern(s) {
+				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
+			}
+		}
+		if TmplF == "" {
+			tmpl, err := pkg.MatchTmpl(LicenseF)
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+			tmplData := &pkg.TmplData{
+				Holder: HolderF,
+				Year:   YearF,
+			}
+			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+			// determine files need to be added
+			pkg.PrepareTasks(args, renderedTmpl, pkg.Remove, SkipF, MuteF, TmplF)
+		} else {
+			content, err := os.ReadFile(TmplF)
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+			buf := bytes.NewBuffer(content)
+			// add blank line at the end
+			_, _ = fmt.Fprintln(buf)
+			pkg.PrepareTasks(args, buf, pkg.Remove, SkipF, MuteF, TmplF)
+		}
+		pkg.ExecuteTasks()
 	},
 }
 

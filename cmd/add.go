@@ -29,10 +29,9 @@ var addCmd = &cobra.Command{
 	Use:     "add",
 	Short:   "",
 	Long:    ``,
-	GroupID: common,
+	GroupID: pkg.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
 		// validate skip pattern
 		for _, s := range SkipF {
 			if !doublestar.ValidatePattern(s) {
@@ -53,14 +52,16 @@ var addCmd = &cobra.Command{
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			pkg.PrepareAddTasks(args, renderedTmpl, SkipF, MuteF, TmplF)
+			pkg.PrepareTasks(args, renderedTmpl, pkg.Add, SkipF, MuteF, TmplF)
 		} else {
 			content, err := os.ReadFile(TmplF)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			buf := bytes.NewBuffer(content)
-			pkg.PrepareAddTasks(args, buf, SkipF, MuteF, TmplF)
+			// add blank line at the end
+			_, _ = fmt.Fprintln(buf)
+			pkg.PrepareTasks(args, buf, pkg.Add, SkipF, MuteF, TmplF)
 		}
 		pkg.ExecuteTasks()
 	},

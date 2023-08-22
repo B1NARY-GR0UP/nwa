@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/B1NARY-GR0UP/nwa/pkg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"time"
@@ -27,7 +28,7 @@ var configCmd = &cobra.Command{
 	Use:     "config",
 	Short:   "",
 	Long:    ``,
-	GroupID: config,
+	GroupID: pkg.Config,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("config called")

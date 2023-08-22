@@ -62,7 +62,6 @@ func generateHeader(path string, tmpl *bytes.Buffer) []byte {
 	return header
 }
 
-// TODO: test needed
 func doGenerate(tmpl *bytes.Buffer, top, mid, bot string) []byte {
 	buf := bytes.NewBuffer(nil)
 	if top != "" {
@@ -75,6 +74,7 @@ func doGenerate(tmpl *bytes.Buffer, top, mid, bot string) []byte {
 	if bot != "" {
 		_, _ = fmt.Fprintln(buf, bot)
 	}
+	// add blank line at the end
 	_, _ = fmt.Fprintln(buf)
 	return buf.Bytes()
 }
@@ -97,6 +97,7 @@ func hasHeader(b []byte) bool {
 		bytes.Contains(bytes.ToLower(b[:n]), []byte("spdx-license-identifier"))
 }
 
+// TODO: rename needed
 func matchFirstLine(b []byte) []byte {
 	var line []byte
 	fls := []string{
@@ -128,6 +129,7 @@ func matchFirstLine(b []byte) []byte {
 
 func assemble(line, header, content []byte) []byte {
 	if line != nil {
+		// line, content
 		// get content exclude the first line
 		content = content[len(line):]
 		// add \n if the first line do not end with \n
@@ -136,6 +138,7 @@ func assemble(line, header, content []byte) []byte {
 		}
 		header = append(line, header...)
 	}
+	// line, header, content
 	header = append(header, content...)
 	return header
 }

@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"github.com/B1NARY-GR0UP/nwa/pkg"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -51,19 +52,13 @@ func Execute() {
 func init() {
 	rootCmd.SetVersionTemplate("{{ .Version }}")
 	rootCmd.AddGroup(&cobra.Group{
-		ID:    common,
+		ID:    pkg.Common,
 		Title: "Common Mode Commands:",
 	}, &cobra.Group{
-		ID:    config,
+		ID:    pkg.Config,
 		Title: "Config Mode Commands:",
 	})
 }
-
-// TODO: nwa check??
-const (
-	common = "common"
-	config = "config"
-)
 
 var (
 	MuteF    bool

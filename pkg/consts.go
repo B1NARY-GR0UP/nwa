@@ -13,28 +13,18 @@
 // limitations under the License.
 //
 
-package cmd
+package pkg
 
-import (
-	"fmt"
-	"github.com/B1NARY-GR0UP/nwa/pkg"
-
-	"github.com/spf13/cobra"
+// TODO: nwa check??
+const (
+	Common = "common"
+	Config = "config"
 )
 
-// updateCmd represents the update command
-var updateCmd = &cobra.Command{
-	Use:     "update",
-	Short:   "",
-	Long:    ``,
-	GroupID: pkg.Common,
-	Args:    cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		// 校验路径参数，看存不存在，即 args 代表添加的路径
-		fmt.Println("update called")
-	},
-}
+type Operation string
 
-func init() {
-	setupCommonCmd(updateCmd)
-}
+const (
+	Add    Operation = "add"
+	Update Operation = "update"
+	Remove Operation = "remove"
+)

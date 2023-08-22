@@ -24,16 +24,16 @@ import (
 	"path/filepath"
 )
 
-// PrepareAddTasks walk through the dir and add tasks into task chan
+// PrepareTasks walk through the dir and add tasks into task chan
 // TODO: replace *bytes.Buffer with []byte
 // TODO: optimize function args
-func PrepareAddTasks(paths []string, tmpl *bytes.Buffer, skipF []string, muteF bool, tmplF string) {
+func PrepareTasks(paths []string, tmpl *bytes.Buffer, operation Operation, skipF []string, muteF bool, tmplF string) {
 	for _, path := range paths {
-		walkDir(path, tmpl, skipF, muteF, tmplF)
+		walkDir(path, tmpl, operation, skipF, muteF, tmplF)
 	}
 }
 
-func walkDir(start string, tmpl *bytes.Buffer, skipF []string, muteF bool, tmplF string) {
+func walkDir(start string, tmpl *bytes.Buffer, operation Operation, skipF []string, muteF bool, tmplF string) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
@@ -53,47 +53,101 @@ func walkDir(start string, tmpl *bytes.Buffer, skipF []string, muteF bool, tmplF
 			}
 			return nil
 		}
-		taskC <- func() {
-			header := tmpl.Bytes()
-			if tmplF == "" {
-				// generate header according to the file type
-				// NOTE: The file has not been modified yet
-				header = generateHeader(path, tmpl)
+		header := tmpl.Bytes()
+		if tmplF == "" {
+			// generate header according to the file type
+			// NOTE: The file has not been modified yet
+			header = generateHeader(path, tmpl)
+		}
+		switch operation {
+		case Add:
+			taskC <- func() {
+				doAdd(path, header, d, muteF)
 			}
-			content, err := os.ReadFile(path)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"path": path,
-					"err":  err,
-				}).Errorln("read file error")
-				return
+		case Update:
+		case Remove:
+			taskC <- func() {
+				doRemove(path, header, d, muteF)
 			}
-			if hasHeader(content) || isGenerated(content) {
-				logrus.WithFields(logrus.Fields{
-					"path": path,
-				}).Warnln("file already has a header or is generated")
-				return
-			}
-			line := matchFirstLine(content)
-			// modify the file
-			err = os.WriteFile(path, assemble(line, header, content), d.Type())
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"path": path,
-					"err":  err,
-				}).Errorln("write file error")
-				return
-			}
-			if !muteF {
-				logrus.WithFields(logrus.Fields{
-					"path": path,
-				}).Infoln("file has been modified")
-			}
+		default:
 		}
 		return nil
 	})
 }
 
+func doAdd(path string, header []byte, d fs.DirEntry, muteF bool) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+			"err":  err,
+		}).Errorln("read file error")
+		return
+	}
+	if hasHeader(content) || isGenerated(content) {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+		}).Warnln("file already has a header or is generated")
+		return
+	}
+	// get the first line of the special file
+	line := matchFirstLine(content)
+	// assemble license header and modify the file
+	err = os.WriteFile(path, assemble(line, header, content), d.Type())
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+			"err":  err,
+		}).Errorln("write file error")
+		return
+	}
+	if !muteF {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+		}).Infoln("file has been modified")
+	}
+}
+
+func doRemove(path string, header []byte, d fs.DirEntry, muteF bool) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+			"err":  err,
+		}).Errorln("read file error")
+		return
+	}
+	if isGenerated(content) {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+		}).Warnln("file is generated")
+		return
+	}
+	// get the first index of the header in the file
+	idx := bytes.Index(content, header)
+	if idx == -1 {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+		}).Warnln("file does not have a matched header")
+		return
+	}
+	// remove the header of the file
+	content = append(content[:idx], content[idx+len(header):]...)
+	// modify the file
+	err = os.WriteFile(path, content, d.Type())
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+			"err":  err,
+		}).Errorln("write file error")
+		return
+	}
+	if !muteF {
+		logrus.WithFields(logrus.Fields{
+			"path": path,
+		}).Infoln("file has been modified")
+	}
+}
 func isMatch(path string, pattern []string) bool {
 	for _, p := range pattern {
 		if match, _ := doublestar.Match(p, path); match {
