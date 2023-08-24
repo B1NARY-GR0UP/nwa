@@ -13,9 +13,8 @@
 // limitations under the License.
 //
 
-package pkg
+package util
 
-// TODO: nwa check??
 const (
 	Common = "common"
 	Config = "config"
@@ -27,4 +26,5 @@ const (
 	Add    Operation = "add"
 	Update Operation = "update"
 	Remove Operation = "remove"
+	Check  Operation = "check"
 )

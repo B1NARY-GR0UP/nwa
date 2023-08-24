@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-package pkg
+package util
 
 // Max number of files can operate at once
 const Max = 1000

@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-package pkg
+package util
 
 import (
 	"bufio"
@@ -68,6 +68,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 			prepareUpdate(path, d, header, muteF)
 		case Remove:
 			prepareRemove(path, d, header, muteF)
+		case Check:
 		default:
 			logrus.Errorln("no matched operation")
 		}

@@ -18,7 +18,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/B1NARY-GR0UP/nwa/pkg"
+	"github.com/B1NARY-GR0UP/nwa/util"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 	"os"
@@ -29,7 +29,7 @@ var addCmd = &cobra.Command{
 	Use:     "add",
 	Short:   "",
 	Long:    ``,
-	GroupID: pkg.Common,
+	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// validate skip pattern
@@ -39,11 +39,11 @@ var addCmd = &cobra.Command{
 			}
 		}
 		if TmplF == "" {
-			tmpl, err := pkg.MatchTmpl(LicenseF)
+			tmpl, err := util.MatchTmpl(LicenseF)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			tmplData := &pkg.TmplData{
+			tmplData := &util.TmplData{
 				Holder: HolderF,
 				Year:   YearF,
 			}
@@ -52,7 +52,7 @@ var addCmd = &cobra.Command{
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			pkg.PrepareTasks(args, renderedTmpl, pkg.Add, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, renderedTmpl, util.Add, SkipF, MuteF, TmplF)
 		} else {
 			content, err := os.ReadFile(TmplF)
 			if err != nil {
@@ -62,9 +62,9 @@ var addCmd = &cobra.Command{
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)
-			pkg.PrepareTasks(args, buf.Bytes(), pkg.Add, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, buf.Bytes(), util.Add, SkipF, MuteF, TmplF)
 		}
-		pkg.ExecuteTasks()
+		util.ExecuteTasks()
 	},
 }
 

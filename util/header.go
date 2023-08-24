@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-package pkg
+package util
 
 import (
 	"bufio"
