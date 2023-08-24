@@ -34,7 +34,6 @@ var configCmd = &cobra.Command{
 	GroupID: util.Config,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
 		if err := defaultConfig.readInConfig(args[0]); err != nil {
 			cobra.CheckErr(err)
 		}
