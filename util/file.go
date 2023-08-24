@@ -251,7 +251,14 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 
 func isSkip(path string, pattern []string) bool {
 	for _, p := range pattern {
-		if match, _ := doublestar.Match(p, path); match {
+		if match, err := doublestar.Match(p, path); match {
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"path":    path,
+					"pattern": p,
+				}).Errorln("skip pattern match error")
+				return false
+			}
 			return true
 		}
 	}
