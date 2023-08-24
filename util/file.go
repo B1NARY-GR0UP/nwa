@@ -98,7 +98,8 @@ func prepareCheck(path string, header []byte, muteF bool) {
 		if idx != -1 && !muteF {
 			logrus.WithFields(logrus.Fields{
 				"path": path,
-			}).Infoln("file does have a matched header")
+			}).Infoln("file has a matched header")
+			return
 		}
 		if !muteF {
 			logrus.WithFields(logrus.Fields{
