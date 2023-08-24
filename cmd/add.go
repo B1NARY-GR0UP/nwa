@@ -58,10 +58,11 @@ var addCmd = &cobra.Command{
 			if err != nil {
 				cobra.CheckErr(err)
 			}
+			// TODO: optimize, remove bytes.Buffer
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)
-			pkg.PrepareTasks(args, buf, pkg.Add, SkipF, MuteF, TmplF)
+			pkg.PrepareTasks(args, buf.Bytes(), pkg.Add, SkipF, MuteF, TmplF)
 		}
 		pkg.ExecuteTasks()
 	},

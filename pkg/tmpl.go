@@ -43,14 +43,14 @@ func MatchTmpl(license string) (string, error) {
 	}
 }
 
-func (t *TmplData) RenderTmpl(tmpl string) (*bytes.Buffer, error) {
+func (t *TmplData) RenderTmpl(tmpl string) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	renderedTmpl := template.Must(template.New("nwa-tmpl").Parse(tmpl))
 	err := renderedTmpl.Execute(buf, t)
 	if err != nil {
 		return nil, err
 	}
-	return buf, nil
+	return buf.Bytes(), nil
 }
 
 const tmplApache = `Copyright {{ .Year }} {{ .Holder }}

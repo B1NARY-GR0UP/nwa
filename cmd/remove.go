@@ -32,7 +32,6 @@ var removeCmd = &cobra.Command{
 	GroupID: pkg.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("remove called")
 		// validate skip pattern
 		for _, s := range SkipF {
 			if !doublestar.ValidatePattern(s) {
@@ -59,10 +58,11 @@ var removeCmd = &cobra.Command{
 			if err != nil {
 				cobra.CheckErr(err)
 			}
+			// TODO: optimize, remove bytes.Buffer
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)
-			pkg.PrepareTasks(args, buf, pkg.Remove, SkipF, MuteF, TmplF)
+			pkg.PrepareTasks(args, buf.Bytes(), pkg.Remove, SkipF, MuteF, TmplF)
 		}
 		pkg.ExecuteTasks()
 	},
