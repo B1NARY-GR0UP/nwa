@@ -53,6 +53,7 @@ func (t *TmplData) RenderTmpl(tmpl string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// TODO: support more templates
 const tmplApache = `Copyright {{ .Year }} {{ .Holder }}
 
 Licensed under the Apache License, Version 2.0 (the "License");

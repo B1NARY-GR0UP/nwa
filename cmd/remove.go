@@ -18,17 +18,19 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"os"
+
 	"github.com/B1NARY-GR0UP/nwa/util"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // removeCmd represents the remove command
 var removeCmd = &cobra.Command{
-	Use:     "remove",
-	Short:   "",
-	Long:    ``,
+	Use:   "remove",
+	Short: "remove license headers of files",
+	Long: `Common Command | Remove licenses headers of files
+EXAMPLE: nwa remove -l mit -c Anmory .`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

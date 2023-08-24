@@ -16,9 +16,10 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/B1NARY-GR0UP/nwa/util"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 const (
@@ -78,7 +79,7 @@ func setupCommonCmd(common *cobra.Command) {
 	common.Flags().StringVarP(&YearF, "year", "y", defaultConfig.Nwa.Year, "copyright year")
 	common.Flags().StringVarP(&LicenseF, "license", "l", defaultConfig.Nwa.License, "license type")
 	common.Flags().StringVarP(&TmplF, "tmpl", "t", defaultConfig.Nwa.Tmpl, "template file path")
-	common.Flags().StringSliceVarP(&SkipF, "skip", "s", defaultConfig.Nwa.Skip, "skip file")
+	common.Flags().StringSliceVarP(&SkipF, "skip", "s", defaultConfig.Nwa.Skip, "skip file path")
 
 	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
 	common.MarkFlagsMutuallyExclusive("year", "tmpl")

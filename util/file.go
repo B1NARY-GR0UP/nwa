@@ -18,20 +18,13 @@ package util
 import (
 	"bufio"
 	"bytes"
-	"github.com/bmatcuk/doublestar/v4"
-	"github.com/sirupsen/logrus"
 	"io/fs"
 	"os"
 	"path/filepath"
-)
 
-// PrepareTasks walk through the dir and add tasks into task chan
-// TODO: optimize function args
-func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
-	for _, path := range paths {
-		walkDir(path, tmpl, operation, skipF, muteF, tmplF)
-	}
-}
+	"github.com/bmatcuk/doublestar/v4"
+	"github.com/sirupsen/logrus"
+)
 
 func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
@@ -126,7 +119,7 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 			return
 		}
 		// get the first line of the special file
-		line := matchFirstLine(content)
+		line := matchHeaderLine(content)
 		file, err := os.Open(path)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
@@ -230,7 +223,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 			return
 		}
 		// get the first line of the special file
-		line := matchFirstLine(content)
+		line := matchHeaderLine(content)
 		// assemble license header and modify the file
 		b := assemble(line, header, content, false)
 		err = os.WriteFile(path, b, d.Type())

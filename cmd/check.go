@@ -18,17 +18,20 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"os"
+
 	"github.com/B1NARY-GR0UP/nwa/util"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
-	Use:     "check",
-	Short:   "",
-	Long:    ``,
+	Use:   "check",
+	Short: "check license headers of files",
+	Long: `Common Command | Check license headers of files
+EXAMPLE: nwa check -t tmpl.txt .
+NOTE: Do not use --mute (-m) flag with the command`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

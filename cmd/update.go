@@ -18,18 +18,21 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/B1NARY-GR0UP/nwa/util"
-	"github.com/bmatcuk/doublestar/v4"
 	"os"
 
+	"github.com/B1NARY-GR0UP/nwa/util"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 )
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
-	Use:     "update",
-	Short:   "",
-	Long:    ``,
+	Use:   "update",
+	Short: "update license headers of files",
+	Long: `Common Command | Update license headers of files
+EXAMPLE: nwa update -l mit -c Anmory .
+NOTE: Update identifies the content before the first blank line as a license header;
+If your file does not meet the requirements, please use remove + add`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

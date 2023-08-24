@@ -26,7 +26,7 @@ Local Flags (add, update, remove):
 --copyright -c => 指定 copyright holder 默认 {Copyright Holder}
 --year -y => 指定年份 默认 {Current Year}
 --license -l => 指定开源许可证类型 默认 {Apache-2.0}
---tmpl -t => 指定模板文件路径 默认 {} **和 -c -y -l 互斥**
+--tmpl -t => 指定模板文件路径 默认 {} **和 -c -y -l 互斥** 完全自定义，允许你使用不同风格的注释
 
 **config 模式下，所有配置以配置文件为准，即配置文件的优先级高于命令行参数**
 
@@ -36,12 +36,12 @@ Local Flags (add, update, remove):
 nwa:
   cmd: "add"
   holder: "RHINE LAB.LLC."
-  year: "2023"
+  year: "2077"
   license: "apache"
   mute: false
-  path: ["server/*.go"]
-  skip: ["example/**", "test/**"]
-  tmpl: "./nwa.tmpl"
+  path: ["server", "client", "pkg"]
+  skip: ["**.py"]
+  tmpl: "nwa.txt"
 ```
 
 ## Related Projects

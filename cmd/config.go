@@ -18,19 +18,35 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/B1NARY-GR0UP/nwa/util"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"time"
 )
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
-	Use:     "config",
-	Short:   "",
-	Long:    ``,
+	Use:   "config",
+	Short: "edit the files according to the configuration file",
+	Long: `Config Command | Edit files according to the configuration file
+EXAMPLE: nwa config config.yaml
+NOTE: This command does not have any flag;
+You can only specify the path of the configuration file, and everything depends on the configuration file;
+If some configuration are not configured, the default configuration will be used
+SAMPLE CONFIGURATION FILE(YAML):
+nwa:
+  cmd: "add"
+  holder: "RHINE LAB.LLC."
+  year: "2077"
+  license: "apache"
+  mute: false
+  path: ["server", "client", "pkg"]
+  skip: ["**.py"]
+  tmpl: "nwa.txt"
+`,
 	GroupID: util.Config,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
