@@ -46,7 +46,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 			return nil
 		}
 		// determine if this file needs to be skipped
-		if isMatch(path, skipF) {
+		if isSkip(path, skipF) {
 			if !muteF {
 				logrus.WithFields(logrus.Fields{
 					"path": path,
@@ -70,7 +70,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		case Check:
 			prepareCheck(path, header, muteF)
 		default:
-			logrus.Errorln("no matched operation")
+			logrus.Warnln("not a valid operation")
 		}
 		return nil
 	})
@@ -122,7 +122,7 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 		if !hasHeader(content) || isGenerated(content) {
 			logrus.WithFields(logrus.Fields{
 				"path": path,
-			}).Infoln("file does not have a header or is generated")
+			}).Warnln("file does not have a header or is generated")
 			return
 		}
 		// get the first line of the special file
@@ -150,7 +150,7 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 		}
 		err = file.Close()
 		if err != nil {
-			logrus.Warnln("file close error")
+			logrus.Errorln("file close error")
 		}
 		// assemble license header and modify the file
 		b := assemble(line, header, afterBlankLine, true)
@@ -249,7 +249,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 	}
 }
 
-func isMatch(path string, pattern []string) bool {
+func isSkip(path string, pattern []string) bool {
 	for _, p := range pattern {
 		if match, _ := doublestar.Match(p, path); match {
 			return true

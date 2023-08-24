@@ -21,7 +21,7 @@ nwa cmd [flags] path
 
 Local Flags (add, update, remove):
 
---mute -m => 静默模式(即，不输出修改的文件信息等) 默认 {false}
+--mute -m => 静默模式(即，不输出修改的文件信息等) 默认 {false} 不会显示 Info 级别以下的信息，但是会显示 Warn 和 Error
 --skip -s => 指定忽略的文件 默认 {}
 --copyright -c => 指定 copyright holder 默认 {Copyright Holder}
 --year -y => 指定年份 默认 {Current Year}

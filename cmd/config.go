@@ -16,10 +16,13 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/B1NARY-GR0UP/nwa/util"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 	"time"
 )
 
@@ -32,15 +35,42 @@ var configCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("config called")
-		// 校验路径参数，即 args 代表配置文件的路径
-		// 读取配置文件
-		if err := defaultConfig.readInConfig(""); err != nil {
+		if err := defaultConfig.readInConfig(args[0]); err != nil {
+			cobra.CheckErr(err)
 		}
-		// 查看是否配置了 tmpl，如果配置了就忽略配置文件中 holder year license 的值
-		// 查看 skip 和 path 一起决定需要进行修改的文件路径（列表）注意：path 为必须参数，如果没有返回错误
-		// 查看是否使用 mute 参数，没有启用则日志输出修改文件列表
-		// 将文件修改任务添加到 chan 中
-		// 使用 worker pool 消费任务
+		// validate skip pattern
+		for _, s := range defaultConfig.Nwa.Skip {
+			if !doublestar.ValidatePattern(s) {
+				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
+			}
+		}
+		if defaultConfig.Nwa.Tmpl == "" {
+			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License)
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+			tmplData := &util.TmplData{
+				Holder: defaultConfig.Nwa.Holder,
+				Year:   defaultConfig.Nwa.Year,
+			}
+			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+			// determine files need to be added
+			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, defaultConfig.Nwa.Tmpl)
+		} else {
+			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+			// TODO: optimize, remove bytes.Buffer
+			buf := bytes.NewBuffer(content)
+			// add blank line at the end
+			_, _ = fmt.Fprintln(buf)
+			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, defaultConfig.Nwa.Tmpl)
+		}
+		util.ExecuteTasks()
 	},
 }
 

@@ -32,6 +32,7 @@ var addCmd = &cobra.Command{
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: extract method, add, remove, update, check are same
 		// validate skip pattern
 		for _, s := range SkipF {
 			if !doublestar.ValidatePattern(s) {
