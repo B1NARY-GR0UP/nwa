@@ -52,7 +52,7 @@ var checkCmd = &cobra.Command{
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(args, renderedTmpl, util.Add, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, renderedTmpl, util.Check, SkipF, MuteF, TmplF)
 		} else {
 			content, err := os.ReadFile(TmplF)
 			if err != nil {
@@ -62,7 +62,7 @@ var checkCmd = &cobra.Command{
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)
-			util.PrepareTasks(args, buf.Bytes(), util.Add, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, buf.Bytes(), util.Check, SkipF, MuteF, TmplF)
 		}
 		util.ExecuteTasks()
 	},

@@ -26,7 +26,6 @@ import (
 )
 
 // PrepareTasks walk through the dir and add tasks into task chan
-// TODO: replace *bytes.Buffer with []byte
 // TODO: optimize function args
 func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
 	for _, path := range paths {
@@ -69,11 +68,44 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		case Remove:
 			prepareRemove(path, d, header, muteF)
 		case Check:
+			prepareCheck(path, header, muteF)
 		default:
 			logrus.Errorln("no matched operation")
 		}
 		return nil
 	})
+}
+
+func prepareCheck(path string, header []byte, muteF bool) {
+	taskC <- func() {
+		content, err := os.ReadFile(path)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+				"err":  err,
+			}).Errorln("read file error")
+			return
+		}
+		if isGenerated(content) {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+			}).Warnln("file is generated")
+			return
+		}
+		// get the first index of the header in the file
+		idx := bytes.Index(content, header)
+		// not matched
+		if idx != -1 && !muteF {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+			}).Infoln("file does have a matched header")
+		}
+		if !muteF {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+			}).Infoln("file does not have a matched header")
+		}
+	}
 }
 
 func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
