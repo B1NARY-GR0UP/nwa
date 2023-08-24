@@ -52,7 +52,7 @@ var updateCmd = &cobra.Command{
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			// determine files need to be added
+			// determine files need to be updated
 			pkg.PrepareTasks(args, renderedTmpl, pkg.Update, SkipF, MuteF, TmplF)
 		} else {
 			content, err := os.ReadFile(TmplF)

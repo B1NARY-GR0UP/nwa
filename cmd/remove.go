@@ -51,7 +51,7 @@ var removeCmd = &cobra.Command{
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			// determine files need to be added
+			// determine files need to be removed
 			pkg.PrepareTasks(args, renderedTmpl, pkg.Remove, SkipF, MuteF, TmplF)
 		} else {
 			content, err := os.ReadFile(TmplF)

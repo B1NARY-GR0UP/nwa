@@ -15,17 +15,17 @@
 
 package pkg
 
-import "github.com/B1NARY-GR0UP/violin"
-
-// Max number of files can operate at one time
-// TODO: upgrade VIOLIN with unbounded queue
-const Max = 500
+// Max number of files can operate at once
+const Max = 1000
 
 var taskC = make(chan func(), Max)
 
+// ExecuteTasks
+// TODO: upgrade VIOLIN with unbounded queue and fix bug :(
 func ExecuteTasks() {
-	v := violin.New(violin.WithWaitingQueueSize(Max))
-	defer v.Shutdown()
-	v.ConsumeWait(taskC)
-	close(taskC)
+	nums := len(taskC)
+	for i := 0; i < nums; i++ {
+		task := <-taskC
+		task()
+	}
 }

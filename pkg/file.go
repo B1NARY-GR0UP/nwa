@@ -114,6 +114,10 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 			afterBlankLine = append(afterBlankLine, scanner.Bytes()...)
 			afterBlankLine = append(afterBlankLine, '\n')
 		}
+		err = file.Close()
+		if err != nil {
+			logrus.Warnln("file close error")
+		}
 		// assemble license header and modify the file
 		b := assemble(line, header, afterBlankLine, true)
 		err = os.WriteFile(path, b, d.Type())
