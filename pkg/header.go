@@ -151,11 +151,13 @@ func matchFirstLine(b []byte) []byte {
 	return nil
 }
 
-func assemble(line, header, content []byte) []byte {
+func assemble(line, header, content []byte, isUpdate bool) []byte {
 	if line != nil {
 		// line, content
 		// get content exclude the first line
-		content = content[len(line):]
+		if !isUpdate {
+			content = content[len(line):]
+		}
 		// add \n if the first line do not end with \n
 		if line[len(line)-1] != '\n' {
 			line = append(line, '\n')

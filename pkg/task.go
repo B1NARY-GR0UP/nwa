@@ -17,6 +17,8 @@ package pkg
 
 import "github.com/B1NARY-GR0UP/violin"
 
+// Max number of files can operate at one time
+// TODO: upgrade VIOLIN with unbounded queue
 const Max = 500
 
 var taskC = make(chan func(), Max)

@@ -16,6 +16,7 @@
 package pkg
 
 import (
+	"bufio"
 	"bytes"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/sirupsen/logrus"
@@ -64,13 +65,71 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		case Add:
 			prepareAdd(path, d, header, muteF)
 		case Update:
+			prepareUpdate(path, d, header, muteF)
 		case Remove:
 			prepareRemove(path, d, header, muteF)
 		default:
-			logrus.Errorln("please specify operation")
+			logrus.Errorln("no matched operation")
 		}
 		return nil
 	})
+}
+
+func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
+	taskC <- func() {
+		content, err := os.ReadFile(path)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+				"err":  err,
+			}).Errorln("read file error")
+			return
+		}
+		if !hasHeader(content) || isGenerated(content) {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+			}).Infoln("file does not have a header or is generated")
+			return
+		}
+		// get the first line of the special file
+		line := matchFirstLine(content)
+		file, err := os.Open(path)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+				"err":  err,
+			}).Errorln("open file error")
+			return
+		}
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			l := scanner.Bytes()
+			if len(l) == 0 {
+				break
+			}
+		}
+		afterBlankLine := make([]byte, 0)
+		// NOTE: scanner will not scan from the beginning
+		for scanner.Scan() {
+			afterBlankLine = append(afterBlankLine, scanner.Bytes()...)
+			afterBlankLine = append(afterBlankLine, '\n')
+		}
+		// assemble license header and modify the file
+		b := assemble(line, header, afterBlankLine, true)
+		err = os.WriteFile(path, b, d.Type())
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+				"err":  err,
+			}).Errorln("write file error")
+			return
+		}
+		if !muteF {
+			logrus.WithFields(logrus.Fields{
+				"path": path,
+			}).Infoln("file has been modified")
+		}
+	}
 }
 
 func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) {
@@ -135,7 +194,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 		// get the first line of the special file
 		line := matchFirstLine(content)
 		// assemble license header and modify the file
-		b := assemble(line, header, content)
+		b := assemble(line, header, content, false)
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
