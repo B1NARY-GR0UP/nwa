@@ -254,6 +254,10 @@ EXAMPLE:
 docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 .
 ```
 
+## Related Projects
+
+- **[nwa-examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality
+
 ## Credits
 
 Sincere appreciation to the following repositories that made the development of NWA possible.
