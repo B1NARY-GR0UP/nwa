@@ -124,7 +124,7 @@ func hasHeader(b []byte) bool {
 		bytes.Contains(bytes.ToLower(b[:n]), []byte("spdx-license-identifier"))
 }
 
-func matchHeaderLine(b []byte) []byte {
+func matchShebang(b []byte) []byte {
 	var line []byte
 	fls := []string{
 		"#!",                       // shell script

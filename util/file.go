@@ -119,7 +119,7 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 			return
 		}
 		// get the first line of the special file
-		line := matchHeaderLine(content)
+		line := matchShebang(content)
 		file, err := os.Open(path)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
@@ -223,7 +223,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 			return
 		}
 		// get the first line of the special file
-		line := matchHeaderLine(content)
+		line := matchShebang(content)
 		// assemble license header and modify the file
 		b := assemble(line, header, content, false)
 		err = os.WriteFile(path, b, d.Type())
