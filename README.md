@@ -67,7 +67,7 @@ nwa add [flags] path
 - **Example**
 
 ```shell
-nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server
+nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server ./utils/bufferpool
 ```
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
