@@ -49,7 +49,7 @@ Use "nwa [command] --help" for more information about a command.
 
 ---
 
-### Add
+### Add - Add license headers to files
 
 - **Usage**
 
@@ -79,7 +79,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ---
 
-### Check
+### Check - Check license headers of files
 
 - **Usage**
 
@@ -111,7 +111,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ---
 
-### Remove
+### Remove - Remove licenses headers of files
 
 - **Usage**
 
@@ -141,7 +141,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ---
 
-### Update
+### Update - Update license headers of files
 
 - **Usage**
 
@@ -173,7 +173,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ---
 
-### Config
+### Config - Edit files according to the configuration file
 
 - **Usage**
 
@@ -216,7 +216,7 @@ nwa:
   tmpl: "nwa.txt"                   # Default: ""                                                       
 ```
 
-### Docker
+### Docker - Run NWA through docker, for those do not have a Go environment
 
 - **Install**
 
