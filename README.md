@@ -46,13 +46,13 @@ Use "nwa [command] --help" for more information about a command.
 
 ### Add
 
-- Usage
+- **Usage**
 
 ```shell
 nwa add [flags] path
 ```
 
-- Flags
+- **Flags**
  
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
@@ -64,7 +64,7 @@ nwa add [flags] path
 | -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
 | -h    | --help      | null                               | help for add       |
 
-- Example
+- **Example**
 
 ```shell
 nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server
@@ -74,13 +74,13 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ### Check
 
-- Usage
+- **Usage**
 
 ```shell
 nwa check [flags] path
 ```
 
-- Flags
+- **Flags**
 
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
@@ -94,7 +94,7 @@ nwa check [flags] path
 
 **NOTE: Do not use --mute (-m) flag with check command.**
 
-- Example
+- **Example**
 
 ```shell
 nwa check --tmpl tmpl.txt ./client
@@ -104,13 +104,13 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ### Remove
 
-- Usage
+- **Usage**
 
 ```shell
 nwa remove [flags] path
 ```
 
-- Flags
+- **Flags**
 
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
@@ -122,18 +122,17 @@ nwa remove [flags] path
 | -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
 | -h    | --help      | null                               | help for remove    |
 
-- Example
+- **Example**
 
 ```shell
 nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
 ```
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
-[EXAMPLE]()
 
 ### Update
 
-- Usage
+- **Usage**
 
 ```shell
 nwa update [flags] path
@@ -141,7 +140,7 @@ nwa update [flags] path
 
 **NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use remove + add command.**
 
-- Flags
+- **Flags**
 
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
@@ -153,7 +152,7 @@ nwa update [flags] path
 | -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
 | -h    | --help      | null                               | help for update    |
 
-- Example
+- **Example**
 
 ```shell
 nwa update -l apache -c "BINARY Members" .
@@ -163,7 +162,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ### Config
 
-- Usage
+- **Usage**
 
 ```shell
 nwa config [flags] path
@@ -171,7 +170,7 @@ nwa config [flags] path
 
 **NOTE: Path is the configuration file path.**
 
-- Flags
+- **Flags**
 
 | Short | Long        | Default                            | Description     |
 |-------|-------------|------------------------------------|-----------------|
@@ -180,7 +179,7 @@ nwa config [flags] path
 
 **NOTE: If some configuration are not configured, the default configuration will be used.**
 
-- Example
+- **Example**
 
 ```shell
 nwa config config.yaml
@@ -188,7 +187,7 @@ nwa config config.yaml
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
-- Sample Configuration file
+- **Sample Configuration file**
  
 ```yaml
 nwa:
