@@ -47,9 +47,9 @@ Flags:
 Use "nwa [command] --help" for more information about a command.
 ```
 
-### Add
-
 ---
+
+### Add
 
 - **Usage**
 
@@ -77,9 +77,9 @@ nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server ./utils/bufferpool
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
-### Check
-
 ---
+
+### Check
 
 - **Usage**
 
@@ -109,9 +109,9 @@ nwa check --tmpl tmpl.txt ./client
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
-### Remove
-
 ---
+
+### Remove
 
 - **Usage**
 
@@ -139,9 +139,9 @@ nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
-### Update
-
 ---
+
+### Update
 
 - **Usage**
 
@@ -171,9 +171,9 @@ nwa update -l apache -c "BINARY Members" .
 
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
-### Config
-
 ---
+
+### Config
 
 - **Usage**
 
