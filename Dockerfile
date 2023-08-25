@@ -19,3 +19,7 @@ WORKDIR /src
 COPY --from=build /app/nwa /app/nwa
 
 ENTRYPOINT ["/app/nwa"]
+
+LABEL org.opencontainers.image.source=https://github.com/B1NARY-GR0UP/nwa
+LABEL org.opencontainers.image.description="NWA - A More Powerful License Header Management Tool"
+LABEL org.opencontainers.image.licenses=Apache
