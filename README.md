@@ -49,6 +49,8 @@ Use "nwa [command] --help" for more information about a command.
 
 ### Add
 
+---
+
 - **Usage**
 
 ```shell
@@ -76,6 +78,8 @@ nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server ./utils/bufferpool
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 ### Check
+
+---
 
 - **Usage**
 
@@ -107,6 +111,8 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 ### Remove
 
+---
+
 - **Usage**
 
 ```shell
@@ -134,6 +140,8 @@ nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 ### Update
+
+---
 
 - **Usage**
 
@@ -164,6 +172,8 @@ nwa update -l apache -c "BINARY Members" .
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 ### Config
+
+---
 
 - **Usage**
 
