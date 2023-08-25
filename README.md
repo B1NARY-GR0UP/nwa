@@ -1,6 +1,6 @@
 # NWA
 
-> mending
+> Mend Your Files
 
 ![NWA](images/NWA.png)
 
