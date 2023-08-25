@@ -196,9 +196,9 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
  
 ```yaml
 nwa:
-  cmd: "add"                        # Optional: "add", "check", "remove", "update" Default: "add"
+  cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update" 
   holder: "RHINE LAB.LLC."          # Default: "<COPYRIGHT HOLDER>"
-  year: "2077"                      # Default: Current year
+  year: "2077"                      # Default: Current Year
   license: "apache"                 # Default: "apache"
   mute: false                       # Default: false (unspecified)
   path: ["server", "client", "pkg"] # Default: []
