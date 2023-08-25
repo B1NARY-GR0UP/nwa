@@ -19,6 +19,7 @@ go install github.com/B1NARY-GR0UP/nwa@latest
 - **[Remove](#remove)**: Remove licenses headers of files
 - **[Update](#update)**: Update license headers of files
 - **[Config](#config)**: Edit files according to the configuration file
+- **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality  
 
 ```shell
 Usage:         
@@ -45,145 +46,175 @@ Use "nwa [command] --help" for more information about a command.
 
 ### Add
 
-[EXAMPLE]()
+- Usage
 
 ```shell
-Common Command | Add license headers to files
-EXAMPLE: nwa add -l apache -c Lorain -m .
-
-Usage:
-  nwa add [flags]
-
-Flags:
-  -c, --copyright string   copyright holder (default "<COPYRIGHT HOLDER>")
-  -h, --help               help for add
-  -l, --license string     license type (default "apache")
-  -m, --mute               mute mode
-  -s, --skip strings       skip file path
-  -t, --tmpl string        template file path
-  -y, --year string        copyright year (default "2023")
+nwa add [flags] path
 ```
+
+- Flags
+ 
+| Short | Long        | Default                            | Description        |
+|-------|-------------|------------------------------------|--------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -l    | --license   | `apache`                           | license type       |
+| -m    | --mute      | `false` (unspecified)              | mute mode          |
+| -s    | --skip      | `[]`                               | skip file path     |
+| -t    | --tmpl      | `""`                               | template file path |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
+| -h    | --help      | null                               | help for add       |
+
+- Example
+
+```shell
+nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server
+```
+
+Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 ### Check
 
-[EXAMPLE]()
+- Usage
 
 ```shell
-Common Command | Check license headers of files   
-EXAMPLE: nwa check -t tmpl.txt .                  
-NOTE: Do not use --mute (-m) flag with the command
-
-Usage:                                                                    
-  nwa check [flags]                                                       
-                                                                          
-Flags:                                                                    
-  -c, --copyright string   copyright holder (default "<COPYRIGHT HOLDER>")
-  -h, --help               help for check                                 
-  -l, --license string     license type (default "apache")                
-  -m, --mute               mute mode                                      
-  -s, --skip strings       skip file path                                 
-  -t, --tmpl string        template file path                             
-  -y, --year string        copyright year (default "2023")   
+nwa check [flags] path
 ```
+
+- Flags
+
+| Short | Long        | Default                            | Description        |
+|-------|-------------|------------------------------------|--------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -l    | --license   | `apache`                           | license type       |
+| -m    | --mute      | `false` (unspecified)              | mute mode          |
+| -s    | --skip      | `[]`                               | skip file path     |
+| -t    | --tmpl      | `""`                               | template file path |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
+| -h    | --help      | null                               | help for check     |
+
+**NOTE: Do not use --mute (-m) flag with check command.**
+
+- Example
+
+```shell
+nwa check --tmpl tmpl.txt ./client
+```
+
+Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 ### Remove
 
-[EXAMPLE]()
+- Usage
 
 ```shell
-Common Command | Remove licenses headers of files
-EXAMPLE: nwa remove -l mit -c Anmory .           
-
-Usage:                                                                    
-  nwa remove [flags]                                                      
-                                                                          
-Flags:                                                                    
-  -c, --copyright string   copyright holder (default "<COPYRIGHT HOLDER>")
-  -h, --help               help for remove                                
-  -l, --license string     license type (default "apache")                
-  -m, --mute               mute mode                                      
-  -s, --skip strings       skip file path                                 
-  -t, --tmpl string        template file path                             
-  -y, --year string        copyright year (default "2023") 
+nwa remove [flags] path
 ```
+
+- Flags
+
+| Short | Long        | Default                            | Description        |
+|-------|-------------|------------------------------------|--------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -l    | --license   | `apache`                           | license type       |
+| -m    | --mute      | `false` (unspecified)              | mute mode          |
+| -s    | --skip      | `[]`                               | skip file path     |
+| -t    | --tmpl      | `""`                               | template file path |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
+| -h    | --help      | null                               | help for remove    |
+
+- Example
+
+```shell
+nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
+```
+
+Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+[EXAMPLE]()
 
 ### Update
 
-[EXAMPLE]()
+- Usage
 
 ```shell
-Common Command | Update license headers of files                                    
-EXAMPLE: nwa update -l mit -c Anmory .                                              
-NOTE: Update identifies the content before the first blank line as a license header;
-If your file does not meet the requirements, please use remove + add                
-
-Usage:                                                                    
-  nwa update [flags]                                                      
-                                                                          
-Flags:                                                                    
-  -c, --copyright string   copyright holder (default "<COPYRIGHT HOLDER>")
-  -h, --help               help for update                                
-  -l, --license string     license type (default "apache")                
-  -m, --mute               mute mode                                      
-  -s, --skip strings       skip file path                                 
-  -t, --tmpl string        template file path                             
-  -y, --year string        copyright year (default "2023") 
+nwa update [flags] path
 ```
+
+**NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use remove + add command.**
+
+- Flags
+
+| Short | Long        | Default                            | Description        |
+|-------|-------------|------------------------------------|--------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -l    | --license   | `apache`                           | license type       |
+| -m    | --mute      | `false` (unspecified)              | mute mode          |
+| -s    | --skip      | `[]`                               | skip file path     |
+| -t    | --tmpl      | `""`                               | template file path |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
+| -h    | --help      | null                               | help for update    |
+
+- Example
+
+```shell
+nwa update -l apache -c "BINARY Members" .
+```
+
+Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 ### Config
 
-[EXAMPLE]()
+- Usage
 
 ```shell
-Config Command | Edit files according to the configuration file                                           
-EXAMPLE: nwa config config.yaml                                                                           
-NOTE: This command does not have any flag;                                                                
-You can only specify the path of the configuration file, and everything depends on the configuration file;
-If some configuration are not configured, the default configuration will be used                          
-SAMPLE CONFIGURATION FILE(YAML):                                                                          
-nwa:                                                                                                      
-  cmd: "add"                                                                                              
-  holder: "RHINE LAB.LLC."                                                                                
-  year: "2077"                                                                                            
-  license: "apache"                                                                                       
-  mute: false                                                                                             
-  path: ["server", "client", "pkg"]                                                                       
-  skip: ["**.py"]                                                                                         
-  tmpl: "nwa.txt"                                                                                         
-
-Usage:                        
-  nwa config [flags]          
-                              
-Flags:                        
-  -h, --help   help for config
+nwa config [flags] path
 ```
 
---mute -m => 静默模式(即，不输出修改的文件信息等) 默认 {false} 不会显示 Info 级别以下的信息，但是会显示 Warn 和 Error
---skip -s => 指定忽略的文件 默认 {}
---copyright -c => 指定 copyright holder 默认 {Copyright Holder}
---year -y => 指定年份 默认 {Current Year}
---license -l => 指定开源许可证类型 默认 {Apache-2.0}
---tmpl -t => 指定模板文件路径 默认 {} **和 -c -y -l 互斥** 完全自定义，允许你使用不同风格的注释
+**NOTE: Path is the configuration file path.**
 
-一个完整的配置文件如下（待定）：
+- Flags
 
+| Short | Long        | Default                            | Description     |
+|-------|-------------|------------------------------------|-----------------|
+| -h    | --help      | null                               | help for config |
+
+
+**NOTE: If some configuration are not configured, the default configuration will be used.**
+
+- Example
+
+```shell
+nwa config config.yaml
+```
+
+Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+
+- Sample Configuration file
+ 
 ```yaml
 nwa:
-  cmd: "add"
-  holder: "RHINE LAB.LLC."
-  year: "2077"
-  license: "apache"
-  mute: false
-  path: ["server", "client", "pkg"]
-  skip: ["**.py"]
-  tmpl: "nwa.txt"
+  cmd: "add"                        # Optional: "add", "check", "remove", "update" Default: "add"
+  holder: "RHINE LAB.LLC."          # Default: "<COPYRIGHT HOLDER>"
+  year: "2077"                      # Default: Current year
+  license: "apache"                 # Default: "apache"
+  mute: false                       # Default: false (unspecified)
+  path: ["server", "client", "pkg"] # Default: []
+  skip: ["**.py"]                   # Default: []
+  tmpl: "nwa.txt"                   # Default: ""                                                       
 ```
 
 ## License
 
 NWA is distributed under the [Apache License 2.0](./LICENSE). The licenses of third party dependencies of NWA are explained [here](./licenses).
 
-## Acknowledgement
+## Credits
+
+Sincere appreciation to the following repositories that made the development of NWA possible.
+
+- [addlicense](https://github.com/google/addlicense)
+- [cobra](https://github.com/spf13/cobra)
+- [doublestar](https://github.com/bmatcuk/doublestar)
+- [logrus](https://github.com/sirupsen/logrus)
+- [viper](https://github.com/spf13/viper)
 
 ## ECOLOGY
 
