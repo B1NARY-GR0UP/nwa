@@ -1,6 +1,10 @@
 # NWA
 
-> A More Powerful License Header Management Tool
+> mending
+
+![NWA](images/NWA.png)
+
+A More Powerful License Header Management Tool
 
 ## Install
 
@@ -44,18 +48,16 @@ nwa:
   tmpl: "nwa.txt"
 ```
 
-## Related Projects
-
-- [VIOLIN](https://github.com/B1NARY-GR0UP/violin) | VIOLIN worker/connection pool | `go` `connection-pool` `worker-pool`
-
 ## License
 
 NWA is distributed under the [Apache License 2.0](./LICENSE). The licenses of third party dependencies of NWA are explained [here](./licenses).
 
+## Acknowledgement
+
 ## ECOLOGY
 
 <p align="center">
-<img src="https://github.com/justlorain/justlorain/blob/main/images/BINARY-WEB-ECO.png" alt="BINARY-WEB-ECO"/>
+<img src="https://github.com/justlorain/justlorain/blob/main/images/BMS.png" alt="BMS"/>
 <br/><br/>
-NWA is a Subproject of the <a href="https://github.com/B1NARY-GR0UP">BINARY WEB ECOLOGY</a>
+NWA is a Subproject of the <a href="https://github.com/B1NARY-GR0UP">Basic Middleware Service</a>
 </p>
