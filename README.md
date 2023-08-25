@@ -218,7 +218,41 @@ nwa:
 
 ### Docker
 
-TODO: publish packet
+- **Install**
+
+Install the nwa docker image directly
+
+EXAMPLE:
+
+```shell
+docker pull ghcr.io/b1nary-gr0up/nwa:main
+```
+
+OR
+
+Build it from source
+
+EXAMPLE:
+
+```shell
+docker build -t ghcr.io/b1nary-gr0up/nwa .
+```
+
+- **Verify if it can work correctly**
+
+EXAMPLE:
+
+```shell
+docker run -it ghcr.io/b1nary-gr0up/nwa:main --version
+```
+
+- **Mount the directory you want NWA to work with to `/src` and use the commands mentions in usage**
+
+EXAMPLE:
+
+```shell
+docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 .
+```
 
 ## Credits
 
