@@ -12,7 +12,7 @@ A More Powerful License Header Management Tool
 go install github.com/B1NARY-GR0UP/nwa@latest
 ```
 
-Do not have Go environment? Check the [Docker](#docker) section.
+Do not have a Go environment? Check the [Docker](#docker) section.
 
 ## Usage
 
@@ -21,7 +21,7 @@ Do not have Go environment? Check the [Docker](#docker) section.
 - **[Remove](#remove)**: Remove licenses headers of files
 - **[Update](#update)**: Update license headers of files
 - **[Config](#config)**: Edit files according to the configuration file
-- **[Docker](#docker)**: Run NWA through docker, for those don't have Go environment
+- **[Docker](#docker)**: Run NWA through docker, for those do not have a Go environment
 - **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality  
 
 ```shell
@@ -52,14 +52,14 @@ Use "nwa [command] --help" for more information about a command.
 - **Usage**
 
 ```shell
-nwa add [flags] path
+nwa add [flags] path...
 ```
 
 - **Flags**
  
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
@@ -80,14 +80,14 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 - **Usage**
 
 ```shell
-nwa check [flags] path
+nwa check [flags] path...
 ```
 
 - **Flags**
 
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
@@ -110,14 +110,14 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 - **Usage**
 
 ```shell
-nwa remove [flags] path
+nwa remove [flags] path...
 ```
 
 - **Flags**
 
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
@@ -138,7 +138,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 - **Usage**
 
 ```shell
-nwa update [flags] path
+nwa update [flags] path...
 ```
 
 **NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use remove + add command.**
@@ -147,7 +147,7 @@ nwa update [flags] path
 
 | Short | Long        | Default                            | Description        |
 |-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright HOLDER   |
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
@@ -191,6 +191,8 @@ nwa config config.yaml
 Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
 
 - **Sample Configuration file**
+
+**NOTE: If you set the `tmpl` field, the `holder`, `year`, and `license` fields will be ignored.**
  
 ```yaml
 nwa:
@@ -206,7 +208,7 @@ nwa:
 
 ### Docker
 
-
+TODO: publish packet
 
 ## Credits
 
