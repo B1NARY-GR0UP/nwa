@@ -12,6 +12,8 @@ A More Powerful License Header Management Tool
 go install github.com/B1NARY-GR0UP/nwa@latest
 ```
 
+Do not have Go environment? Check the [Docker](#docker) section.
+
 ## Usage
 
 - **[Add](#add)**: Add license headers to files
@@ -19,6 +21,7 @@ go install github.com/B1NARY-GR0UP/nwa@latest
 - **[Remove](#remove)**: Remove licenses headers of files
 - **[Update](#update)**: Update license headers of files
 - **[Config](#config)**: Edit files according to the configuration file
+- **[Docker](#docker)**: Run NWA through docker, for those don't have Go environment
 - **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality  
 
 ```shell
@@ -201,9 +204,9 @@ nwa:
   tmpl: "nwa.txt"                   # Default: ""                                                       
 ```
 
-## License
+### Docker
 
-NWA is distributed under the [Apache License 2.0](./LICENSE). The licenses of third party dependencies of NWA are explained [here](./licenses).
+
 
 ## Credits
 
@@ -214,6 +217,10 @@ Sincere appreciation to the following repositories that made the development of 
 - [doublestar](https://github.com/bmatcuk/doublestar)
 - [logrus](https://github.com/sirupsen/logrus)
 - [viper](https://github.com/spf13/viper)
+
+## License
+
+NWA is distributed under the [Apache License 2.0](./LICENSE). The licenses of third party dependencies of NWA are explained [here](./licenses).
 
 ## ECOLOGY
 
