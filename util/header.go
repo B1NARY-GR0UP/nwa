@@ -73,6 +73,9 @@ func generateHeader(path string, tmpl []byte) []byte {
 	case ".php":
 		header = doGenerate(tmpl, "", "// ", "")
 		put(header, []string{".php"})
+	case ".j2":
+		header = doGenerate(tmpl, "{#", "", "#}")
+		put(header, []string{".j2"})
 	case ".ml", ".mli", ".mll", ".mly":
 		header = doGenerate(tmpl, "(**", "   ", "*)")
 		put(header, []string{".ml", ".mli", ".mll", ".mly"})
