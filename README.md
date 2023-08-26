@@ -1,5 +1,7 @@
 # NWA
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
+
 > Mend Your Files
 
 ![NWA](images/NWA.png)
