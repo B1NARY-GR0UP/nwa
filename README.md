@@ -18,12 +18,12 @@ Do not have a Go environment? Check the [Docker](#docker) section.
 
 ## Usage
 
-- **[Add](#add)**: Add license headers to files
-- **[Check](#check)**: Check license headers of files
-- **[Remove](#remove)**: Remove licenses headers of files
-- **[Update](#update)**: Update license headers of files
-- **[Config](#config)**: Edit files according to the configuration file
-- **[Docker](#docker)**: Run NWA through docker, for those do not have a Go environment
+- **[Add](#add---add-license-headers-to-files)**: Add license headers to files
+- **[Check](#check---check-license-headers-of-files)**: Check license headers of files
+- **[Remove](#remove---remove-licenses-headers-of-files)**: Remove licenses headers of files
+- **[Update](#update---update-license-headers-of-files)**: Update license headers of files
+- **[Config](#config---edit-files-according-to-the-configuration-file)**: Edit files according to the configuration file
+- **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those do not have a Go environment
 - **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality  
 
 ```shell
