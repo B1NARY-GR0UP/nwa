@@ -47,6 +47,7 @@ func generateHeader(path string, tmpl []byte) []byte {
 	}
 	switch ext {
 	case ".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts":
+		// TODO: optimize cache
 		header = doGenerate(tmpl, "/*", " * ", " */")
 		put(header, []string{".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts"})
 	case ".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts":

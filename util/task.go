@@ -29,6 +29,7 @@ func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []stri
 }
 
 // ExecuteTasks
+// TODO: use VIOLIN
 // TODO: upgrade VIOLIN with unbounded queue and fix bug :(
 func ExecuteTasks() {
 	nums := len(taskC)
