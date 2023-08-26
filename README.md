@@ -256,7 +256,7 @@ Build it from source
 EXAMPLE:
 
 ```shell
-docker build -t ghcr.io/b1nary-gr0up/nwa .
+docker build -t ghcr.io/b1nary-gr0up/nwa:main .
 ```
 
 - **Verify if it can work correctly**
