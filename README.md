@@ -14,7 +14,7 @@ A More Powerful License Header Management Tool
 go install github.com/B1NARY-GR0UP/nwa@latest
 ```
 
-Do not have a Go environment? Check the [Docker](#docker) section.
+Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment) section.
 
 ## Usage
 
