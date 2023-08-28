@@ -8,6 +8,10 @@
 
 A More Powerful License Header Management Tool
 
+<div align="center">
+English | [中文](README_CN.md)
+</div>
+
 ## Install
 
 ```shell
@@ -151,7 +155,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 nwa update [flags] path...
 ```
 
-**NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use remove + add command.**
+**NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use `remove` + `add` command.**
 
 - **Flags**
 
