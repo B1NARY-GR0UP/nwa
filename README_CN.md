@@ -1,8 +1,8 @@
 # NWA
 
-[English](README.md) | 中文
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
+
+[English](README.md) | 中文
 
 > 修补您的文件
 
@@ -359,7 +359,7 @@ nwa:
 
 ## 鸣谢
 
-衷心感谢以下使NWA开发成为可能的项目：
+衷心感谢以下使 NWA 的开发成为可能的项目：
 
 - [addlicense](https://github.com/google/addlicense)
 - [cobra](https://github.com/spf13/cobra)
