@@ -1,5 +1,7 @@
 # NWA
 
+[English](README.md) | 中文
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
 
 > 修补您的文件
@@ -7,10 +9,6 @@
 ![NWA](images/NWA.png)
 
 一款更强大的许可声明管理工具
-
-<div align="center">
-[English](README.md) | 中文
-</div>
 
 ## 安装
 
@@ -81,11 +79,11 @@ Use "nwa [command] --help" for more information about a command.
 
 **命令列表**
 
-- **Add**: 为文件添加许可声明；
-- **Remove**: 移除文件的许可声明；
-- **Update**: 更新文件的许可声明；
-- **Check**: 检查文件的许可声明；
-- **Config**: 以配置文件的方式编辑文件的许可声明；
+- **[Add](#add---为文件添加许可声明)**: 为文件添加许可声明；
+- **[Remove](#remove---移除文件的许可声明)**: 移除文件的许可声明；
+- **[Update](#update---更新文件的许可声明)**: 更新文件的许可声明；
+- **[Check](#check---检查文件的许可声明)**: 检查文件的许可声明；
+- **[Config](#config---以配置文件的方式编辑文件的许可声明)**: 以配置文件的方式编辑文件的许可声明；
 
 ### Add - 为文件添加许可声明
 
