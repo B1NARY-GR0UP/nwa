@@ -279,7 +279,11 @@ docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LL
 
 ## Related Projects
 
-- **[nwa-examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality
+- [nwa-examples](https://github.com/rainiring/nwa-examples): Examples of NWA functionality
+
+## Blogs
+
+- [Add License Headers to Your Code Files](https://dev.to/justlorain/add-license-headers-to-your-code-files-nwa-a-more-powerful-license-statement-management-tool-86o) 
 
 ## Credits
 

@@ -355,7 +355,11 @@ nwa:
 
 ## 相关项目
 
-- **[nwa-examples](https://github.com/rainiring/nwa-examples)**: NWA 的使用示例；
+- [nwa-examples](https://github.com/rainiring/nwa-examples): NWA 的使用示例；
+
+## 博客
+
+- [为您的代码文件添加许可声明：NWA一款更强大的许可声明管理工具](https://juejin.cn/post/7272025820967976996)
 
 ## 鸣谢
 
