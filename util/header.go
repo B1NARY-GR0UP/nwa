@@ -71,7 +71,7 @@ func generateHeader(path string, tmpl []byte) []byte {
 		header = doGenerate(tmpl, "/**", " * ", " */")
 		put(header, []string{".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts"})
 	case ".cc", ".cpp", ".cs", ".go", ".hcl", ".hh", ".hpp", ".m", ".mm", ".proto", ".rs", ".swift", ".dart", ".groovy", ".v", ".sv":
-		header = doGenerate(tmpl, "", "// ", "//")
+		header = doGenerate(tmpl, "", "// ", "")
 		put(header, []string{".cc", ".cpp", ".cs", ".go", ".hcl", ".hh", ".hpp", ".m", ".mm", ".proto", ".rs", ".swift", ".dart", ".groovy", ".v", ".sv"})
 	case ".py", ".sh", ".yaml", ".yml", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml":
 		header = doGenerate(tmpl, "", "# ", "")
