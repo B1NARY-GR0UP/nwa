@@ -69,6 +69,7 @@ var (
 	LicenseF string
 	TmplF    string
 	SkipF    []string
+	SPDXIDsF string
 )
 
 func setupCommonCmd(common *cobra.Command) {
@@ -84,6 +85,11 @@ func setupCommonCmd(common *cobra.Command) {
 	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
 	common.MarkFlagsMutuallyExclusive("year", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
+
+	// SPDX IDs
+	common.Flags().StringVarP(&SPDXIDsF, "spdxids", "i", defaultConfig.Nwa.SPDXIDS, "spdx ids")
+	common.MarkFlagsMutuallyExclusive("spdxids", "license")
+	common.MarkFlagsMutuallyExclusive("spdxids", "tmpl")
 }
 
 func setupConfigCmd(config *cobra.Command) {

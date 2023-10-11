@@ -43,13 +43,14 @@ If your file does not meet the requirements, please use remove + add`,
 			}
 		}
 		if TmplF == "" {
-			tmpl, err := util.MatchTmpl(LicenseF)
+			tmpl, err := util.MatchTmpl(LicenseF, SPDXIDsF != "")
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			tmplData := &util.TmplData{
-				Holder: HolderF,
-				Year:   YearF,
+				Holder:  HolderF,
+				Year:    YearF,
+				SPDXIDs: SPDXIDsF,
 			}
 			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
 			if err != nil {
@@ -62,7 +63,6 @@ If your file does not meet the requirements, please use remove + add`,
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			// TODO: optimize, remove bytes.Buffer
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)

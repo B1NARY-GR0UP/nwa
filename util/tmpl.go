@@ -22,16 +22,23 @@ import (
 	"strings"
 )
 
+var spdxids bool
+
 var (
 	errLicenseNotSupported = errors.New("license not supported, please use custom tmpl with --tmpl or -t flag")
 )
 
 type TmplData struct {
-	Holder string
-	Year   string
+	Holder  string
+	Year    string
+	SPDXIDs string
 }
 
-func MatchTmpl(license string) (string, error) {
+func MatchTmpl(license string, useSPDXIDs bool) (string, error) {
+	if useSPDXIDs {
+		spdxids = true
+		return tmplSPDXIDs, nil
+	}
 	license = strings.ToLower(license)
 	switch license {
 	case "apache", "apache-2.0", "apache-2", "apache20", "apache 2.0", "apache2.0":
@@ -44,6 +51,12 @@ func MatchTmpl(license string) (string, error) {
 }
 
 func (t *TmplData) RenderTmpl(tmpl string) ([]byte, error) {
+	if spdxids {
+		// if holder is not declared when using spdxids then just don't generate the copyright line
+		if t.Holder == "<COPYRIGHT HOLDER>" {
+			t.Holder = ""
+		}
+	}
 	buf := bytes.NewBuffer(nil)
 	renderedTmpl := template.Must(template.New("nwa-tmpl").Parse(tmpl))
 	err := renderedTmpl.Execute(buf, t)
@@ -88,3 +101,6 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.`
+
+const tmplSPDXIDs = `{{ if .Holder }}Copyright{{ if .Year }} {{ .Year }}{{ end }} {{ .Holder }}
+{{ end }}SPDX-License-Identifier: {{ .SPDXIDs }}`

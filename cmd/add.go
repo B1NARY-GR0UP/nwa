@@ -34,7 +34,6 @@ EXAMPLE: nwa add -l apache -c Lorain -m .`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: extract method, add, remove, update, check are same
 		// validate skip pattern
 		for _, s := range SkipF {
 			if !doublestar.ValidatePattern(s) {
@@ -42,13 +41,14 @@ EXAMPLE: nwa add -l apache -c Lorain -m .`,
 			}
 		}
 		if TmplF == "" {
-			tmpl, err := util.MatchTmpl(LicenseF)
+			tmpl, err := util.MatchTmpl(LicenseF, SPDXIDsF != "")
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			tmplData := &util.TmplData{
-				Holder: HolderF,
-				Year:   YearF,
+				Holder:  HolderF,
+				Year:    YearF,
+				SPDXIDs: SPDXIDsF,
 			}
 			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
 			if err != nil {
@@ -61,7 +61,6 @@ EXAMPLE: nwa add -l apache -c Lorain -m .`,
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			// TODO: optimize, remove bytes.Buffer
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)

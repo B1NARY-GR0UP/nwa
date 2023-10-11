@@ -29,6 +29,7 @@ import (
 func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
+			// TODO: replace logrus with slog
 			logrus.WithFields(logrus.Fields{
 				"path": path,
 				"err":  err,

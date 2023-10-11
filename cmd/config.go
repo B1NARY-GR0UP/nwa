@@ -60,13 +60,14 @@ nwa:
 			}
 		}
 		if defaultConfig.Nwa.Tmpl == "" {
-			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License)
+			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License, SPDXIDsF != "")
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			tmplData := &util.TmplData{
-				Holder: defaultConfig.Nwa.Holder,
-				Year:   defaultConfig.Nwa.Year,
+				Holder:  defaultConfig.Nwa.Holder,
+				Year:    defaultConfig.Nwa.Year,
+				SPDXIDs: defaultConfig.Nwa.SPDXIDS,
 			}
 			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
 			if err != nil {
@@ -79,7 +80,6 @@ nwa:
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			// TODO: optimize, remove bytes.Buffer
 			buf := bytes.NewBuffer(content)
 			// add blank line at the end
 			_, _ = fmt.Fprintln(buf)
@@ -105,6 +105,7 @@ type NwaConfig struct {
 	Mute    bool     `yaml:"mute"`
 	Path    []string `yaml:"path"`
 	Skip    []string `yaml:"skip"`
+	SPDXIDS string   `yaml:"spdxids"`
 	Tmpl    string   `yaml:"tmpl"`
 }
 
@@ -116,6 +117,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Mute:    false,
 	Path:    []string{},
 	Skip:    []string{},
+	SPDXIDS: "",
 	Tmpl:    "",
 }}
 
@@ -124,6 +126,7 @@ func (cfg *Config) readInConfig(path string) error {
 	if err := viper.ReadInConfig(); err != nil {
 		return err
 	}
+	// will overwrite default config if some fields is declared
 	if err := viper.Unmarshal(cfg); err != nil {
 		return err
 	}
