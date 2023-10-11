@@ -19,21 +19,17 @@ import (
 	"bufio"
 	"bytes"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/sirupsen/logrus"
 )
 
 func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			// TODO: replace logrus with slog
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("walk dir error")
+			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
 			return nil
 		}
 		if d.IsDir() {
@@ -42,9 +38,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		// determine if this file needs to be skipped
 		if isSkip(path, skipF) {
 			if !muteF {
-				logrus.WithFields(logrus.Fields{
-					"path": path,
-				}).Infoln("skip file")
+				slog.Info("skip file", slog.String("path", path))
 			}
 			return nil
 		}
@@ -64,7 +58,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		case Check:
 			prepareCheck(path, header, muteF)
 		default:
-			logrus.Warnln("not a valid operation")
+			slog.Warn("not a valid operation")
 		}
 		return nil
 	})
@@ -74,31 +68,22 @@ func prepareCheck(path string, header []byte, muteF bool) {
 	taskC <- func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("read file error")
+			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if isGenerated(content) {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Warnln("file is generated")
+			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		// not matched
 		if idx != -1 && !muteF {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Infoln("file has a matched header")
+			slog.Info("file has a matched header", slog.String("path", path))
 			return
 		}
 		if !muteF {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Infoln("file does not have a matched header")
+			slog.Info("file does not have a matched header", slog.String("path", path))
 		}
 	}
 }
@@ -107,26 +92,18 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 	taskC <- func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("read file error")
+			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if !hasHeader(content) || isGenerated(content) {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Warnln("file does not have a header or is generated")
+			slog.Warn("file does not have a header or is generated", slog.String("path", path))
 			return
 		}
 		// get the first line of the special file
 		line := matchShebang(content)
 		file, err := os.Open(path)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("open file error")
+			slog.Error("open file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		scanner := bufio.NewScanner(file)
@@ -144,22 +121,17 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 		}
 		err = file.Close()
 		if err != nil {
-			logrus.Errorln("file close error")
+			slog.Error("file close error")
 		}
 		// assemble license header and modify the file
 		b := assemble(line, header, afterBlankLine, true)
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("write file error")
+			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if !muteF {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Infoln("file has been modified")
+			slog.Info("file has been modified", slog.String("path", path))
 		}
 	}
 }
@@ -168,24 +140,17 @@ func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) {
 	taskC <- func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("read file error")
+			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if isGenerated(content) {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Warnln("file is generated")
+			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		if idx == -1 {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Warnln("file does not have a matched header")
+			slog.Warn("file does not have a matched header", slog.String("path", path))
 			return
 		}
 		// remove the header of the file
@@ -193,16 +158,11 @@ func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) {
 		// modify the file
 		err = os.WriteFile(path, content, d.Type())
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("write file error")
+			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if !muteF {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Infoln("file has been modified")
+			slog.Info("file has been modified", slog.String("path", path))
 		}
 	}
 }
@@ -211,16 +171,11 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 	taskC <- func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("read file error")
+			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if hasHeader(content) || isGenerated(content) {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Warnln("file already has a header or is generated")
+			slog.Warn("file already has a header or is generated", slog.String("path", path))
 			return
 		}
 		// get the first line of the special file
@@ -229,16 +184,11 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
 		b := assemble(line, header, content, false)
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-				"err":  err,
-			}).Errorln("write file error")
+			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if !muteF {
-			logrus.WithFields(logrus.Fields{
-				"path": path,
-			}).Infoln("file has been modified")
+			slog.Info("file has been modified", slog.String("path", path))
 		}
 	}
 }
@@ -247,10 +197,7 @@ func isSkip(path string, pattern []string) bool {
 	for _, p := range pattern {
 		if match, err := doublestar.Match(p, path); match {
 			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"path":    path,
-					"pattern": p,
-				}).Errorln("skip pattern match error")
+				slog.Error("skip pattern match error", slog.String("path", path), slog.String("pattern", p))
 				return false
 			}
 			return true

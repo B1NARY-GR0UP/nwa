@@ -368,7 +368,6 @@ nwa:
 - [addlicense](https://github.com/google/addlicense)
 - [cobra](https://github.com/spf13/cobra)
 - [doublestar](https://github.com/bmatcuk/doublestar)
-- [logrus](https://github.com/sirupsen/logrus)
 - [viper](https://github.com/spf13/viper)
 
 ## 许可证
