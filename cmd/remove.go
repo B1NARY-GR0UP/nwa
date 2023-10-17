@@ -30,7 +30,7 @@ var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "remove license headers of files",
 	Long: `Common Command | Remove licenses headers of files
-EXAMPLE: nwa remove -l mit -c Anmory .`,
+EXAMPLE: nwa remove -i "Apache and MIT" .`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

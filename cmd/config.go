@@ -42,6 +42,7 @@ nwa:
   holder: "RHINE LAB.LLC."
   year: "2077"
   license: "apache"
+  spdxids: ""
   mute: false
   path: ["server", "client", "pkg"]
   skip: ["**.py"]

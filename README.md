@@ -67,6 +67,7 @@ nwa add [flags] path...
 |-------|-------------|------------------------------------|--------------------|
 | -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
+| -i    | --spdxids   | `""`                               | SPDX IDs           |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
 | -t    | --tmpl      | `""`                               | template file path |
@@ -97,6 +98,7 @@ nwa check [flags] path...
 |-------|-------------|------------------------------------|--------------------|
 | -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
+| -i    | --spdxids   | `""`                               | SPDX IDs           |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
 | -t    | --tmpl      | `""`                               | template file path |
@@ -129,6 +131,7 @@ nwa remove [flags] path...
 |-------|-------------|------------------------------------|--------------------|
 | -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
+| -i    | --spdxids   | `""`                               | SPDX IDs           |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
 | -t    | --tmpl      | `""`                               | template file path |
@@ -161,6 +164,7 @@ nwa update [flags] path...
 |-------|-------------|------------------------------------|--------------------|
 | -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
 | -l    | --license   | `apache`                           | license type       |
+| -i    | --spdxids   | `""`                               | SPDX IDs           |
 | -m    | --mute      | `false` (unspecified)              | mute mode          |
 | -s    | --skip      | `[]`                               | skip file path     |
 | -t    | --tmpl      | `""`                               | template file path |
@@ -206,7 +210,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 - **Sample Configuration file**
 
-**NOTE: If you set the `tmpl` field, the `holder`, `year`, and `license` fields will be ignored.**
+**NOTE: If you set the `tmpl` field, the `holder`, `year`, `license` and `spdxids` fields will be ignored.**
  
 ```yaml
 nwa:
@@ -214,6 +218,7 @@ nwa:
   holder: "RHINE LAB.LLC."          # Default: "<COPYRIGHT HOLDER>"
   year: "2077"                      # Default: Current Year
   license: "apache"                 # Default: "apache"
+  spdxids: ""                       # Default: ""
   mute: false                       # Default: false (unspecified)
   path: ["server", "client", "pkg"] # Default: []
   skip: ["**.py"]                   # Default: []
@@ -236,7 +241,6 @@ nwa:
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 ```
 
 ### Docker - Run NWA through docker, for those do not have a Go environment
