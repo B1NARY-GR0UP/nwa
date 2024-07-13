@@ -1,14 +1,10 @@
-# NWA
+![NWA](images/NWA.png)
+
+A More Powerful License Header Management Tool
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
 
 English | [中文](README_CN.md)
-
-> Mend Your Files
-
-![NWA](images/NWA.png)
-
-A More Powerful License Header Management Tool
 
 ## Install
 

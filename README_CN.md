@@ -1,14 +1,10 @@
-# NWA
+![NWA](images/NWA.png)
+
+一款更强大的许可声明管理工具
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
 
 [English](README.md) | 中文
-
-> 修补您的文件
-
-![NWA](images/NWA.png)
-
-一款更强大的许可声明管理工具
 
 ## 安装
 
