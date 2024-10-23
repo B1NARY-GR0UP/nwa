@@ -68,6 +68,7 @@ var (
 	YearF    string
 	LicenseF string
 	TmplF    string
+	RawTmplF string
 	SkipF    []string
 	SPDXIDsF string
 )
@@ -80,16 +81,24 @@ func setupCommonCmd(common *cobra.Command) {
 	common.Flags().StringVarP(&YearF, "year", "y", defaultConfig.Nwa.Year, "copyright year")
 	common.Flags().StringVarP(&LicenseF, "license", "l", defaultConfig.Nwa.License, "license type")
 	common.Flags().StringVarP(&TmplF, "tmpl", "t", defaultConfig.Nwa.Tmpl, "template file path")
+	common.Flags().StringVarP(&RawTmplF, "rawtmpl", "r", defaultConfig.Nwa.RawTmpl, "template file path (enable raw template)")
 	common.Flags().StringSliceVarP(&SkipF, "skip", "s", defaultConfig.Nwa.Skip, "skip file path")
 
+	common.MarkFlagsMutuallyExclusive("tmpl", "rawtmpl")
+	// tmpl
 	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
 	common.MarkFlagsMutuallyExclusive("year", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
+	// rawtmpl
+	common.MarkFlagsMutuallyExclusive("copyright", "rawtmpl")
+	common.MarkFlagsMutuallyExclusive("year", "rawtmpl")
+	common.MarkFlagsMutuallyExclusive("license", "rawtmpl")
 
 	// SPDX IDs
 	common.Flags().StringVarP(&SPDXIDsF, "spdxids", "i", defaultConfig.Nwa.SPDXIDS, "spdx ids")
 	common.MarkFlagsMutuallyExclusive("spdxids", "license")
 	common.MarkFlagsMutuallyExclusive("spdxids", "tmpl")
+	common.MarkFlagsMutuallyExclusive("spdxids", "rawtmpl")
 }
 
 func setupConfigCmd(config *cobra.Command) {

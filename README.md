@@ -60,16 +60,17 @@ nwa add [flags] path...
 
 - **Flags**
  
-| Short | Long        | Default                            | Description        |
-|-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
-| -l    | --license   | `apache`                           | license type       |
-| -i    | --spdxids   | `""`                               | SPDX IDs           |
-| -m    | --mute      | `false` (unspecified)              | mute mode          |
-| -s    | --skip      | `[]`                               | skip file path     |
-| -t    | --tmpl      | `""`                               | template file path |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
-| -h    | --help      | null                               | help for add       |
+| Short | Long        | Default                            | Description                              |
+|-------|-------------|------------------------------------|------------------------------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
+| -l    | --license   | `apache`                           | license type                             |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
+| -m    | --mute      | `false` (unspecified)              | mute mode                                |
+| -s    | --skip      | `[]`                               | skip file path                           |
+| -t    | --tmpl      | `""`                               | template file path                       |
+| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
+| -h    | --help      | null                               | help for add                             |
 
 - **Example**
 
@@ -91,16 +92,17 @@ nwa check [flags] path...
 
 - **Flags**
 
-| Short | Long        | Default                            | Description        |
-|-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
-| -l    | --license   | `apache`                           | license type       |
-| -i    | --spdxids   | `""`                               | SPDX IDs           |
-| -m    | --mute      | `false` (unspecified)              | mute mode          |
-| -s    | --skip      | `[]`                               | skip file path     |
-| -t    | --tmpl      | `""`                               | template file path |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
-| -h    | --help      | null                               | help for check     |
+| Short | Long        | Default                            | Description                              |
+|-------|-------------|------------------------------------|------------------------------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
+| -l    | --license   | `apache`                           | license type                             |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
+| -m    | --mute      | `false` (unspecified)              | mute mode                                |
+| -s    | --skip      | `[]`                               | skip file path                           |
+| -t    | --tmpl      | `""`                               | template file path                       |
+| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
+| -h    | --help      | null                               | help for check                           |
 
 **NOTE: Do not use --mute (-m) flag with check command.**
 
@@ -124,16 +126,17 @@ nwa remove [flags] path...
 
 - **Flags**
 
-| Short | Long        | Default                            | Description        |
-|-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
-| -l    | --license   | `apache`                           | license type       |
-| -i    | --spdxids   | `""`                               | SPDX IDs           |
-| -m    | --mute      | `false` (unspecified)              | mute mode          |
-| -s    | --skip      | `[]`                               | skip file path     |
-| -t    | --tmpl      | `""`                               | template file path |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
-| -h    | --help      | null                               | help for remove    |
+| Short | Long        | Default                            | Description                              |
+|-------|-------------|------------------------------------|------------------------------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
+| -l    | --license   | `apache`                           | license type                             |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
+| -m    | --mute      | `false` (unspecified)              | mute mode                                |
+| -s    | --skip      | `[]`                               | skip file path                           |
+| -t    | --tmpl      | `""`                               | template file path                       |
+| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
+| -h    | --help      | null                               | help for remove                          |
 
 - **Example**
 
@@ -157,16 +160,17 @@ nwa update [flags] path...
 
 - **Flags**
 
-| Short | Long        | Default                            | Description        |
-|-------|-------------|------------------------------------|--------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder   |
-| -l    | --license   | `apache`                           | license type       |
-| -i    | --spdxids   | `""`                               | SPDX IDs           |
-| -m    | --mute      | `false` (unspecified)              | mute mode          |
-| -s    | --skip      | `[]`                               | skip file path     |
-| -t    | --tmpl      | `""`                               | template file path |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year     |
-| -h    | --help      | null                               | help for update    |
+| Short | Long        | Default                            | Description                              |
+|-------|-------------|------------------------------------|------------------------------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
+| -l    | --license   | `apache`                           | license type                             |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
+| -m    | --mute      | `false` (unspecified)              | mute mode                                |
+| -s    | --skip      | `[]`                               | skip file path                           |
+| -t    | --tmpl      | `""`                               | template file path                       |
+| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
+| -h    | --help      | null                               | help for update                          |
 
 - **Example**
 
@@ -207,7 +211,7 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 
 - **Sample Configuration file**
 
-**NOTE: If you set the `tmpl` field, the `holder`, `year`, `license` and `spdxids` fields will be ignored.**
+**NOTE: If you set the `tmpl` or `rawtmpl` field, the `holder`, `year`, `license` and `spdxids` fields will be ignored.**
  
 ```yaml
 nwa:
@@ -220,6 +224,7 @@ nwa:
   path: ["server", "client", "pkg"] # Default: []
   skip: ["**.py"]                   # Default: []
   tmpl: "nwa.txt"                   # Default: ""                                                       
+  rawtmpl: ""                       # Default: ""
 ```
 
 ### Supported Licence Templates
@@ -233,7 +238,12 @@ nwa:
 | AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
 | AGPL-3.0 Only     | `agpl-3.0-only`                                               |
 
-If the license template you need is not available, you could use the `--tmpl` (`-t`) option or submit an Issue/PR.
+If the license template you need is not available, you could use the `--tmpl` (`-t`) flag or submit an Issue/PR.
+
+If you want to use the content of the template file directly to the header of your file without modification, please use the -rawtmpl (-r) flag. 
+When the raw template is enabled, NWA will not generate different types of licence headers based on your file type.
+
+**NOTE: The `--tmpl` (`-t`) and `--rawtmpl` (`-r`) flags cannot be used simultaneously.**
 
 - **Example**
 

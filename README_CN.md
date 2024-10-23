@@ -117,16 +117,17 @@ NWA 也会以输出日志的形式提示您如果有文件已经具有了许可�
 
 `add` 命令目前支持的 flags 如下表所示：
 
-| 短标志 | 长标志         | 默认值                        | 介绍       |
-|-----|-------------|----------------------------|----------|
-| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属     |
-| -l  | --license   | `apache`                   | 许可证类型    |
-| -i  | --spdxids   | `""`                       | SPDX IDs |
-| -m  | --mute      | `false` (不指定)              | 静默模式     |
-| -s  | --skip      | `[]`                       | 跳过的文件路径  |
-| -t  | --tmpl      | `""`                       | 模板文件路径   |
-| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份     |
-| -h  | --help      | 无                          | 帮助       |
+| 短标志 | 长标志         | 默认值                        | 介绍                |
+|-----|-------------|----------------------------|-------------------|
+| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属              |
+| -l  | --license   | `apache`                   | 许可证类型             |
+| -i  | --spdxids   | `""`                       | SPDX IDs          |
+| -m  | --mute      | `false` (不指定)              | 静默模式              |
+| -s  | --skip      | `[]`                       | 跳过的文件路径           |
+| -t  | --tmpl      | `""`                       | 模板文件路径            |
+| -r  | --rawtmpl   | `""`                       | 模板文件路径（启用 raw 模式） |
+| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份              |
+| -h  | --help      | 无                          | 帮助                |
 
 大部分的 flag 都很容易理解，值得一提的是 `-s` （`-skip`）和 `-t`（`-tmpl`）;
 
@@ -192,16 +193,17 @@ nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
 
 `remove` 命令目前支持的 flags 如下表所示：
 
-| 短标志 | 长标志         | 默认值                        | 介绍       |
-|-----|-------------|----------------------------|----------|
-| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属     |
-| -l  | --license   | `apache`                   | 许可证类型    |
-| -i  | --spdxids   | `""`                       | SPDX IDs |
-| -m  | --mute      | `false` (不指定)              | 静默模式     |
-| -s  | --skip      | `[]`                       | 跳过的文件路径  |
-| -t  | --tmpl      | `""`                       | 模板文件路径   |
-| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份     |
-| -h  | --help      | 无                          | 帮助       |
+| 短标志 | 长标志         | 默认值                        | 介绍                |
+|-----|-------------|----------------------------|-------------------|
+| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属              |
+| -l  | --license   | `apache`                   | 许可证类型             |
+| -i  | --spdxids   | `""`                       | SPDX IDs          |
+| -m  | --mute      | `false` (不指定)              | 静默模式              |
+| -s  | --skip      | `[]`                       | 跳过的文件路径           |
+| -t  | --tmpl      | `""`                       | 模板文件路径            |
+| -r  | --rawtmpl   | `""`                       | 模板文件路径（启用 raw 模式） |
+| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份              |
+| -h  | --help      | 无                          | 帮助                |
 
 **注意：如果您指定了模板，则 NWA 不会根据文件类型来移除对应的许可声明，而是移除路径下所有符合模板文件内容的许可声明。**
 
@@ -241,16 +243,17 @@ nwa update -l apache -c "BINARY Members" .
 
 `update` 命令目前支持的 flags 如下表所示：
 
-| 短标志 | 长标志         | 默认值                        | 介绍       |
-|-----|-------------|----------------------------|----------|
-| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属     |
-| -l  | --license   | `apache`                   | 许可证类型    |
-| -i  | --spdxids   | `""`                       | SPDX IDs |
-| -m  | --mute      | `false` (不指定)              | 静默模式     |
-| -s  | --skip      | `[]`                       | 跳过的文件路径  |
-| -t  | --tmpl      | `""`                       | 模板文件路径   |
-| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份     |
-| -h  | --help      | 无                          | 帮助       |
+| 短标志 | 长标志         | 默认值                        | 介绍                |
+|-----|-------------|----------------------------|-------------------|
+| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属              |
+| -l  | --license   | `apache`                   | 许可证类型             |
+| -i  | --spdxids   | `""`                       | SPDX IDs          |
+| -m  | --mute      | `false` (不指定)              | 静默模式              |
+| -s  | --skip      | `[]`                       | 跳过的文件路径           |
+| -t  | --tmpl      | `""`                       | 模板文件路径            |
+| -r  | --rawtmpl   | `""`                       | 模板文件路径（启用 raw 模式） |
+| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份              |
+| -h  | --help      | 无                          | 帮助                |
 
 **注意：如果您指定了模板，则 NWA 不会根据文件类型来更新对应的许可声明，而是更新路径下所有文件第一个空行前的内容为模板文件中指定的内容。**
 
@@ -288,16 +291,17 @@ time="2023-08-25T23:01:49+08:00" level=info msg="file does not have a matched he
 
 `check` 命令目前支持的 flags 如下表所示：
 
-| 短标志 | 长标志         | 默认值                        | 介绍       |
-|-----|-------------|----------------------------|----------|
-| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属     |
-| -l  | --license   | `apache`                   | 许可证类型    |
-| -i  | --spdxids   | `""`                       | SPDX IDs |
-| -m  | --mute      | `false` (不指定)              | 静默模式     |
-| -s  | --skip      | `[]`                       | 跳过的文件路径  |
-| -t  | --tmpl      | `""`                       | 模板文件路径   |
-| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份     |
-| -h  | --help      | 无                          | 帮助       |
+| 短标志 | 长标志         | 默认值                        | 介绍                |
+|-----|-------------|----------------------------|-------------------|
+| -c  | --copyright | `<COPYRIGHT HOLDER>`       | 版权归属              |
+| -l  | --license   | `apache`                   | 许可证类型             |
+| -i  | --spdxids   | `""`                       | SPDX IDs          |
+| -m  | --mute      | `false` (不指定)              | 静默模式              |
+| -s  | --skip      | `[]`                       | 跳过的文件路径           |
+| -t  | --tmpl      | `""`                       | 模板文件路径            |
+| -r  | --rawtmpl   | `""`                       | 模板文件路径（启用 raw 模式） |
+| -y  | --year      | `time.Now().Year()` (当前年份) | 版权年份              |
+| -h  | --help      | 无                          | 帮助                |
 
 **注意：在使用 `check` 命令时不要与 `-m` flag 一起使用，因为这会让 NWA 无法输出检查的结果。**
 
@@ -344,11 +348,12 @@ nwa:
   path: ["server", "client", "pkg"] # 默认值: []
   skip: ["**.py"]                   # 默认值: []
   tmpl: "nwa.txt"                   # 默认值: ""                                                       
+  rawtmpl: ""                       # 默认值: ""                                                       
 ```
 
 如果您不指定一些配置文件字段，NWA 将会使用默认值，比如如果您不指定许可证类型，则会默认使用 Apache 2.0 协议。
 
-**注意：如果您设置了 `tmpl` 字段，那么 `holder`，`year`，`license` 和 `spdxids` 字段将被 NWA 忽略。**
+**注意：如果您设置了 `tmpl` 字段或者 `rawtmpl`，那么 `holder`，`year`，`license` 和 `spdxids` 字段将被 NWA 忽略。**
 
 更多的使用示例请您参考 [nwa-examples](https://github.com/rainiring/nwa-examples)。
 
@@ -363,7 +368,11 @@ nwa:
 | AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
 | AGPL-3.0 Only     | `agpl-3.0-only`                                               |
 
-如果没有您需要的模板，您可以使用 --tmpl (-t) 选项或者提交一个 Issue/PR。
+如果没有您需要的模板，您可以使用 `--tmpl` (`-t`) 选项或者提交一个 Issue/PR。
+
+如果你想要原封不动的把模板文件里的内容添加到你的文件头，请使用 `--rawtmpl` (`-r`) 选项，启用 raw template 后 NWA 不会根据你的文件类型生成不同类型（注释）的协议头。
+
+**注意：`--tmpl` (`-t`) 和 `--rawtmpl` (`-r`) 不能同时使用。**
 
 ## 相关项目
 

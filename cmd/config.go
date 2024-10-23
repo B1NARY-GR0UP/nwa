@@ -60,6 +60,15 @@ nwa:
 				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
 			}
 		}
+		if defaultConfig.Nwa.Tmpl != "" && defaultConfig.Nwa.RawTmpl != "" {
+			cobra.CheckErr("tmpl flag should not be used with rawtmpl flag")
+		}
+		// check if enable rawtmpl
+		var rawTmpl bool
+		if defaultConfig.Nwa.RawTmpl != "" {
+			defaultConfig.Nwa.Tmpl = defaultConfig.Nwa.RawTmpl
+			rawTmpl = true
+		}
 		if defaultConfig.Nwa.Tmpl == "" {
 			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License, SPDXIDsF != "")
 			if err != nil {
@@ -75,14 +84,17 @@ nwa:
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute)
+			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, rawTmpl)
 		} else {
 			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			buf := bytes.NewBuffer(content)
-			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute)
+			if rawTmpl {
+				_, _ = fmt.Fprintln(buf)
+			}
+			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, rawTmpl)
 		}
 		util.ExecuteTasks()
 	},
@@ -106,6 +118,7 @@ type NwaConfig struct {
 	Skip    []string `yaml:"skip"`
 	SPDXIDS string   `yaml:"spdxids"`
 	Tmpl    string   `yaml:"tmpl"`
+	RawTmpl string   `yaml:"rawtmpl"`
 }
 
 var defaultConfig = &Config{Nwa: NwaConfig{
@@ -118,6 +131,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Skip:    []string{},
 	SPDXIDS: "",
 	Tmpl:    "",
+	RawTmpl: "",
 }}
 
 func (cfg *Config) readInConfig(path string) error {

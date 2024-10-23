@@ -41,6 +41,12 @@ NOTE: Do not use --mute (-m) flag with the command`,
 				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
 			}
 		}
+		// check if enable rawtmpl
+		var rawTmpl bool
+		if RawTmplF != "" && TmplF == "" {
+			TmplF = RawTmplF
+			rawTmpl = true
+		}
 		if TmplF == "" {
 			tmpl, err := util.MatchTmpl(LicenseF, SPDXIDsF != "")
 			if err != nil {
@@ -56,14 +62,17 @@ NOTE: Do not use --mute (-m) flag with the command`,
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(args, renderedTmpl, util.Check, SkipF, MuteF)
+			util.PrepareTasks(args, renderedTmpl, util.Check, SkipF, MuteF, rawTmpl)
 		} else {
 			content, err := os.ReadFile(TmplF)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			buf := bytes.NewBuffer(content)
-			util.PrepareTasks(args, buf.Bytes(), util.Check, SkipF, MuteF)
+			if rawTmpl {
+				_, _ = fmt.Fprintln(buf)
+			}
+			util.PrepareTasks(args, buf.Bytes(), util.Check, SkipF, MuteF, rawTmpl)
 		}
 		util.ExecuteTasks()
 	},
