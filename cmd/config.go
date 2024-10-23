@@ -75,16 +75,14 @@ nwa:
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, defaultConfig.Nwa.Tmpl)
+			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute)
 		} else {
 			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			buf := bytes.NewBuffer(content)
-			// add blank line at the end
-			_, _ = fmt.Fprintln(buf)
-			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, defaultConfig.Nwa.Tmpl)
+			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute)
 		}
 		util.ExecuteTasks()
 	},

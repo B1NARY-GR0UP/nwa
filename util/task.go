@@ -22,9 +22,9 @@ var taskC = make(chan func(), Max)
 
 // PrepareTasks walk through the dir and add tasks into task chan
 // TODO: optimize function args
-func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
+func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, muteF bool) {
 	for _, path := range paths {
-		walkDir(path, tmpl, operation, skipF, muteF, tmplF)
+		walkDir(path, tmpl, operation, skipF, muteF)
 	}
 }
 

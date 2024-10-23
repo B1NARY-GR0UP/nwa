@@ -55,16 +55,14 @@ EXAMPLE: nwa add -l apache -c Lorain -m .`,
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(args, renderedTmpl, util.Add, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, renderedTmpl, util.Add, SkipF, MuteF)
 		} else {
 			content, err := os.ReadFile(TmplF)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			buf := bytes.NewBuffer(content)
-			// add blank line at the end
-			_, _ = fmt.Fprintln(buf)
-			util.PrepareTasks(args, buf.Bytes(), util.Add, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, buf.Bytes(), util.Add, SkipF, MuteF)
 		}
 		util.ExecuteTasks()
 	},

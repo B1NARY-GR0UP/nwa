@@ -26,7 +26,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool, tmplF string) {
+func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
@@ -42,12 +42,9 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 			}
 			return nil
 		}
-		header := tmpl
-		if tmplF == "" {
-			// generate header according to the file type
-			// NOTE: The file has not been modified yet
-			header = generateHeader(path, tmpl)
-		}
+		// generate header according to the file type
+		// NOTE: The file has not been modified yet
+		header := generateHeader(path, tmpl)
 		switch operation {
 		case Add:
 			prepareAdd(path, d, header, muteF)

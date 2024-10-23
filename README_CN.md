@@ -145,20 +145,19 @@ nwa add -s **.py -s /example/**/*.txt -c Lorain .
 - `example-tmpl.txt`
 
 ```text
-// Copyright 2077 RHINE LAB.LLC.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+Copyright 2077 RHINE LAB.LLC.
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
 更多的使用示例请您参考 [nwa-examples](https://github.com/rainiring/nwa-examples)。
@@ -364,7 +363,7 @@ nwa:
 | AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
 | AGPL-3.0 Only     | `agpl-3.0-only`                                               |
 
-如果没有您需要的模板，您可以使用 --tmpl (-t) 选项或者提交一个 PR。
+如果没有您需要的模板，您可以使用 --tmpl (-t) 选项或者提交一个 Issue/PR。
 
 ## 相关项目
 

@@ -21,6 +21,7 @@ Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docke
 - **[Remove](#remove---remove-licenses-headers-of-files)**: Remove licenses headers of files
 - **[Update](#update---update-license-headers-of-files)**: Update license headers of files
 - **[Config](#config---edit-files-according-to-the-configuration-file)**: Edit files according to the configuration file
+- **[Supported Licence Templates](#supported-licence-templates)**: Use built-in license templates or use custom templates 
 - **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those do not have a Go environment
 - **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality  
 
@@ -221,22 +222,41 @@ nwa:
   tmpl: "nwa.txt"                   # Default: ""                                                       
 ```
 
-- **Sample Template File**
+### Supported Licence Templates
+
+| License           | Option (ignore case)                                          |
+|-------------------|---------------------------------------------------------------|
+| Apache-2.0        | `apache`, `apache-2.0`, `apache-2`, `apache 2.0`, `apache2.0` |
+| MIT               | `mit`                                                         |
+| GPL-3.0 or Later  | `gpl-3.0-or-later`                                            |
+| GPL-3.0 Only      | `gpl-3.0-only`                                                |
+| AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
+| AGPL-3.0 Only     | `agpl-3.0-only`                                               |
+
+If the license template you need is not available, you could use the `--tmpl` (`-t`) option or submit an Issue/PR.
+
+- **Example**
+
+```shell
+nwa add -t mytmpl.txt .
+```
+
+`mytmpl.txt` is as follows:
 
 ```text
-// Copyright 2077 RHINE LAB.LLC.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+Copyright 2077 RHINE LAB.LLC.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
 ### Docker - Run NWA through docker, for those do not have a Go environment
@@ -276,19 +296,6 @@ EXAMPLE:
 ```shell
 docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 .
 ```
-
-## Supported Licence Templates
-
-| License           | Option (ignore case)                                          |
-|-------------------|---------------------------------------------------------------|
-| Apache-2.0        | `apache`, `apache-2.0`, `apache-2`, `apache 2.0`, `apache2.0` |
-| MIT               | `mit`                                                         |
-| GPL-3.0 or Later  | `gpl-3.0-or-later`                                            |
-| GPL-3.0 Only      | `gpl-3.0-only`                                                |
-| AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
-| AGPL-3.0 Only     | `agpl-3.0-only`                                               |
-
-If the license template you need is not available, you could use the `--tmpl` (`-t`) option or submit a PR.
 
 ## Related Projects
 

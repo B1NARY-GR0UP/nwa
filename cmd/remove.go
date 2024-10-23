@@ -55,16 +55,14 @@ EXAMPLE: nwa remove -i "Apache and MIT" .`,
 				cobra.CheckErr(err)
 			}
 			// determine files need to be removed
-			util.PrepareTasks(args, renderedTmpl, util.Remove, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, renderedTmpl, util.Remove, SkipF, MuteF)
 		} else {
 			content, err := os.ReadFile(TmplF)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			buf := bytes.NewBuffer(content)
-			// add blank line at the end
-			_, _ = fmt.Fprintln(buf)
-			util.PrepareTasks(args, buf.Bytes(), util.Remove, SkipF, MuteF, TmplF)
+			util.PrepareTasks(args, buf.Bytes(), util.Remove, SkipF, MuteF)
 		}
 		util.ExecuteTasks()
 	},
