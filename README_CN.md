@@ -353,6 +353,19 @@ nwa:
 
 更多的使用示例请您参考 [nwa-examples](https://github.com/rainiring/nwa-examples)。
 
+## 支持的协议模板
+
+| 协议                | 选项 (忽略大小写)                                                    |
+|-------------------|---------------------------------------------------------------|
+| Apache-2.0        | `apache`, `apache-2.0`, `apache-2`, `apache 2.0`, `apache2.0` |
+| MIT               | `mit`                                                         |
+| GPL-3.0 or Later  | `gpl-3.0-or-later`                                            |
+| GPL-3.0 Only      | `gpl-3.0-only`                                                |
+| AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
+| AGPL-3.0 Only     | `agpl-3.0-only`                                               |
+
+如果没有您需要的模板，您可以使用 --tmpl (-t) 选项或者提交一个 PR。
+
 ## 相关项目
 
 - [nwa-examples](https://github.com/rainiring/nwa-examples): NWA 的使用示例；

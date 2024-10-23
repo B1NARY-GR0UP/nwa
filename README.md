@@ -277,6 +277,19 @@ EXAMPLE:
 docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 .
 ```
 
+## Supported Licence Templates
+
+| License           | Option (ignore case)                                          |
+|-------------------|---------------------------------------------------------------|
+| Apache-2.0        | `apache`, `apache-2.0`, `apache-2`, `apache 2.0`, `apache2.0` |
+| MIT               | `mit`                                                         |
+| GPL-3.0 or Later  | `gpl-3.0-or-later`                                            |
+| GPL-3.0 Only      | `gpl-3.0-only`                                                |
+| AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
+| AGPL-3.0 Only     | `agpl-3.0-only`                                               |
+
+If the license template you need is not available, you could use the `--tmpl` (`-t`) option or submit a PR.
+
 ## Related Projects
 
 - [nwa-examples](https://github.com/rainiring/nwa-examples): Examples of NWA functionality
