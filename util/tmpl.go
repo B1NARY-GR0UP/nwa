@@ -49,6 +49,10 @@ func MatchTmpl(license string, useSPDXIDs bool) (string, error) {
 		return tmplGPLThreeOrLater, nil
 	case "gpl-3.0-only":
 		return tmplGPLThreeOnly, nil
+	case "agpl-3.0-or-later":
+		return tmplAGPLThreeOrLater, nil
+	case "agpl-3.0-only":
+		return tmplAGPLThreeOnly, nil
 	default:
 		return "", errLicenseNotSupported
 	}
