@@ -63,9 +63,9 @@ func generateHeader(path string, tmpl []byte) []byte {
 		return h
 	}
 	switch ext {
-	case ".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts":
+	case ".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php":
 		header = doGenerate(tmpl, "/*", " * ", " */")
-		put(header, []string{".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts"})
+		put(header, []string{".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php"})
 	case ".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts":
 		header = doGenerate(tmpl, "/**", " * ", " */")
 		put(header, []string{".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts"})
@@ -87,9 +87,6 @@ func generateHeader(path string, tmpl []byte) []byte {
 	case ".html", ".xml", ".vue", ".wxi", ".wxl", ".wxs":
 		header = doGenerate(tmpl, "<!--", " ", "-->")
 		put(header, []string{".html", ".xml", ".vue", ".wxi", ".wxl", ".wxs"})
-	case ".php":
-		header = doGenerate(tmpl, "", "// ", "")
-		put(header, []string{".php"})
 	case ".j2":
 		header = doGenerate(tmpl, "{#", "", "#}")
 		put(header, []string{".j2"})
