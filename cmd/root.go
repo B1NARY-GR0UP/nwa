@@ -16,9 +16,13 @@
 package cmd
 
 import (
+	"bytes"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/B1NARY-GR0UP/nwa/util"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 )
 
@@ -62,28 +66,39 @@ func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
-// TODO: use struct and defaultFlags var
-var (
-	MuteF    bool
-	HolderF  string
-	YearF    string
-	LicenseF string
-	TmplF    string
-	RawTmplF string
-	SkipF    []string
-	SPDXIDsF string
-)
+type CommonFlags struct {
+	Mute    bool
+	Holder  string
+	Year    string
+	License string
+	Tmpl    string
+	RawTmpl string
+	Skip    []string
+	SPDXIDs string
+}
+
+var defaultCommonFlags = CommonFlags{
+	Mute:    false,
+	Holder:  "<COPYRIGHT HOLDER>",
+	Year:    fmt.Sprint(time.Now().Year()),
+	License: "apache",
+	Tmpl:    "",
+	RawTmpl: "",
+	Skip:    []string{},
+	SPDXIDs: "",
+}
 
 func setupCommonCmd(common *cobra.Command) {
 	rootCmd.AddCommand(common)
 
-	common.Flags().BoolVarP(&MuteF, "mute", "m", defaultConfig.Nwa.Mute, "mute mode")
-	common.Flags().StringVarP(&HolderF, "copyright", "c", defaultConfig.Nwa.Holder, "copyright holder")
-	common.Flags().StringVarP(&YearF, "year", "y", defaultConfig.Nwa.Year, "copyright year")
-	common.Flags().StringVarP(&LicenseF, "license", "l", defaultConfig.Nwa.License, "license type")
-	common.Flags().StringVarP(&TmplF, "tmpl", "t", defaultConfig.Nwa.Tmpl, "template file path")
-	common.Flags().StringVarP(&RawTmplF, "rawtmpl", "r", defaultConfig.Nwa.RawTmpl, "template file path (enable raw template)")
-	common.Flags().StringSliceVarP(&SkipF, "skip", "s", defaultConfig.Nwa.Skip, "skip file path")
+	common.Flags().BoolVarP(&defaultCommonFlags.Mute, "mute", "m", defaultCommonFlags.Mute, "mute mode")
+	common.Flags().StringVarP(&defaultCommonFlags.Holder, "copyright", "c", defaultCommonFlags.Holder, "copyright holder")
+	common.Flags().StringVarP(&defaultCommonFlags.Year, "year", "y", defaultCommonFlags.Year, "copyright year")
+	common.Flags().StringVarP(&defaultCommonFlags.License, "license", "l", defaultCommonFlags.License, "license type")
+	common.Flags().StringVarP(&defaultCommonFlags.Tmpl, "tmpl", "t", defaultCommonFlags.Tmpl, "template file path")
+	common.Flags().StringVarP(&defaultCommonFlags.RawTmpl, "rawtmpl", "r", defaultCommonFlags.RawTmpl, "template file path (enable raw template)")
+	common.Flags().StringSliceVarP(&defaultCommonFlags.Skip, "skip", "s", defaultCommonFlags.Skip, "skip file path")
+	common.Flags().StringVarP(&defaultCommonFlags.SPDXIDs, "spdxids", "i", defaultCommonFlags.SPDXIDs, "spdx ids")
 
 	common.MarkFlagsMutuallyExclusive("tmpl", "rawtmpl")
 	// tmpl
@@ -96,12 +111,53 @@ func setupCommonCmd(common *cobra.Command) {
 	common.MarkFlagsMutuallyExclusive("license", "rawtmpl")
 
 	// SPDX IDs
-	common.Flags().StringVarP(&SPDXIDsF, "spdxids", "i", defaultConfig.Nwa.SPDXIDS, "spdx ids")
-	common.MarkFlagsMutuallyExclusive("spdxids", "license")
-	common.MarkFlagsMutuallyExclusive("spdxids", "tmpl")
-	common.MarkFlagsMutuallyExclusive("spdxids", "rawtmpl")
+	common.MarkFlagsMutuallyExclusive("license", "spdxids")
+	common.MarkFlagsMutuallyExclusive("tmpl", "spdxids")
+	common.MarkFlagsMutuallyExclusive("rawtmpl", "spdxids")
 }
 
 func setupConfigCmd(config *cobra.Command) {
 	rootCmd.AddCommand(config)
+}
+
+func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation util.Operation) {
+	// validate skip pattern
+	for _, s := range flags.Skip {
+		if !doublestar.ValidatePattern(s) {
+			cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
+		}
+	}
+	// check if enable rawtmpl
+	var rawTmpl bool
+	if flags.RawTmpl != "" && flags.Tmpl == "" {
+		flags.Tmpl = flags.RawTmpl
+		rawTmpl = true
+	}
+	if flags.Tmpl == "" {
+		tmpl, err := util.MatchTmpl(flags.License, flags.SPDXIDs != "")
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		tmplData := &util.TmplData{
+			Holder:  flags.Holder,
+			Year:    flags.Year,
+			SPDXIDs: flags.SPDXIDs,
+		}
+		renderedTmpl, err := tmplData.RenderTmpl(tmpl)
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		util.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Mute, rawTmpl)
+	} else {
+		content, err := os.ReadFile(flags.Tmpl)
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		buf := bytes.NewBuffer(content)
+		if rawTmpl {
+			_, _ = fmt.Fprintln(buf)
+		}
+		util.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, flags.Mute, rawTmpl)
+	}
+	util.ExecuteTasks()
 }

@@ -70,14 +70,14 @@ nwa:
 			rawTmpl = true
 		}
 		if defaultConfig.Nwa.Tmpl == "" {
-			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License, SPDXIDsF != "")
+			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License, defaultConfig.Nwa.SPDXIDs != "")
 			if err != nil {
 				cobra.CheckErr(err)
 			}
 			tmplData := &util.TmplData{
 				Holder:  defaultConfig.Nwa.Holder,
 				Year:    defaultConfig.Nwa.Year,
-				SPDXIDs: defaultConfig.Nwa.SPDXIDS,
+				SPDXIDs: defaultConfig.Nwa.SPDXIDs,
 			}
 			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
 			if err != nil {
@@ -116,7 +116,7 @@ type NwaConfig struct {
 	Mute    bool     `yaml:"mute"`
 	Path    []string `yaml:"path"`
 	Skip    []string `yaml:"skip"`
-	SPDXIDS string   `yaml:"spdxids"`
+	SPDXIDs string   `yaml:"spdxids"`
 	Tmpl    string   `yaml:"tmpl"`
 	RawTmpl string   `yaml:"rawtmpl"`
 }
@@ -129,7 +129,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Mute:    false,
 	Path:    []string{},
 	Skip:    []string{},
-	SPDXIDS: "",
+	SPDXIDs: "",
 	Tmpl:    "",
 	RawTmpl: "",
 }}

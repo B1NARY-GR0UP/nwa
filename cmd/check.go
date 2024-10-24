@@ -16,12 +16,7 @@
 package cmd
 
 import (
-	"bytes"
-	"fmt"
-	"os"
-
 	"github.com/B1NARY-GR0UP/nwa/util"
-	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 )
 
@@ -35,46 +30,7 @@ NOTE: Do not use --mute (-m) flag with the command`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// validate skip pattern
-		for _, s := range SkipF {
-			if !doublestar.ValidatePattern(s) {
-				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
-			}
-		}
-		// check if enable rawtmpl
-		var rawTmpl bool
-		if RawTmplF != "" && TmplF == "" {
-			TmplF = RawTmplF
-			rawTmpl = true
-		}
-		if TmplF == "" {
-			tmpl, err := util.MatchTmpl(LicenseF, SPDXIDsF != "")
-			if err != nil {
-				cobra.CheckErr(err)
-			}
-			tmplData := &util.TmplData{
-				Holder:  HolderF,
-				Year:    YearF,
-				SPDXIDs: SPDXIDsF,
-			}
-			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
-			if err != nil {
-				cobra.CheckErr(err)
-			}
-			// determine files need to be added
-			util.PrepareTasks(args, renderedTmpl, util.Check, SkipF, MuteF, rawTmpl)
-		} else {
-			content, err := os.ReadFile(TmplF)
-			if err != nil {
-				cobra.CheckErr(err)
-			}
-			buf := bytes.NewBuffer(content)
-			if rawTmpl {
-				_, _ = fmt.Fprintln(buf)
-			}
-			util.PrepareTasks(args, buf.Bytes(), util.Check, SkipF, MuteF, rawTmpl)
-		}
-		util.ExecuteTasks()
+		executeCommonCmd(cmd, args, defaultCommonFlags, util.Check)
 	},
 }
 
