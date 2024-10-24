@@ -62,6 +62,7 @@ func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
+// TODO: use struct and defaultFlags var
 var (
 	MuteF    bool
 	HolderF  string

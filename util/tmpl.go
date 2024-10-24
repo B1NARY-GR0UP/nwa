@@ -22,11 +22,9 @@ import (
 	"strings"
 )
 
-var spdxids bool
+var errLicenseNotSupported = errors.New("license not supported, please use custom tmpl with --tmpl(-t) or --rawtmpl(-r) flag")
 
-var (
-	errLicenseNotSupported = errors.New("license not supported, please use custom tmpl with --tmpl or -t flag")
-)
+var spdxids bool
 
 type TmplData struct {
 	Holder  string

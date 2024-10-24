@@ -46,7 +46,11 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		if !rawTmpl {
 			// generate header according to the file type
 			// NOTE: The file has not been modified yet
-			header = generateHeader(path, tmpl)
+			header, err = generateHeader(path, tmpl)
+			if err != nil {
+				slog.Warn(err.Error(), slog.String("path", path))
+				return nil
+			}
 		}
 		switch operation {
 		case Add:
