@@ -87,9 +87,9 @@ func generateHeader(path string, tmpl []byte) []byte {
 	case ".html", ".xml", ".vue", ".wxi", ".wxl", ".wxs":
 		header = doGenerate(tmpl, "<!--", " ", "-->")
 		put(header, []string{".html", ".xml", ".vue", ".wxi", ".wxl", ".wxs"})
-	case ".j2":
+	case ".j2", ".twig":
 		header = doGenerate(tmpl, "{#", "", "#}")
-		put(header, []string{".j2"})
+		put(header, []string{".j2", ".twig"})
 	case ".ml", ".mli", ".mll", ".mly":
 		header = doGenerate(tmpl, "(**", "   ", "*)")
 		put(header, []string{".ml", ".mli", ".mll", ".mly"})
