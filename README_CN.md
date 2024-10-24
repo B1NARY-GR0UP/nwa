@@ -183,7 +183,7 @@ nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
 
 - 许可证类型： `MIT`
 - 版权归属（copyright holder）： `RHINE LAB.LLC.`
-- 版权年份： `2023`
+- 版权年份：当前年份 
 
 的许可声明。
 
@@ -229,7 +229,7 @@ nwa update -l apache -c "BINARY Members" .
 
 - 许可证类型： `Apache 2.0`
 - 版权归属（copyright holder）： `BINARY Members`
-- 版权年份： `2023`
+- 版权年份：当前年份
 
 而不管之前的版权声明是什么。
 
