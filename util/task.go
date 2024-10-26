@@ -15,22 +15,27 @@
 
 package util
 
-// Max number of files can operate at once
-const Max = 1000
+import "sync"
 
-var taskC = make(chan func(), Max)
+const _size = 1000
+
+var taskC = make(chan func(), _size)
+
+var wg sync.WaitGroup
 
 // PrepareTasks walk through the dir and add tasks into task chan
 func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, muteF bool, rawTmpl bool) {
 	for _, path := range paths {
 		walkDir(path, tmpl, operation, skipF, muteF, rawTmpl)
 	}
+	go func() {
+		wg.Wait()
+		close(taskC)
+	}()
 }
 
 func ExecuteTasks() {
-	nums := len(taskC)
-	for i := 0; i < nums; i++ {
-		task := <-taskC
+	for task := range taskC {
 		task()
 	}
 }

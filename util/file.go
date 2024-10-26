@@ -54,13 +54,29 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		}
 		switch operation {
 		case Add:
-			prepareAdd(path, d, header, muteF)
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				taskC <- prepareAdd(path, d, header, muteF)
+			}()
 		case Update:
-			prepareUpdate(path, d, header, muteF)
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				taskC <- prepareUpdate(path, d, header, muteF)
+			}()
 		case Remove:
-			prepareRemove(path, d, header, muteF)
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				taskC <- prepareRemove(path, d, header, muteF)
+			}()
 		case Check:
-			prepareCheck(path, header, muteF)
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				taskC <- prepareCheck(path, header, muteF)
+			}()
 		default:
 			slog.Warn("not a valid operation")
 		}
@@ -68,8 +84,8 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 	})
 }
 
-func prepareCheck(path string, header []byte, muteF bool) {
-	taskC <- func() {
+func prepareCheck(path string, header []byte, muteF bool) func() {
+	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
@@ -92,8 +108,8 @@ func prepareCheck(path string, header []byte, muteF bool) {
 	}
 }
 
-func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
-	taskC <- func() {
+func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) func() {
+	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
@@ -140,8 +156,8 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) {
 	}
 }
 
-func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) {
-	taskC <- func() {
+func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) func() {
+	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
@@ -171,8 +187,8 @@ func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) {
 	}
 }
 
-func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) {
-	taskC <- func() {
+func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) func() {
+	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))

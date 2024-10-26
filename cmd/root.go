@@ -124,7 +124,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 	// validate skip pattern
 	for _, s := range flags.Skip {
 		if !doublestar.ValidatePattern(s) {
-			cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
+			cobra.CheckErr(fmt.Errorf("--skip (-s) pattern %v is not valid", s))
 		}
 	}
 	// check if enable rawtmpl
