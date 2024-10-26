@@ -96,7 +96,7 @@ nwa:
 			}
 			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, rawTmpl)
 		}
-		util.ExecuteTasks()
+		util.ExecuteTasks(util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Mute)
 	},
 }
 

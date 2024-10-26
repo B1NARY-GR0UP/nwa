@@ -159,5 +159,5 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		}
 		util.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, flags.Mute, rawTmpl)
 	}
-	util.ExecuteTasks()
+	util.ExecuteTasks(operation, flags.Mute)
 }

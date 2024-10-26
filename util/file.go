@@ -26,9 +26,19 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
+// lock-free because of serial
+var counter = struct {
+	modified   int
+	skipped    int
+	matched    int
+	mismatched int
+	failed     int
+}{}
+
 func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool, rawTmpl bool) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
+			counter.failed++
 			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
 			return nil
 		}
@@ -37,6 +47,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		}
 		// determine if this file needs to be skipped
 		if isSkip(path, skipF) {
+			counter.skipped++
 			if !muteF {
 				slog.Info("skip file", slog.String("path", path))
 			}
@@ -48,6 +59,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 			// NOTE: The file has not been modified yet
 			header, err = generateHeader(path, tmpl)
 			if err != nil {
+				counter.failed++
 				slog.Warn(err.Error(), slog.String("path", path))
 				return nil
 			}
@@ -88,20 +100,27 @@ func prepareCheck(path string, header []byte, muteF bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
+			counter.failed++
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if isGenerated(content) {
+			counter.failed++
 			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
-		// not matched
-		if idx != -1 && !muteF {
-			slog.Info("file has a matched header", slog.String("path", path))
+		// matched
+		if idx != -1 {
+			counter.matched++
+			if !muteF {
+				slog.Info("file has a matched header", slog.String("path", path))
+			}
 			return
 		}
+		// mismatched
+		counter.mismatched++
 		if !muteF {
 			slog.Info("file does not have a matched header", slog.String("path", path))
 		}
@@ -112,10 +131,12 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) func()
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
+			counter.failed++
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if !hasHeader(content) || isGenerated(content) {
+			counter.failed++
 			slog.Warn("file does not have a header or is generated", slog.String("path", path))
 			return
 		}
@@ -123,6 +144,7 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) func()
 		line := matchShebang(content)
 		file, err := os.Open(path)
 		if err != nil {
+			counter.failed++
 			slog.Error("open file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
@@ -147,9 +169,11 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) func()
 		b := assemble(line, header, afterBlankLine, true)
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
+			counter.failed++
 			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+		counter.modified++
 		if !muteF {
 			slog.Info("file has been modified", slog.String("path", path))
 		}
@@ -160,16 +184,19 @@ func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) func()
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
+			counter.failed++
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if isGenerated(content) {
+			counter.failed++
 			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		if idx == -1 {
+			counter.failed++
 			slog.Warn("file does not have a matched header", slog.String("path", path))
 			return
 		}
@@ -178,9 +205,11 @@ func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) func()
 		// modify the file
 		err = os.WriteFile(path, content, d.Type())
 		if err != nil {
+			counter.failed++
 			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+		counter.modified++
 		if !muteF {
 			slog.Info("file has been modified", slog.String("path", path))
 		}
@@ -191,10 +220,12 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
+			counter.failed++
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
 		if hasHeader(content) || isGenerated(content) {
+			counter.failed++
 			slog.Warn("file already has a header or is generated", slog.String("path", path))
 			return
 		}
@@ -204,9 +235,11 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) func() {
 		b := assemble(line, header, content, false)
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
+			counter.failed++
 			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+		counter.modified++
 		if !muteF {
 			slog.Info("file has been modified", slog.String("path", path))
 		}
