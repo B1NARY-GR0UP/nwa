@@ -35,10 +35,16 @@ jobs:
         run: |
           output=$(nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go)
           echo "$output"
-          summary_line=$(echo "$output" | grep 'Summary')
-          echo "SUMMARY_LINE=$summary_line" >> $GITHUB_ENV
+          last_line=$(echo "$output" | tail -n 1)
+          echo "RESULT=$last_line" >> $GITHUB_ENV
 
       - name: Verify Check Output
         run: |
-          echo "Summary Line: ${{ env.SUMMARY_LINE }}"
-          echo "${{ env.SUMMARY_LINE }}" | grep -q 'mismatched=0'
+          echo "Checking last line of the output:"
+          echo "${{ env.RESULT }}"
+          if echo "${{ env.RESULT }}" | grep -q 'mismatched=0'; then
+            echo "License Header Check passed."
+          else
+            echo "License Header Check failed."
+            exit 1
+          fi
