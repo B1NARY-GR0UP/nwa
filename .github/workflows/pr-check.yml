@@ -39,5 +39,5 @@ jobs:
 
     - name: Verify Check Output
       run: |
-        echo "${{ steps.license-check.outputs.result }}" | grep -q 'mismatched=0'
+        echo "${{ steps.license-check.outputs.result }}" | grep 'Summary' | grep -q 'mismatched=0'
       continue-on-error: false
