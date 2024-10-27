@@ -28,7 +28,6 @@
 //
 // This file may have been modified by BINARY Members. All BINARY
 // Modifications are Copyright 2023 BINARY Members.
-//
 
 package util
 
