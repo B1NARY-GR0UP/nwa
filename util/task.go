@@ -47,7 +47,7 @@ func ExecuteTasks(operation Operation, muteF bool) {
 		if muteF {
 			return
 		}
-		slog.Info("SUMMARY",
+		slog.Info("Summary",
 			slog.String("modified", strconv.Itoa(counter.modified)),
 			slog.String("skipped", strconv.Itoa(counter.skipped)),
 			slog.String("failed", strconv.Itoa(counter.failed)),
@@ -56,7 +56,7 @@ func ExecuteTasks(operation Operation, muteF bool) {
 		if muteF {
 			return
 		}
-		slog.Info("SUMMARY",
+		slog.Info("Summary",
 			slog.String("matched", strconv.Itoa(counter.matched)),
 			slog.String("mismatched", strconv.Itoa(counter.mismatched)),
 			slog.String("skipped", strconv.Itoa(counter.skipped)),
