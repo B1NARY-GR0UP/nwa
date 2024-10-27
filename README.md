@@ -20,10 +20,10 @@ Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docke
 - **[Check](#check---check-license-headers-of-files)**: Check license headers of files
 - **[Remove](#remove---remove-licenses-headers-of-files)**: Remove licenses headers of files
 - **[Update](#update---update-license-headers-of-files)**: Update license headers of files
-- **[Config](#config---edit-files-according-to-the-configuration-file)**: Edit files according to the configuration file
+- **[Config](#config-mode)**: Edit files according to the configuration file
 - **[Supported Licence Templates](#supported-licence-templates)**: Use built-in license templates or use custom templates 
 - **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those do not have a Go environment
-- **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA functionality  
+- **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA usage
 
 ```shell
 Usage:         
@@ -48,61 +48,57 @@ Flags:
 Use "nwa [command] --help" for more information about a command.
 ```
 
----
+### Common Mode
 
-### Add - Add license headers to files
+#### Flags
+
+| Short | Long        | Default                            | Description                                                  |
+| ----- | ----------- | ---------------------------------- | ------------------------------------------------------------ |
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                                             |
+| -l    | --license   | `apache`                           | license type                                                 |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                                     |
+| -m    | --mute      | `false` (unspecified)              | mute mode                                                    |
+| -s    | --skip      | `[]`                               | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
+| -t    | --tmpl      | `""`                               | template file path                                           |
+| -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                     |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                               |
+| -h    | --help      | null                               | help for command                                             |
+
+#### Add - Add license headers to files
 
 - **Usage**
 
 ```shell
 nwa add [flags] path...
 ```
-
-- **Flags**
- 
-| Short | Long        | Default                            | Description                              |
-|-------|-------------|------------------------------------|------------------------------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
-| -l    | --license   | `apache`                           | license type                             |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
-| -m    | --mute      | `false` (unspecified)              | mute mode                                |
-| -s    | --skip      | `[]`                               | skip file path                           |
-| -t    | --tmpl      | `""`                               | template file path                       |
-| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
-| -h    | --help      | null                               | help for add                             |
-
 - **Example**
 
 ```shell
 nwa add -l apache -c "RHINE LAB.LLC." -y 2077 ./server ./utils/bufferpool
 ```
 
-Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+The command in the example above **adds** a license header to all files under the folders with relative paths `./server` and `./utils/bufferpool`:
 
----
+- License type: `Apache 2.0`
+- Copyright holder: `RHINE LAB.LLC.`
+- Copyright year: `2077`
 
-### Check - Check license headers of files
+NWA will generate a corresponding license header based on the file type in the specified paths. For example, `.py` files will use `#` for comments, and `.go` files will use `//`.
+
+If your file type is not supported by NWA, you can:
+
+- Specify a custom template file using the `--tmpl` (`-t`) or `--rawtmpl` (`-r`) flag. Refer to [Supported Licence Templates](#supported-licence-templates)
+- Submit an issue or PR to NWA
+
+NWA will also output logs to inform you if any files already have a license header or if any files are not allowed to be edited (such as code files generated by tools).
+
+#### Check - Check license headers of files
 
 - **Usage**
 
 ```shell
 nwa check [flags] path...
 ```
-
-- **Flags**
-
-| Short | Long        | Default                            | Description                              |
-|-------|-------------|------------------------------------|------------------------------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
-| -l    | --license   | `apache`                           | license type                             |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
-| -m    | --mute      | `false` (unspecified)              | mute mode                                |
-| -s    | --skip      | `[]`                               | skip file path                           |
-| -t    | --tmpl      | `""`                               | template file path                       |
-| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
-| -h    | --help      | null                               | help for check                           |
 
 **NOTE: Do not use --mute (-m) flag with check command.**
 
@@ -112,11 +108,20 @@ nwa check [flags] path...
 nwa check --tmpl tmpl.txt ./client
 ```
 
-Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+The command in the example above **checks** whether the license header of all files under the folder with the relative path `./client` match the content specified in the `tmpl.txt` template file.
 
----
+After the check is complete, NWA will output the results as logs. A sample output is as follows:
 
-### Remove - Remove licenses headers of files
+```txt
+2024/10/27 20:38:57 INFO skip file path=README.md
+2024/10/27 20:38:57 INFO file has a matched header path=dirA\fileA.go
+2024/10/27 20:38:57 INFO file has a matched header path=dirB\fileB.go
+2024/10/27 20:38:57 INFO file does not have a matched header path=main.go
+2024/10/27 20:38:57 INFO file does not have a matched header path=dirB\dirC\fileC.go
+2024/10/27 20:38:57 INFO Summary matched=2 mismatched=2 skipped=1 failed=0
+```
+
+#### Remove - Remove licenses headers of files
 
 - **Usage**
 
@@ -124,31 +129,20 @@ Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more exam
 nwa remove [flags] path...
 ```
 
-- **Flags**
-
-| Short | Long        | Default                            | Description                              |
-|-------|-------------|------------------------------------|------------------------------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
-| -l    | --license   | `apache`                           | license type                             |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
-| -m    | --mute      | `false` (unspecified)              | mute mode                                |
-| -s    | --skip      | `[]`                               | skip file path                           |
-| -t    | --tmpl      | `""`                               | template file path                       |
-| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
-| -h    | --help      | null                               | help for remove                          |
-
 - **Example**
 
 ```shell
-nwa remove -l mit -c "RHINE LAB.LLC." -s **.py pkg
+nwa remove -l mit -c "RHINE LAB.LLC." -s "vender/**" src
 ```
+The command in the example above skips all files under the `vendor` folder and **removes** the license header for files under the folder with the relative path `src`:
 
-Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+- License type: `MIT`
+- Copyright holder: `RHINE LAB.LLC.`
+- Copyright year: current year
 
----
+If a file in the specified path does not have a license header or is not allowed to be edited, NWA will inform you through log output.
 
-### Update - Update license headers of files
+#### Update - Update license headers of files
 
 - **Usage**
 
@@ -158,31 +152,30 @@ nwa update [flags] path...
 
 **NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use `remove` + `add` command.**
 
-- **Flags**
-
-| Short | Long        | Default                            | Description                              |
-|-------|-------------|------------------------------------|------------------------------------------|
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                         |
-| -l    | --license   | `apache`                           | license type                             |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                 |
-| -m    | --mute      | `false` (unspecified)              | mute mode                                |
-| -s    | --skip      | `[]`                               | skip file path                           |
-| -t    | --tmpl      | `""`                               | template file path                       |
-| -r    | --rawtmpl   | `""`                               | template file path (enable raw template) |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                           |
-| -h    | --help      | null                               | help for update                          |
 
 - **Example**
 
 ```shell
-nwa update -l apache -c "BINARY Members" .
+nwa update -l apache -c "BINARY Members" -s "dirA/**" -s "dirB/*.py" .
 ```
 
-Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+The command in the example above **updates** the license header of all files in the current directory, **except** for all files under `dirA` and Python files under `dirB`, to:
 
----
+- License type: `Apache 2.0`
+- Copyright holder: `BINARY Members`
+- Copyright year: current year
 
-### Config - Edit files according to the configuration file
+regardless of the previous license header.
+
+### Config Mode
+
+- **Flags**
+
+| Short | Long        | Default                            | Description     |
+|-------|-------------|------------------------------------|-----------------|
+| -h    | --help      | null                               | help for config |
+
+**NOTE: If some configuration are not configured, the default configuration will be used.**
 
 - **Usage**
 
@@ -192,27 +185,18 @@ nwa config [flags] path
 
 **NOTE: Path is the configuration file path.**
 
-- **Flags**
-
-| Short | Long        | Default                            | Description     |
-|-------|-------------|------------------------------------|-----------------|
-| -h    | --help      | null                               | help for config |
-
-
-**NOTE: If some configuration are not configured, the default configuration will be used.**
-
 - **Example**
 
 ```shell
 nwa config config.yaml
 ```
 
-Refer to [nwa-examples](https://github.com/rainiring/nwa-examples) for more examples.
+The command in the example above reads the `config.yaml` **configuration file** and edits the license header of the specified files according to its content. The structure of the configuration file will be provided below.
 
 - **Sample Configuration file**
 
 **NOTE: If you set the `tmpl` or `rawtmpl` field, the `holder`, `year`, `license` and `spdxids` fields will be ignored.**
- 
+
 ```yaml
 nwa:
   cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update" 
@@ -238,12 +222,11 @@ nwa:
 | AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
 | AGPL-3.0 Only     | `agpl-3.0-only`                                               |
 
-If the license template you need is not available, you could use the `--tmpl` (`-t`) flag or submit an Issue/PR.
-
-If you want to use the content of the template file directly to the header of your file without modification, please use the -rawtmpl (-r) flag. 
-When the raw template is enabled, NWA will not generate different types of licence headers based on your file type.
+If the license template you need is not available, you could use the `--tmpl` (`-t`) flag, `--rawtmpl` (`-r`) flag or submit an Issue/PR.
 
 **NOTE: The `--tmpl` (`-t`) and `--rawtmpl` (`-r`) flags cannot be used simultaneously.**
+
+#### --tmpl (-t)
 
 - **Example**
 
@@ -269,23 +252,55 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
+This command example uses the content in `mytmpl.txt` as the license header, and NWA will generate license headers with different comment types based on the file type.
+
+#### --rawtmpl (-r)
+
+If you want to use the content of the template file directly to the header of your file without modification, please use the -rawtmpl (-r) flag. 
+When the raw template is enabled, NWA will not generate different types of licence headers based on your file type.
+
+- **Example**
+
+```shell
+nwa add --rawtmpl myrawtmpl.txt .
+```
+
+`myrawtmpl.txt` is as follows:
+
+```txt
+
+// Copyright 2077 RHINE LAB.LLC.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+```
+
+This command example uses the content in `myrawtmpl.txt` as the license header. NWA will **not** generate license headers with different comment types based on the file type **but** will instead add the content of `myrawtmpl.txt` directly to each file (include blank line).
+
+
 ### Docker - Run NWA through docker, for those do not have a Go environment
 
 - **Install**
 
-Install the nwa docker image directly
-
-EXAMPLE:
+Install the nwa docker image directly:
 
 ```shell
 docker pull ghcr.io/b1nary-gr0up/nwa:main
 ```
 
-OR
+**OR**
 
-Build it from source
-
-EXAMPLE:
+Build it from source:
 
 ```shell
 docker build -t ghcr.io/b1nary-gr0up/nwa:main .
@@ -293,15 +308,11 @@ docker build -t ghcr.io/b1nary-gr0up/nwa:main .
 
 - **Verify if it can work correctly**
 
-EXAMPLE:
-
 ```shell
 docker run -it ghcr.io/b1nary-gr0up/nwa:main --version
 ```
 
 - **Mount the directory you want NWA to work with to `/src` and use the commands mentions in usage**
-
-EXAMPLE:
 
 ```shell
 docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 .
