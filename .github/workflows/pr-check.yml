@@ -1,7 +1,7 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: Go
+name: Pull Request Check
 
 on:
   push:
@@ -27,8 +27,17 @@ jobs:
     - name: Test
       run: go test -v ./...
 
-    - name: Install nwa
-      run: go install github.com/B1NARY-GR0UP/nwa@latest
+    - name: Install NWA
+      run: go install github.com/B1NARY-GR0UP/nwa@4619d499a477881481dd13c32b6e107d2d2a4ccf
 
-    - name: Run license header check
-      run: nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go
+    - name: Run License Header Check
+      id: license-check
+      run: |
+        output=$(nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go)
+        echo "$output"
+        echo "result=$output" >> $GITHUB_OUTPUT
+
+    - name: Verify Check Output
+      run: |
+        echo "${{ steps.license-check.outputs.result }}" | grep -q 'mismatch=0'
+      continue-on-error: false
