@@ -19,6 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// TODO: support fuzzy matching (e.g. ignore year, only check copyright and license type)
+
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
 	Use:   "check",
