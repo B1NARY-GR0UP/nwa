@@ -33,11 +33,11 @@ jobs:
     - name: Run License Header Check
       id: license-check
       run: |
-        output=$(nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go)
+        output=$(nwa check -c "BINARY Members" -l apache ./...)
         echo "$output"
-        echo "result=$output" >> $GITHUB_OUTPUT
+        echo "RESULT=$output" >> $GITHUB_ENV
 
     - name: Verify Check Output
       run: |
-        echo "${{ steps.license-check.outputs.result }}" | grep 'Summary' | grep -q 'mismatched=0'
-      continue-on-error: false
+        echo "${{ env.RESULT }}"
+        echo "${{ env.RESULT }}" | grep -q 'Summary.*mismatched=0'
