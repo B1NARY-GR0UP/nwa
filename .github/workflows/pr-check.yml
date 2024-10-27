@@ -14,30 +14,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.21
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
 
-    - name: Build
-      run: go build -v ./...
+      - name: Build
+        run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
+      - name: Test
+        run: go test -v ./...
 
-    - name: Install NWA
-      run: go install github.com/B1NARY-GR0UP/nwa@4619d499a477881481dd13c32b6e107d2d2a4ccf
+      - name: Install NWA
+        run: go install github.com/B1NARY-GR0UP/nwa@4619d499a477881481dd13c32b6e107d2d2a4ccf
 
-    - name: Run License Header Check
-      id: license-check
-      run: |
-        output=$(nwa check -c "BINARY Members" -l apache ./...)
-        echo "$output"
-        echo "RESULT=$output" >> $GITHUB_ENV
+      - name: Run License Header Check
+        id: license-check
+        run: |
+          output=$(nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go)
+          echo "$output"
+          summary_line=$(echo "$output" | grep 'Summary')
+          echo "SUMMARY_LINE=$summary_line" >> $GITHUB_ENV
 
-    - name: Verify Check Output
-      run: |
-        echo "${{ env.RESULT }}"
-        echo "${{ env.RESULT }}" | grep -q 'Summary.*mismatched=0'
+      - name: Verify Check Output
+        run: |
+          echo "Summary Line: ${{ env.SUMMARY_LINE }}"
+          echo "${{ env.SUMMARY_LINE }}" | grep -q 'mismatched=0'
