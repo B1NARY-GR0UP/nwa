@@ -23,6 +23,7 @@ Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docke
 - **[Config](#config-mode)**: Edit files according to the configuration file
 - **[Supported Licence Templates](#supported-licence-templates)**: Use built-in license templates or use custom templates 
 - **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those do not have a Go environment
+- **[Used In CI](#used-in-ci)**: Use NWA in CI
 - **[Examples](https://github.com/rainiring/nwa-examples)**: Examples of NWA usage
 
 ```shell
