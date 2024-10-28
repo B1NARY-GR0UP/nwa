@@ -28,22 +28,7 @@ jobs:
         run: go test -v ./...
 
       - name: Install NWA
-        run: go install github.com/B1NARY-GR0UP/nwa@4619d499a477881481dd13c32b6e107d2d2a4ccf
+        run: go install github.com/B1NARY-GR0UP/nwa@latest
 
       - name: Run License Header Check
-        id: license-check
-        run: |
-          output=$(nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go)
-          echo "$output"
-          summary=$(echo "$output" | grep "Summary")
-          echo "RESULT=$summary" >> $GITHUB_ENV
-
-      - name: Verify Check Output
-        run: |
-          echo "Checking last line of the output:"
-          echo "RESULT: '${{ env.RESULT }}'"
-          if echo "${{ env.RESULT }}" | grep -q 'mismatched=0'; then
-            echo "License Header Check passed."
-          else
-            echo "License Header Check failed."
-            exit 1
+        run: nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go

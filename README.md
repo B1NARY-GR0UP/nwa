@@ -52,17 +52,17 @@ Use "nwa [command] --help" for more information about a command.
 
 #### Flags
 
-| Short | Long        | Default                            | Description                                                  |
-| ----- | ----------- | ---------------------------------- | ------------------------------------------------------------ |
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                                             |
-| -l    | --license   | `apache`                           | license type                                                 |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                                     |
-| -m    | --mute      | `false` (unspecified)              | mute mode                                                    |
+| Short | Long        | Default                            | Description                                                                                                    |
+|-------|-------------|------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                                                                                               |
+| -l    | --license   | `apache`                           | license type                                                                                                   |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                                                                                       |
+| -m    | --mute      | `false` (unspecified)              | mute mode                                                                                                      |
 | -s    | --skip      | `[]`                               | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
-| -t    | --tmpl      | `""`                               | template file path                                           |
-| -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                     |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                               |
-| -h    | --help      | null                               | help for command                                             |
+| -t    | --tmpl      | `""`                               | template file path                                                                                             |
+| -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                                                                       |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                                                                                 |
+| -h    | --help      | null                               | help for command                                                                                               |
 
 #### Add - Add license headers to files
 
@@ -316,6 +316,40 @@ docker run -it ghcr.io/b1nary-gr0up/nwa:main --version
 
 ```shell
 docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 .
+```
+
+### Used in CI
+
+- **GitHub Action Example**
+
+You may refer to the other commands introduced in the "Usage" section for optimization. 
+One approach to determine if the `check` command passes is to check if there is `mismatched=0` in the output. If it exists, the check passes; otherwise, it does not.
+
+```yaml
+name: Pull Request Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+
+      - name: Install NWA
+        run: go install github.com/B1NARY-GR0UP/nwa@latest
+
+      - name: Run License Header Check
+        run: nwa check -c "BINARY Members" -l apache ./**/*.go ./*.go
 ```
 
 ## Related Projects
