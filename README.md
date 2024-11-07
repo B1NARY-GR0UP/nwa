@@ -324,7 +324,8 @@ docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LL
 - **GitHub Action Example**
 
 You may refer to the other commands introduced in the "Usage" section for optimization. 
-One approach to determine if the `check` command passes is to check if there is `mismatched=0` in the output. If it exists, the check passes; otherwise, it does not.
+
+> One approach to determine if the `check` command passes is to check if there is `mismatched=0` in the output. If it exists, the check passes; otherwise, it does not.
 
 ```yaml
 name: Pull Request Check
