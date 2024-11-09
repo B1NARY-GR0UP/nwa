@@ -16,6 +16,7 @@ package util
 
 import (
 	"log/slog"
+	"os"
 	"strconv"
 	"sync"
 )
@@ -61,6 +62,10 @@ func ExecuteTasks(operation Operation, muteF bool) {
 			slog.String("skipped", strconv.Itoa(counter.skipped)),
 			slog.String("failed", strconv.Itoa(counter.failed)),
 		)
+		// exit 1 to fail ci check
+		if counter.mismatched > 0 || counter.failed > 0 {
+			os.Exit(1)
+		}
 	default:
 		slog.Warn("not a valid operation")
 	}
