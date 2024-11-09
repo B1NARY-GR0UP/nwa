@@ -323,9 +323,9 @@ docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LL
 
 - **GitHub Action Example**
 
-You may refer to the other commands introduced in the "Usage" section for optimization. 
+When there are **mismatched** or **failed** entries in the result of `nwa check`, `nwa` will return a non-zero exit code, causing the CI to fail.
 
-> One approach to determine if the `check` command passes is to check if there is `mismatched=0` in the output. If it exists, the check passes; otherwise, it does not.
+You may refer to the other commands or flags introduced in the "Usage" section for optimization. 
 
 ```yaml
 name: Pull Request Check
