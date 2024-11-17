@@ -17,6 +17,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"log/slog"
 	"os"
 	"time"
 
@@ -53,6 +54,16 @@ nwa:
 		if err := defaultConfig.readInConfig(args[0]); err != nil {
 			cobra.CheckErr(err)
 		}
+
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+		if defaultConfig.Nwa.Verbose {
+			slog.SetLogLoggerLevel(slog.LevelInfo)
+		}
+		// mute has higher priority
+		if defaultConfig.Nwa.Mute {
+			slog.SetLogLoggerLevel(util.LevelMute)
+		}
+
 		// validate skip pattern
 		for _, s := range defaultConfig.Nwa.Skip {
 			if !doublestar.ValidatePattern(s) {
@@ -83,7 +94,7 @@ nwa:
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, rawTmpl)
+			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl)
 		} else {
 			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
 			if err != nil {
@@ -93,7 +104,7 @@ nwa:
 			if rawTmpl {
 				_, _ = fmt.Fprintln(buf)
 			}
-			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, defaultConfig.Nwa.Mute, rawTmpl)
+			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl)
 		}
 		util.ExecuteTasks(util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Mute)
 	},
@@ -113,6 +124,7 @@ type NwaConfig struct {
 	Year    string   `yaml:"year"`
 	License string   `yaml:"license"`
 	Mute    bool     `yaml:"mute"`
+	Verbose bool     `yaml:"verbose"`
 	Path    []string `yaml:"path"`
 	Skip    []string `yaml:"skip"`
 	SPDXIDs string   `yaml:"spdxids"`
@@ -126,6 +138,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Year:    fmt.Sprint(time.Now().Year()),
 	License: "apache",
 	Mute:    false,
+	Verbose: false,
 	Path:    []string{},
 	Skip:    []string{},
 	SPDXIDs: "",

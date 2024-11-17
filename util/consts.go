@@ -27,3 +27,5 @@ const (
 	Remove Operation = "remove"
 	Check  Operation = "check"
 )
+
+const LevelMute = 12

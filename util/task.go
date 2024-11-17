@@ -15,9 +15,9 @@
 package util
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
-	"strconv"
 	"sync"
 )
 
@@ -28,9 +28,9 @@ var taskC = make(chan func(), _size)
 var wg sync.WaitGroup
 
 // PrepareTasks walk through the dir and add tasks into task chan
-func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, muteF bool, rawTmpl bool) {
+func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, rawTmpl bool) {
 	for _, path := range paths {
-		walkDir(path, tmpl, operation, skipF, muteF, rawTmpl)
+		walkDir(path, tmpl, operation, skipF, rawTmpl)
 	}
 	go func() {
 		wg.Wait()
@@ -44,24 +44,13 @@ func ExecuteTasks(operation Operation, muteF bool) {
 	}
 	switch operation {
 	case Add, Update, Remove:
-		if muteF {
-			return
+		if !muteF {
+			fmt.Printf("[NWA SUMMARY] modified=%d skipped=%d failed=%d", counter.modified, counter.skipped, counter.failed)
 		}
-		slog.Info("Summary",
-			slog.String("modified", strconv.Itoa(counter.modified)),
-			slog.String("skipped", strconv.Itoa(counter.skipped)),
-			slog.String("failed", strconv.Itoa(counter.failed)),
-		)
 	case Check:
-		if muteF {
-			return
+		if !muteF {
+			fmt.Printf("[NWA SUMMARY] matched=%d mismatched=%d skipped=%d failed=%d", counter.matched, counter.mismatched, counter.skipped, counter.failed)
 		}
-		slog.Info("Summary",
-			slog.String("matched", strconv.Itoa(counter.matched)),
-			slog.String("mismatched", strconv.Itoa(counter.mismatched)),
-			slog.String("skipped", strconv.Itoa(counter.skipped)),
-			slog.String("failed", strconv.Itoa(counter.failed)),
-		)
 		// exit 1 to fail ci check
 		if counter.mismatched > 0 || counter.failed > 0 {
 			os.Exit(1)

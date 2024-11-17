@@ -34,7 +34,7 @@ var counter = struct {
 	failed     int
 }{}
 
-func walkDir(start string, tmpl []byte, operation Operation, skipF []string, muteF bool, rawTmpl bool) {
+func walkDir(start string, tmpl []byte, operation Operation, skipF []string, rawTmpl bool) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
@@ -47,9 +47,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 		// determine if this file needs to be skipped
 		if isSkip(path, skipF) {
 			counter.skipped++
-			if !muteF {
-				slog.Info("skip file", slog.String("path", path))
-			}
+			slog.Info("skip file", slog.String("path", path))
 			return nil
 		}
 		header := tmpl
@@ -68,25 +66,25 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				taskC <- prepareAdd(path, d, header, muteF)
+				taskC <- prepareAdd(path, d, header)
 			}()
 		case Update:
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				taskC <- prepareUpdate(path, d, header, muteF)
+				taskC <- prepareUpdate(path, d, header)
 			}()
 		case Remove:
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				taskC <- prepareRemove(path, d, header, muteF)
+				taskC <- prepareRemove(path, d, header)
 			}()
 		case Check:
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				taskC <- prepareCheck(path, header, muteF)
+				taskC <- prepareCheck(path, header)
 			}()
 		default:
 			slog.Warn("not a valid operation")
@@ -95,7 +93,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, mut
 	})
 }
 
-func prepareCheck(path string, header []byte, muteF bool) func() {
+func prepareCheck(path string, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -113,20 +111,16 @@ func prepareCheck(path string, header []byte, muteF bool) func() {
 		// matched
 		if idx != -1 {
 			counter.matched++
-			if !muteF {
-				slog.Info("file has a matched header", slog.String("path", path))
-			}
+			slog.Info("file has a matched header", slog.String("path", path))
 			return
 		}
 		// mismatched
 		counter.mismatched++
-		if !muteF {
-			slog.Info("file does not have a matched header", slog.String("path", path))
-		}
+		slog.Warn("file does not have a matched header", slog.String("path", path))
 	}
 }
 
-func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) func() {
+func prepareUpdate(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -173,13 +167,11 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte, muteF bool) func()
 			return
 		}
 		counter.modified++
-		if !muteF {
-			slog.Info("file has been modified", slog.String("path", path))
-		}
+		slog.Info("file has been modified", slog.String("path", path))
 	}
 }
 
-func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) func() {
+func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -209,13 +201,11 @@ func prepareRemove(path string, d fs.DirEntry, header []byte, muteF bool) func()
 			return
 		}
 		counter.modified++
-		if !muteF {
-			slog.Info("file has been modified", slog.String("path", path))
-		}
+		slog.Info("file has been modified", slog.String("path", path))
 	}
 }
 
-func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) func() {
+func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -239,9 +229,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte, muteF bool) func() {
 			return
 		}
 		counter.modified++
-		if !muteF {
-			slog.Info("file has been modified", slog.String("path", path))
-		}
+		slog.Info("file has been modified", slog.String("path", path))
 	}
 }
 
