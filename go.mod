@@ -1,6 +1,6 @@
 module github.com/B1NARY-GR0UP/nwa
 
-go 1.21
+go 1.23
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.6.0
