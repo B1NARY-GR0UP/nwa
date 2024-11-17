@@ -21,6 +21,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/bmatcuk/doublestar/v4"
 )
@@ -34,7 +35,7 @@ var counter = struct {
 	failed     int
 }{}
 
-func walkDir(start string, tmpl []byte, operation Operation, skipF []string, rawTmpl bool) {
+func walkDir(start string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
 	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
@@ -45,13 +46,13 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, raw
 			return nil
 		}
 		// determine if this file needs to be skipped
-		if isSkip(path, skipF) {
+		if isSkip(path, skips) {
 			counter.skipped++
 			slog.Info("skip file", slog.String("path", path))
 			return nil
 		}
 		header := tmpl
-		if !rawTmpl {
+		if !raw {
 			// generate header according to the file type
 			// NOTE: The file has not been modified yet
 			header, err = generateHeader(path, tmpl)
@@ -84,7 +85,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, raw
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				taskC <- prepareCheck(path, header)
+				taskC <- prepareCheck(path, header, fuzzy)
 			}()
 		default:
 			slog.Warn("not a valid operation")
@@ -93,7 +94,7 @@ func walkDir(start string, tmpl []byte, operation Operation, skipF []string, raw
 	})
 }
 
-func prepareCheck(path string, header []byte) func() {
+func prepareCheck(path string, header []byte, fuzzy bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -106,6 +107,13 @@ func prepareCheck(path string, header []byte) func() {
 			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
+
+		// fuzzy matching
+		if fuzzy {
+			header = removeYear(header)
+			content = removeYear(content)
+		}
+
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		// matched
@@ -244,4 +252,8 @@ func isSkip(path string, pattern []string) bool {
 		}
 	}
 	return false
+}
+
+func removeYear(b []byte) []byte {
+	return regexp.MustCompile(`\b\d{4}\b`).ReplaceAll(b, []byte{})
 }

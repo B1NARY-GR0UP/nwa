@@ -94,7 +94,7 @@ nwa:
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl)
+			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
 		} else {
 			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
 			if err != nil {
@@ -104,7 +104,7 @@ nwa:
 			if rawTmpl {
 				_, _ = fmt.Fprintln(buf)
 			}
-			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl)
+			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
 		}
 		util.ExecuteTasks(util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Mute)
 	},
@@ -125,6 +125,7 @@ type NwaConfig struct {
 	License string   `yaml:"license"`
 	Mute    bool     `yaml:"mute"`
 	Verbose bool     `yaml:"verbose"`
+	Fuzzy   bool     `yaml:"fuzzy"`
 	Path    []string `yaml:"path"`
 	Skip    []string `yaml:"skip"`
 	SPDXIDs string   `yaml:"spdxids"`
@@ -139,6 +140,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	License: "apache",
 	Mute:    false,
 	Verbose: false,
+	Fuzzy:   false,
 	Path:    []string{},
 	Skip:    []string{},
 	SPDXIDs: "",

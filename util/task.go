@@ -28,9 +28,9 @@ var taskC = make(chan func(), _size)
 var wg sync.WaitGroup
 
 // PrepareTasks walk through the dir and add tasks into task chan
-func PrepareTasks(paths []string, tmpl []byte, operation Operation, skipF []string, rawTmpl bool) {
+func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
 	for _, path := range paths {
-		walkDir(path, tmpl, operation, skipF, rawTmpl)
+		walkDir(path, tmpl, operation, skips, raw, fuzzy)
 	}
 	go func() {
 		wg.Wait()

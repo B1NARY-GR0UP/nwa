@@ -69,6 +69,7 @@ func init() {
 type CommonFlags struct {
 	Mute    bool
 	Verbose bool
+	Fuzzy   bool
 	Holder  string
 	Year    string
 	License string
@@ -81,6 +82,7 @@ type CommonFlags struct {
 var defaultCommonFlags = CommonFlags{
 	Mute:    false,
 	Verbose: false,
+	Fuzzy:   false,
 	Holder:  "<COPYRIGHT HOLDER>",
 	Year:    fmt.Sprint(time.Now().Year()),
 	License: "apache",
@@ -95,6 +97,7 @@ func setupCommonCmd(common *cobra.Command) {
 
 	common.Flags().BoolVarP(&defaultCommonFlags.Mute, "mute", "m", defaultCommonFlags.Mute, "mute mode")
 	common.Flags().BoolVarP(&defaultCommonFlags.Verbose, "verbose", "V", defaultCommonFlags.Verbose, "verbose mode")
+	common.Flags().BoolVarP(&defaultCommonFlags.Fuzzy, "fuzzy", "f", defaultCommonFlags.Fuzzy, "fuzzy matching")
 	common.Flags().StringVarP(&defaultCommonFlags.Holder, "copyright", "c", defaultCommonFlags.Holder, "copyright holder")
 	common.Flags().StringVarP(&defaultCommonFlags.Year, "year", "y", defaultCommonFlags.Year, "copyright year")
 	common.Flags().StringVarP(&defaultCommonFlags.License, "license", "l", defaultCommonFlags.License, "license type")
@@ -160,7 +163,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		if err != nil {
 			cobra.CheckErr(err)
 		}
-		util.PrepareTasks(args, renderedTmpl, operation, flags.Skip, rawTmpl)
+		util.PrepareTasks(args, renderedTmpl, operation, flags.Skip, rawTmpl, flags.Fuzzy)
 	} else {
 		content, err := os.ReadFile(flags.Tmpl)
 		if err != nil {
@@ -170,7 +173,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		if rawTmpl {
 			_, _ = fmt.Fprintln(buf)
 		}
-		util.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, rawTmpl)
+		util.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, rawTmpl, flags.Fuzzy)
 	}
 	util.ExecuteTasks(operation, flags.Mute)
 }
