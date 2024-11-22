@@ -45,11 +45,11 @@ func ExecuteTasks(operation Operation, muteF bool) {
 	switch operation {
 	case Add, Update, Remove:
 		if !muteF {
-			fmt.Printf("[NWA SUMMARY] modified=%d skipped=%d failed=%d", counter.modified, counter.skipped, counter.failed)
+			fmt.Printf("[NWA SUMMARY] modified=%d skipped=%d failed=%d\n", counter.modified, counter.skipped, counter.failed)
 		}
 	case Check:
 		if !muteF {
-			fmt.Printf("[NWA SUMMARY] matched=%d mismatched=%d skipped=%d failed=%d", counter.matched, counter.mismatched, counter.skipped, counter.failed)
+			fmt.Printf("[NWA SUMMARY] matched=%d mismatched=%d skipped=%d failed=%d\n", counter.matched, counter.mismatched, counter.skipped, counter.failed)
 		}
 		// exit 1 to fail ci check
 		if counter.mismatched > 0 || counter.failed > 0 {
