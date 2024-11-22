@@ -47,7 +47,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 		match, err := doublestar.Match(pattern, path)
 		if err != nil {
 			counter.failed++
-			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
+			slog.Error("match doublestar pattern error", slog.String("path", path), slog.String("err", err.Error()))
 			return nil
 		}
 		if !match {
