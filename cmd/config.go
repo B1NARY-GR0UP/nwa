@@ -70,6 +70,13 @@ nwa:
 				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
 			}
 		}
+		// validate path pattern
+		for _, path := range defaultConfig.Nwa.Path {
+			if !doublestar.ValidatePattern(path) {
+				cobra.CheckErr(fmt.Errorf("path pattern %v is not valid", path))
+			}
+		}
+
 		if defaultConfig.Nwa.Tmpl != "" && defaultConfig.Nwa.RawTmpl != "" {
 			cobra.CheckErr("tmpl flag should not be used with rawtmpl flag")
 		}

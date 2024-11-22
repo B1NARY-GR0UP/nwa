@@ -143,6 +143,13 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			cobra.CheckErr(fmt.Errorf("--skip (-s) pattern %v is not valid", s))
 		}
 	}
+	// validate path pattern
+	for _, arg := range args {
+		if !doublestar.ValidatePattern(arg) {
+			cobra.CheckErr(fmt.Errorf("path pattern %v is not valid", arg))
+		}
+	}
+
 	// check if enable rawtmpl
 	var rawTmpl bool
 	if flags.RawTmpl != "" && flags.Tmpl == "" {
