@@ -35,22 +35,38 @@ var counter = struct {
 	failed     int
 }{}
 
-func walkDir(start string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
-	_ = filepath.WalkDir(start, func(path string, d fs.DirEntry, err error) error {
+func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
+	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
 			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
 			return nil
 		}
+
+		// match glob pattern
+		match, err := doublestar.Match(pattern, path)
+		if err != nil {
+			counter.failed++
+			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
+			return nil
+		}
+		if !match {
+			return nil
+		}
+
+		// ignore dir
 		if d.IsDir() {
 			return nil
 		}
+
 		// determine if this file needs to be skipped
 		if isSkip(path, skips) {
 			counter.skipped++
 			slog.Info("skip file", slog.String("path", path))
 			return nil
 		}
+
+		// generate header or use tmpl
 		header := tmpl
 		if !raw {
 			// generate header according to the file type
@@ -62,6 +78,8 @@ func walkDir(start string, tmpl []byte, operation Operation, skips []string, raw
 				return nil
 			}
 		}
+
+		// submit task
 		switch operation {
 		case Add:
 			wg.Add(1)
@@ -91,7 +109,9 @@ func walkDir(start string, tmpl []byte, operation Operation, skips []string, raw
 			slog.Warn("not a valid operation")
 		}
 		return nil
-	})
+	}); err != nil {
+		panic(err)
+	}
 }
 
 func prepareCheck(path string, header []byte, fuzzy bool) func() {

@@ -29,3 +29,5 @@ const (
 )
 
 const LevelMute = 12
+
+const _root = "."
