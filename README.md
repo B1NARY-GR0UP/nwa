@@ -4,8 +4,6 @@ A More Powerful License Header Management Tool
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
 
-English | [中文](README_CN.md)
-
 ## Install
 
 ```shell
@@ -56,13 +54,15 @@ Use "nwa [command] --help" for more information about a command.
 | Short | Long        | Default                            | Description                                                                                                    |
 |-------|-------------|------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                                                                                               |
+| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                                                                                 |
 | -l    | --license   | `apache`                           | license type                                                                                                   |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                                                                                       |
-| -m    | --mute      | `false` (unspecified)              | mute mode                                                                                                      |
 | -s    | --skip      | `[]`                               | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
+| -V    | --verbose   | `false` (unspecified)              | verbose mode (Allow log output below the **WARN** level)                                                       |
+| -m    | --mute      | `false` (unspecified)              | mute mode (Disable all log output)                                                                             |
+| -i    | --spdxids   | `""`                               | SPDX IDs                                                                                                       |
 | -t    | --tmpl      | `""`                               | template file path                                                                                             |
 | -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                                                                       |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                                                                                 |
+| -f    | --fuzzy     | `false` (unspecified)              | `nwa check` will ignore differences in the **year** within the license header                                  |
 | -h    | --help      | null                               | help for command                                                                                               |
 
 #### Add - Add license headers to files
@@ -206,6 +206,8 @@ nwa:
   license: "apache"                 # Default: "apache"
   spdxids: ""                       # Default: ""
   mute: false                       # Default: false (unspecified)
+  verbose: false                    # Default: false (unspecified)
+  fuzzy: false                      # Default: false (unspecified)
   path: ["server", "client", "pkg"] # Default: []
   skip: ["**.py"]                   # Default: []
   tmpl: "nwa.txt"                   # Default: ""                                                       
