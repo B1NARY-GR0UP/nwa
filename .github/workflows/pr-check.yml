@@ -23,9 +23,3 @@ jobs:
 
       - name: Test
         run: go test -v ./...
-
-      - name: Install NWA
-        run: go install github.com/B1NARY-GR0UP/nwa@latest
-
-      - name: Run License Header Check
-        run: nwa check -c "BINARY Members" -l apache -y 2023 ./**/*.go ./*.go

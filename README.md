@@ -68,7 +68,7 @@ Use "nwa [command] --help" for more information about a command.
 
 Both **`--skip` (`-s`)** and the **working path** support patterns recognized by [doublestar](https://github.com/bmatcuk/doublestar#patterns). 
 
-However, some shells may interpret these patterns (e.g., `**`), which could cause NWA to behave unexpectedly. 
+However, some shells may interpret these patterns (e.g. `**`), which could cause NWA to behave unexpectedly. 
 
 The best way to resolve this issue is to **wrap your paths in double quotes (`""`)**.
 
