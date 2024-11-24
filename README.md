@@ -121,12 +121,20 @@ The command in the example above **checks** whether the license header of all fi
 After the check is complete, NWA will output the results as logs. A sample output is as follows:
 
 ```txt
-2024/10/27 20:38:57 INFO skip file path=README.md
-2024/10/27 20:38:57 INFO file has a matched header path=dirA\fileA.go
-2024/10/27 20:38:57 INFO file has a matched header path=dirB\fileB.go
-2024/10/27 20:38:57 INFO file does not have a matched header path=main.go
-2024/10/27 20:38:57 INFO file does not have a matched header path=dirB\dirC\fileC.go
-2024/10/27 20:38:57 INFO Summary matched=2 mismatched=2 skipped=1 failed=0
+2024/11/24 19:24:29 WARN file does not have a matched header path=dirB\dirC\fileC.go
+2024/11/24 19:24:29 WARN file does not have a matched header path=main.go
+[NWA SUMMARY] matched=2 mismatched=2 skipped=1 failed=0
+```
+
+Verbose mode:
+
+```txt
+2024/11/24 19:24:35 INFO skip file path=README.md
+2024/11/24 19:24:35 INFO file has a matched header path=dirA\fileA.go
+2024/11/24 19:24:35 WARN file does not have a matched header path=dirB\dirC\fileC.go
+2024/11/24 19:24:35 WARN file does not have a matched header path=main.go
+2024/11/24 19:24:35 INFO file has a matched header path=dirB\fileB.go
+[NWA SUMMARY] matched=2 mismatched=2 skipped=1 failed=0
 ```
 
 ### Remove - Remove licenses headers of files
