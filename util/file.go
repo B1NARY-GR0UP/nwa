@@ -123,8 +123,7 @@ func prepareCheck(path string, header []byte, fuzzy bool) func() {
 			return
 		}
 		if isGenerated(content) {
-			counter.failed++
-			slog.Warn("file is generated", slog.String("path", path))
+			slog.Warn("file is generated, won't check", slog.String("path", path))
 			return
 		}
 
