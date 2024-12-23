@@ -44,7 +44,7 @@ nwa:
   license: "apache"
   spdxids: ""
   mute: false
-  path: ["server", "client", "pkg"]
+  path: ["server/**", "client/**", "pkg/**"]
   skip: ["**.py"]
   tmpl: "nwa.txt"
 `,

@@ -24,7 +24,7 @@ var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "check license headers of files",
 	Long: `Common Command | Check license headers of files
-EXAMPLE: nwa check -t tmpl.txt .
+EXAMPLE: nwa check -t tmpl.txt "src/**"
 NOTE: Do not use --mute (-m) flag with the command`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),

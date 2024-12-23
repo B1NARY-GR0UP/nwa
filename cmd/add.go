@@ -24,7 +24,7 @@ var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "add license headers to files",
 	Long: `Common Command | Add license headers to files
-EXAMPLE: nwa add -l apache -c Lorain -m .`,
+EXAMPLE: nwa add -l apache -c Lorain -m "**/*.go"`,
 	GroupID: util.Common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
