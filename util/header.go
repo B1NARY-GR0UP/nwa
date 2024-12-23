@@ -68,9 +68,9 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 	case ".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php":
 		header = doGenerate(tmpl, "/*", " * ", " */")
 		put(header, []string{".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php"})
-	case ".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts":
+	case ".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts", ".cts", ".mts":
 		header = doGenerate(tmpl, "/**", " * ", " */")
-		put(header, []string{".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts"})
+		put(header, []string{".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts", ".cts", ".mts"})
 	case ".cc", ".cpp", ".cs", ".go", ".hcl", ".hh", ".hpp", ".m", ".mm", ".proto", ".rs", ".swift", ".dart", ".groovy", ".v", ".sv":
 		header = doGenerate(tmpl, "", "// ", "")
 		put(header, []string{".cc", ".cpp", ".cs", ".go", ".hcl", ".hh", ".hpp", ".m", ".mm", ".proto", ".rs", ".swift", ".dart", ".groovy", ".v", ".sv"})
