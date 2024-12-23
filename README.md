@@ -12,6 +12,8 @@ go install github.com/B1NARY-GR0UP/nwa@latest
 
 Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment) section.
 
+Or [use NWA in CI](#used-in-ci).
+
 ## Usage
 
 - **[Flags](#flags)**: Use flags to customize the behavior of NWA
@@ -63,6 +65,7 @@ Use "nwa [command] --help" for more information about a command.
 | -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                                                                       |
 | -f    | --fuzzy     | `false` (unspecified)              | `nwa check` will ignore differences in the **year** within the license header                                  |
 | -h    | --help      | null                               | help for command                                                                                               |
+| -v    | --version   | null                               | vision of NWA                                                                                                  |
 
 ### DoubleStar(**) Patterns
 
@@ -342,10 +345,10 @@ docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LL
 
 When there are **mismatched** or **failed** entries in the result of `nwa check`, `nwa` will return a non-zero exit code, causing the CI to fail.
 
-You may refer to the other commands or flags introduced in the "Usage" section for optimization. 
+You may refer to the other commands or flags introduced in the [Usage](#usage) section for optimization. 
 
 ```yaml
-name: Pull Request Check
+name: License Header Check
 
 on:
   push:
