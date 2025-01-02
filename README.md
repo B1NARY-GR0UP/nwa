@@ -65,7 +65,6 @@ Use "nwa [command] --help" for more information about a command.
 | -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                                                                       |
 | -f    | --fuzzy     | `false` (unspecified)              | `nwa check` will ignore differences in the **year** within the license header                                  |
 | -h    | --help      | null                               | help for command                                                                                               |
-| -v    | --version   | null                               | vision of NWA                                                                                                  |
 
 ### DoubleStar(**) Patterns
 
@@ -371,7 +370,7 @@ jobs:
         run: go install github.com/B1NARY-GR0UP/nwa@latest
 
       - name: Run License Header Check
-        run: nwa check -c "BINARY Members" -l apache "**/*.go"
+        run: nwa check -c "BINARY Members" -f -l apache "**/*.go"
 ```
 
 ## Blogs
