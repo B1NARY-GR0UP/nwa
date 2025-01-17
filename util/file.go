@@ -27,11 +27,22 @@ import (
 )
 
 // lock-free because of serial
+//
+// Add, Update, Remove:
+// - modified
+// - skipped
+// - failed
+//
+// Check:
+// - matched
+// - mismatched
+// - skipped
+// - failed
 var counter = struct {
-	modified   int
-	skipped    int
 	matched    int
 	mismatched int
+	modified   int
+	skipped    int
 	failed     int
 }{}
 
