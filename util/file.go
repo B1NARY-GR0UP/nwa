@@ -31,24 +31,28 @@ import (
 // lock-free because of serial
 //
 // Add, Update, Remove:
+// - scanned
 // - modified
 // - skipped
 // - failed
 //
 // Check:
+// - scanned
 // - matched
 // - mismatched
 // - skipped
 // - failed
 var counter = struct {
-	matched    int
-	mismatched int
-	modified   int
-	skipped    int
-	failed     int
+	scanned    int // files have been read
+	matched    int // files license headers matched as required
+	mismatched int // files license headers do not match as required
+	modified   int // files have been modified (e.g. add, update, remove license header)
+	skipped    int // file paths match the skip pattern
+	failed     int // unexpected error occurred
 }{}
 
 func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
+	// TODO: add doc notes for walkDir started from root (.)
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
@@ -135,6 +139,9 @@ func prepareCheck(path string, header []byte, fuzzy bool) func() {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+
+		counter.scanned++
+
 		if isGenerated(content) {
 			slog.Warn("file is generated, won't check", slog.String("path", path))
 			return
@@ -168,11 +175,15 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte) func() {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+
+		counter.scanned++
+
 		if !hasHeader(content) || isGenerated(content) {
 			counter.failed++
 			slog.Warn("file does not have a header or is generated", slog.String("path", path))
 			return
 		}
+
 		// get the first line of the special file
 		line := matchShebang(content)
 		file, err := os.Open(path)
@@ -219,11 +230,15 @@ func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+
+		counter.scanned++
+
 		if isGenerated(content) {
 			counter.failed++
 			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
+
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		if idx == -1 {
@@ -231,6 +246,7 @@ func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
 			slog.Warn("file does not have a matched header", slog.String("path", path))
 			return
 		}
+
 		// remove the header of the file
 		content = append(content[:idx], content[idx+len(header):]...)
 		// modify the file
@@ -253,6 +269,9 @@ func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+
+		counter.scanned++
+
 		// TODO: split hasHeader and isGenerated
 		// TODO: do not count hasHeader and isGenerated as failed
 		if hasHeader(content) || isGenerated(content) {
@@ -260,6 +279,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 			slog.Warn("file already has a header or is generated", slog.String("path", path))
 			return
 		}
+
 		// get the first line of the special file
 		line := matchShebang(content)
 		// assemble license header and modify the file
