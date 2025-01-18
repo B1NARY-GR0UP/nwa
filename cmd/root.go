@@ -28,13 +28,13 @@ import (
 
 const (
 	Name    = "nwa"
-	Version = "v0.4.3"
+	Version = "v0.5.0"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   Name,
-	Short: "A More Powerful License Header Management Tool",
+	Short: "A Simple Yet Powerful Tool for License Header Management",
 	Long: `
 ███╗   ██╗██╗    ██╗ █████╗ 
 ████╗  ██║██║    ██║██╔══██╗
