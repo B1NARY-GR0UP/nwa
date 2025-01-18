@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/B1NARY-GR0UP/nwa/util"
+	"github.com/B1NARY-GR0UP/nwa/internal"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -48,7 +48,7 @@ nwa:
   skip: ["**.py"]
   tmpl: "nwa.txt"
 `,
-	GroupID: util.Config,
+	GroupID: _config,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := defaultConfig.readInConfig(args[0]); err != nil {
@@ -61,7 +61,7 @@ nwa:
 		}
 		// mute has higher priority
 		if defaultConfig.Nwa.Mute {
-			slog.SetLogLoggerLevel(util.LevelMute)
+			slog.SetLogLoggerLevel(_levelMute)
 		}
 
 		// validate skip pattern
@@ -87,11 +87,11 @@ nwa:
 			rawTmpl = true
 		}
 		if defaultConfig.Nwa.Tmpl == "" {
-			tmpl, err := util.MatchTmpl(defaultConfig.Nwa.License, defaultConfig.Nwa.SPDXIDs != "")
+			tmpl, err := internal.MatchTmpl(defaultConfig.Nwa.License, defaultConfig.Nwa.SPDXIDs != "")
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			tmplData := &util.TmplData{
+			tmplData := &internal.TmplData{
 				Holder:  defaultConfig.Nwa.Holder,
 				Year:    defaultConfig.Nwa.Year,
 				SPDXIDs: defaultConfig.Nwa.SPDXIDs,
@@ -101,7 +101,7 @@ nwa:
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			util.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, internal.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
 		} else {
 			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
 			if err != nil {
@@ -111,9 +111,9 @@ nwa:
 			if rawTmpl {
 				_, _ = fmt.Fprintln(buf)
 			}
-			util.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), internal.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
 		}
-		util.ExecuteTasks(util.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Mute)
+		internal.ExecuteTasks(internal.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Mute)
 	},
 }
 

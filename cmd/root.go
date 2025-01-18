@@ -21,19 +21,19 @@ import (
 	"os"
 	"time"
 
-	"github.com/B1NARY-GR0UP/nwa/util"
+	"github.com/B1NARY-GR0UP/nwa/internal"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/spf13/cobra"
 )
 
 const (
-	name    = "nwa"
-	version = "v0.4.3"
+	Name    = "nwa"
+	Version = "v0.4.3"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   name,
+	Use:   Name,
 	Short: "A More Powerful License Header Management Tool",
 	Long: `
 ███╗   ██╗██╗    ██╗ █████╗ 
@@ -43,8 +43,10 @@ var rootCmd = &cobra.Command{
 ██║ ╚████║╚███╔███╔╝██║  ██║
 ╚═╝  ╚═══╝ ╚══╝╚══╝ ╚═╝  ╚═╝
 `,
-	Version: version,
+	Version: Version,
 }
+
+const _levelMute = 12
 
 // Execute executes the root command
 func Execute() {
@@ -54,13 +56,18 @@ func Execute() {
 	}
 }
 
+const (
+	_common = "common"
+	_config = "config"
+)
+
 func init() {
 	rootCmd.SetVersionTemplate("{{ .Version }}")
 	rootCmd.AddGroup(&cobra.Group{
-		ID:    util.Common,
+		ID:    _common,
 		Title: "Common Mode Commands:",
 	}, &cobra.Group{
-		ID:    util.Config,
+		ID:    _config,
 		Title: "Config Mode Commands:",
 	})
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
@@ -128,13 +135,13 @@ func setupConfigCmd(config *cobra.Command) {
 	rootCmd.AddCommand(config)
 }
 
-func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation util.Operation) {
+func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation internal.Operation) {
 	slog.SetLogLoggerLevel(slog.LevelWarn)
 	if flags.Verbose {
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
 	if flags.Mute {
-		slog.SetLogLoggerLevel(util.LevelMute)
+		slog.SetLogLoggerLevel(_levelMute)
 	}
 
 	// validate skip pattern
@@ -157,11 +164,11 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		rawTmpl = true
 	}
 	if flags.Tmpl == "" {
-		tmpl, err := util.MatchTmpl(flags.License, flags.SPDXIDs != "")
+		tmpl, err := internal.MatchTmpl(flags.License, flags.SPDXIDs != "")
 		if err != nil {
 			cobra.CheckErr(err)
 		}
-		tmplData := &util.TmplData{
+		tmplData := &internal.TmplData{
 			Holder:  flags.Holder,
 			Year:    flags.Year,
 			SPDXIDs: flags.SPDXIDs,
@@ -170,7 +177,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		if err != nil {
 			cobra.CheckErr(err)
 		}
-		util.PrepareTasks(args, renderedTmpl, operation, flags.Skip, rawTmpl, flags.Fuzzy)
+		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, rawTmpl, flags.Fuzzy)
 	} else {
 		content, err := os.ReadFile(flags.Tmpl)
 		if err != nil {
@@ -180,7 +187,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		if rawTmpl {
 			_, _ = fmt.Fprintln(buf)
 		}
-		util.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, rawTmpl, flags.Fuzzy)
+		internal.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, rawTmpl, flags.Fuzzy)
 	}
-	util.ExecuteTasks(operation, flags.Mute)
+	internal.ExecuteTasks(operation, flags.Mute)
 }

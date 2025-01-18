@@ -29,7 +29,7 @@
 // This file may have been modified by BINARY Members. All BINARY
 // Modifications are Copyright 2023 BINARY Members.
 
-package util
+package internal
 
 import (
 	"bufio"
@@ -106,7 +106,6 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 }
 
 func doGenerate(tmpl []byte, top, mid, bot string) []byte {
-	// TODO: optimize use deep copy?
 	t := bytes.NewBuffer(tmpl)
 	buf := bytes.NewBuffer(nil)
 	if top != "" {

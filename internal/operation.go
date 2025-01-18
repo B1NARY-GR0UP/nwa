@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package internal
 
 import (
 	"bufio"
@@ -26,7 +26,16 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-// TODO: refactor
+type Operation string
+
+const (
+	Add    Operation = "add"
+	Update Operation = "update"
+	Remove Operation = "remove"
+	Check  Operation = "check"
+)
+
+const _root = "."
 
 // lock-free because of serial
 //
@@ -99,28 +108,28 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 		// submit task
 		switch operation {
 		case Add:
-			wg.Add(1)
+			taskWG.Add(1)
 			go func() {
-				defer wg.Done()
-				taskC <- prepareAdd(path, d, header)
+				defer taskWG.Done()
+				taskC <- operationAdd(path, d, header)
 			}()
 		case Update:
-			wg.Add(1)
+			taskWG.Add(1)
 			go func() {
-				defer wg.Done()
-				taskC <- prepareUpdate(path, d, header)
+				defer taskWG.Done()
+				taskC <- operationUpdate(path, d, header)
 			}()
 		case Remove:
-			wg.Add(1)
+			taskWG.Add(1)
 			go func() {
-				defer wg.Done()
-				taskC <- prepareRemove(path, d, header)
+				defer taskWG.Done()
+				taskC <- operationRemove(path, d, header)
 			}()
 		case Check:
-			wg.Add(1)
+			taskWG.Add(1)
 			go func() {
-				defer wg.Done()
-				taskC <- prepareCheck(path, header, fuzzy)
+				defer taskWG.Done()
+				taskC <- operationCheck(path, header, fuzzy)
 			}()
 		default:
 			slog.Warn("not a valid operation")
@@ -131,7 +140,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 	}
 }
 
-func prepareCheck(path string, header []byte, fuzzy bool) func() {
+func operationCheck(path string, header []byte, fuzzy bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -167,7 +176,7 @@ func prepareCheck(path string, header []byte, fuzzy bool) func() {
 	}
 }
 
-func prepareUpdate(path string, d fs.DirEntry, header []byte) func() {
+func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -226,7 +235,7 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte) func() {
 	}
 }
 
-func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
+func operationRemove(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -264,7 +273,7 @@ func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
 	}
 }
 
-func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
+func operationAdd(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {

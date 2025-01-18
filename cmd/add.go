@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"github.com/B1NARY-GR0UP/nwa/util"
+	"github.com/B1NARY-GR0UP/nwa/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -25,10 +25,10 @@ var addCmd = &cobra.Command{
 	Short: "add license headers to files",
 	Long: `Common Command | Add license headers to files
 EXAMPLE: nwa add -l apache -c Lorain -m "**/*.go"`,
-	GroupID: util.Common,
+	GroupID: _common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		executeCommonCmd(cmd, args, defaultCommonFlags, util.Add)
+		executeCommonCmd(cmd, args, defaultCommonFlags, internal.Add)
 	},
 }
 

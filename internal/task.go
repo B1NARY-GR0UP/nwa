@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package internal
 
 import (
 	"fmt"
@@ -23,9 +23,10 @@ import (
 
 const _size = 1000
 
-var taskC = make(chan func(), _size)
-
-var wg sync.WaitGroup
+var (
+	taskC  = make(chan func(), _size)
+	taskWG sync.WaitGroup
+)
 
 // PrepareTasks walk through the dir and add tasks into task chan
 func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
@@ -33,7 +34,7 @@ func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []stri
 		walkDir(path, tmpl, operation, skips, raw, fuzzy)
 	}
 	go func() {
-		wg.Wait()
+		taskWG.Wait()
 		close(taskC)
 	}()
 }
