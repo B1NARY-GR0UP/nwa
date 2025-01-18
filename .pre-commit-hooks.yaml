@@ -2,4 +2,4 @@
     name: license header management
     description: add, check, update and remove license header
     entry: nwa
-    language: go
+    language: golang
