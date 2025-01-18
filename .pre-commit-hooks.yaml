@@ -3,3 +3,8 @@
     description: add, check, update and remove license header
     entry: nwa
     language: golang
+-   id: nwa-check
+    name: license header check
+    description: check license header
+    entry: nwa check
+    language: golang

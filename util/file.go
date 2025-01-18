@@ -254,7 +254,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 			return
 		}
 		// TODO: split hasHeader and isGenerated
-		// TODO: do not count isGenerated as failed
+		// TODO: do not count hasHeader and isGenerated as failed
 		if hasHeader(content) || isGenerated(content) {
 			counter.failed++
 			slog.Warn("file already has a header or is generated", slog.String("path", path))
