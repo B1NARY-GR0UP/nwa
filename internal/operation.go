@@ -61,7 +61,6 @@ var counter = struct {
 }{}
 
 func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
-	// TODO: add doc notes for walkDir started from root (.)
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++

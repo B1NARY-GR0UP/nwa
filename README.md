@@ -1,6 +1,6 @@
 ![NWA](images/NWA.png)
 
-A More Powerful License Header Management Tool
+A Simple Yet Powerful Tool for License Header Management: Effortlessly Add, Check, Update, and Remove License Headers
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
 
@@ -12,7 +12,10 @@ go install github.com/B1NARY-GR0UP/nwa@latest
 
 Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment) section.
 
-Or [use NWA in CI](#used-in-ci).
+Or 
+
+- [Use NWA in CI](#used-in-ci).
+- [Use NWA in pre-commit](#used-in-pre-commit).
 
 ## Usage
 
@@ -25,7 +28,8 @@ Or [use NWA in CI](#used-in-ci).
 - **[Config](#config-mode)**: Edit files according to the configuration file
 - **[Supported Licence Templates](#supported-licence-templates)**: Use built-in license templates or use custom templates 
 - **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those do not have a Go environment
-- **[Used In CI](#used-in-ci)**: Use NWA in CI
+- **[Used in CI](#used-in-ci)**: Use NWA in CI
+- **[Used in pre-commit](#used-in-pre-commit)**: Use NWA in pre-commit
 
 ```shell
 Usage:         
@@ -74,6 +78,8 @@ However, some shells may interpret these patterns (e.g. `**`), which could cause
 
 The best way to resolve this issue is to **wrap your paths in double quotes (`""`)**.
 
+**NOTE: Since NWA always operates from the current directory (`.`), parent directories are not visible to NWA. Make sure not to use paths like `../path/to/file`.**
+
 ### Add - Add license headers to files
 
 - **Usage**
@@ -109,8 +115,6 @@ NWA will also output logs to inform you if any files already have a license head
 ```shell
 nwa check [flags] path...
 ```
-
-**NOTE: Do not use --mute (-m) flag with check command.**
 
 - **Example**
 
@@ -371,6 +375,41 @@ jobs:
 
       - name: Run License Header Check
         run: nwa check -c "BINARY Members" -f -l apache "**/*.go"
+```
+
+### Used in pre-commit
+
+Thanks to the support of the [pre-commit](https://pre-commit.com/) tool, NWA can be used as a pre-commit hook.
+
+Currently, NWA offers two hooks, `nwa-check` and `nwa`, as specified in [.pre-commit-hooks.yaml](./.pre-commit-hooks.yaml). 
+You can use them by configuring the [.pre-commit-config.yaml](https://pre-commit.com/#adding-pre-commit-plugins-to-your-project) file in your Git repository.
+
+Below are examples of `.pre-commit-config.yaml` file using the `nwa-check` and `nwa` hooks, which you can modify according to your needs:
+
+**NOTE: A Golang runtime environment is required.**
+
+- **License Header Check Example**
+
+```yaml
+repos:
+  -   repo: https://github.com/B1NARY-GR0UP/nwa
+      rev: v0.5.0
+      hooks:
+        -   id: nwa-check
+            args: ["-c", "BINARY Members", "-f", "-l", "apache"]
+```
+
+- **License Header Add Example**
+
+**NOTE: `pre-commit` considers a hook to have failed if it modifies any files. Therefore, after using `add`, `update`, or `remove`, you may need to run `git add` again and commit the updated files.**
+
+```yaml
+repos:
+  -   repo: https://github.com/B1NARY-GR0UP/nwa
+      rev: v0.5.0
+      hooks:
+        -   id: nwa
+            args: ["add", "-c", "BINARY Members", "-l", "apache"]
 ```
 
 ## Blogs
