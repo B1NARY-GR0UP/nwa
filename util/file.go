@@ -26,6 +26,8 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
+// TODO: refactor
+
 // lock-free because of serial
 //
 // Add, Update, Remove:
@@ -251,6 +253,8 @@ func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+		// TODO: split hasHeader and isGenerated
+		// TODO: do not count isGenerated as failed
 		if hasHeader(content) || isGenerated(content) {
 			counter.failed++
 			slog.Warn("file already has a header or is generated", slog.String("path", path))
