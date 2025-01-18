@@ -179,7 +179,6 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte) func() {
 		counter.scanned++
 
 		if !hasHeader(content) || isGenerated(content) {
-			counter.failed++
 			slog.Warn("file does not have a header or is generated", slog.String("path", path))
 			return
 		}
@@ -234,7 +233,6 @@ func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
 		counter.scanned++
 
 		if isGenerated(content) {
-			counter.failed++
 			slog.Warn("file is generated", slog.String("path", path))
 			return
 		}
@@ -273,9 +271,7 @@ func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 		counter.scanned++
 
 		// TODO: split hasHeader and isGenerated
-		// TODO: do not count hasHeader and isGenerated as failed
 		if hasHeader(content) || isGenerated(content) {
-			counter.failed++
 			slog.Warn("file already has a header or is generated", slog.String("path", path))
 			return
 		}
