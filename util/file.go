@@ -143,7 +143,7 @@ func prepareCheck(path string, header []byte, fuzzy bool) func() {
 		counter.scanned++
 
 		if isGenerated(content) {
-			slog.Warn("file is generated, won't check", slog.String("path", path))
+			slog.Warn("file is generated, won't be checked", slog.String("path", path))
 			return
 		}
 
@@ -178,8 +178,13 @@ func prepareUpdate(path string, d fs.DirEntry, header []byte) func() {
 
 		counter.scanned++
 
-		if !hasHeader(content) || isGenerated(content) {
-			slog.Warn("file does not have a header or is generated", slog.String("path", path))
+		// check generated first
+		if isGenerated(content) {
+			slog.Warn("file is generated, won't be modified", slog.String("path", path))
+			return
+		}
+		if !hasHeader(content) {
+			slog.Warn("file does not have a header", slog.String("path", path))
 			return
 		}
 
@@ -233,7 +238,7 @@ func prepareRemove(path string, d fs.DirEntry, header []byte) func() {
 		counter.scanned++
 
 		if isGenerated(content) {
-			slog.Warn("file is generated", slog.String("path", path))
+			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
 
@@ -270,9 +275,13 @@ func prepareAdd(path string, d fs.DirEntry, header []byte) func() {
 
 		counter.scanned++
 
-		// TODO: split hasHeader and isGenerated
-		if hasHeader(content) || isGenerated(content) {
-			slog.Warn("file already has a header or is generated", slog.String("path", path))
+		// check generated first
+		if isGenerated(content) {
+			slog.Warn("file is generated, won't be modified", slog.String("path", path))
+			return
+		}
+		if hasHeader(content) {
+			slog.Warn("file already has a header", slog.String("path", path))
 			return
 		}
 
