@@ -170,20 +170,22 @@ func matchShebang(b []byte) []byte {
 	return nil
 }
 
-func assemble(line, header, content []byte, isUpdate bool) []byte {
-	if line != nil {
-		// line, content
-		// get content exclude the first line
+func assemble(shebang, header, content []byte, isUpdate bool) []byte {
+	if shebang != nil {
 		if !isUpdate {
-			content = content[len(line):]
+			// get content exclude the shebang
+			content = content[len(shebang):]
 		}
-		// add \n if the first line do not end with \n
-		if line[len(line)-1] != '\n' {
-			line = append(line, '\n')
+
+		// add \n if the shebang do not end with \n
+		if shebang[len(shebang)-1] != '\n' {
+			shebang = append(shebang, '\n')
 		}
-		header = append(line, header...)
+		header = append(shebang, header...)
 	}
-	// line, header, content
+	// 1. shebang
+	// 2. header
+	// 3. content
 	header = append(header, content...)
 	return header
 }

@@ -196,14 +196,15 @@ func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 			return
 		}
 
-		// get the first line of the special file
-		line := matchShebang(content)
+		// get the shebang of the special file
+		shebang := matchShebang(content)
 		file, err := os.Open(path)
 		if err != nil {
 			counter.failed++
 			slog.Error("open file error", slog.String("path", path), slog.String("err", err.Error()))
 			return
 		}
+
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			l := scanner.Bytes()
@@ -211,6 +212,7 @@ func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 				break
 			}
 		}
+
 		afterBlankLine := make([]byte, 0)
 		// NOTE: scanner will not scan from the beginning
 		for scanner.Scan() {
@@ -221,8 +223,10 @@ func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 		if err != nil {
 			slog.Error("file close error")
 		}
+
 		// assemble license header and modify the file
-		b := assemble(line, header, afterBlankLine, true)
+		b := assemble(shebang, header, afterBlankLine, true)
+
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			counter.failed++
@@ -293,10 +297,11 @@ func operationAdd(path string, d fs.DirEntry, header []byte) func() {
 			return
 		}
 
-		// get the first line of the special file
-		line := matchShebang(content)
+		// get the shebang of the special file
+		shebang := matchShebang(content)
 		// assemble license header and modify the file
-		b := assemble(line, header, content, false)
+		b := assemble(shebang, header, content, false)
+
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			counter.failed++
