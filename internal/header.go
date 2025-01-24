@@ -86,9 +86,9 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 	case ".hs", ".sql", ".sdl":
 		header = doGenerate(tmpl, "", "-- ", "")
 		put(header, []string{".hs", ".sql", ".sdl"})
-	case ".html", ".xml", ".vue", ".wxi", ".wxl", ".wxs":
+	case ".html", ".markdown", ".md", ".xml", ".vue", ".wxi", ".wxl", ".wxs":
 		header = doGenerate(tmpl, "<!--", " ", "-->")
-		put(header, []string{".html", ".xml", ".vue", ".wxi", ".wxl", ".wxs"})
+		put(header, []string{".html", ".markdown", ".md", ".xml", ".vue", ".wxi", ".wxl", ".wxs"})
 	case ".j2", ".twig":
 		header = doGenerate(tmpl, "{#", "", "#}")
 		put(header, []string{".j2", ".twig"})
