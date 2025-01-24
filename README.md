@@ -90,10 +90,10 @@ nwa add [flags] path...
 - **Example**
 
 ```shell
-nwa add -l apache -c "RHINE LAB.LLC." -y 2077 "server/**" "utils/bufferpool/**"
+nwa add -l apache -c "RHINE LAB.LLC." -y 2077 "src/**/*.go" "pkg/pool/**"
 ```
 
-The command in the example above **adds** a license header to all files under the folders with relative paths `server` and `utils/bufferpool`:
+The command in the example above **adds** a license header to all Go files under the folder with the relative path `src` and to all files under the folder with the relative path `pkg/pool`:
 
 - License type: `Apache 2.0`
 - Copyright holder: `RHINE LAB.LLC.`
@@ -119,17 +119,17 @@ nwa check [flags] path...
 - **Example**
 
 ```shell
-nwa check --tmpl tmpl.txt "client/**"
+nwa check --tmpl tmpl.txt "**/*.py"
 ```
 
-The command in the example above **checks** whether the license header of all files under the folder with the relative path `client` match the content specified in the `tmpl.txt` template file.
+The command in the example above **checks** whether the license header of all Python files matches the content specified in the `tmpl.txt` template file.
 
 After the check is complete, NWA will output the results as logs. A sample output is as follows:
 
 ```txt
 2024/11/24 19:24:29 WARN file does not have a matched header path=dirB\dirC\fileC.go
 2024/11/24 19:24:29 WARN file does not have a matched header path=main.go
-[NWA SUMMARY] matched=2 mismatched=2 skipped=1 failed=0
+[NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
 
 Verbose mode:
@@ -140,7 +140,7 @@ Verbose mode:
 2024/11/24 19:24:35 WARN file does not have a matched header path=dirB\dirC\fileC.go
 2024/11/24 19:24:35 WARN file does not have a matched header path=main.go
 2024/11/24 19:24:35 INFO file has a matched header path=dirB\fileB.go
-[NWA SUMMARY] matched=2 mismatched=2 skipped=1 failed=0
+[NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
 
 ### Remove - Remove licenses headers of files
