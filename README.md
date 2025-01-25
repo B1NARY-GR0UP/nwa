@@ -193,9 +193,10 @@ regardless of the previous license header.
 
 - **Flags**
 
-| Short | Long        | Default                            | Description     |
-|-------|-------------|------------------------------------|-----------------|
-| -h    | --help      | null                               | help for config |
+| Short | Long        | Default                            | Description        |
+|-------|-------------|------------------------------------|--------------------|
+| -c    | --command   | add                                | command to execute |
+| -h    | --help      | null                               | help for config    |
 
 **NOTE: If some configuration are not configured, the default configuration will be used.**
 
