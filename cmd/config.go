@@ -36,7 +36,7 @@ EXAMPLE: nwa config config.yaml -c check
 NOTE: This command only supports the command flag;
 You can only specify the path of the configuration file, and everything depends on the configuration file;
 If some configuration are not configured, the default configuration will be used;
-The command can be overwritten on the command line
+The command can be set on the command line
 SAMPLE CONFIGURATION FILE(YAML):
 nwa:
   cmd: "add"
