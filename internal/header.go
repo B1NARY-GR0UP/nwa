@@ -74,9 +74,9 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 	case ".cc", ".cpp", ".cs", ".go", ".hcl", ".hh", ".hpp", ".m", ".mm", ".proto", ".rs", ".swift", ".dart", ".groovy", ".v", ".sv":
 		header = doGenerate(tmpl, "", "// ", "")
 		put(header, []string{".cc", ".cpp", ".cs", ".go", ".hcl", ".hh", ".hpp", ".m", ".mm", ".proto", ".rs", ".swift", ".dart", ".groovy", ".v", ".sv"})
-	case ".py", ".sh", ".yaml", ".yml", "makefile", ".mk", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml":
+	case ".py", ".sh", ".yaml", ".yml", "makefile", ".mk", "containerfile", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml":
 		header = doGenerate(tmpl, "", "# ", "")
-		put(header, []string{".py", ".sh", ".yaml", ".yml", "makefile", ".mk", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml"})
+		put(header, []string{".py", ".sh", ".yaml", ".yml", "makefile", ".mk", "containerfile", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml"})
 	case ".el", ".lisp":
 		header = doGenerate(tmpl, "", ";; ", "")
 		put(header, []string{".el", ".lisp"})
