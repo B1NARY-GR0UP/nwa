@@ -24,7 +24,9 @@ var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update license headers of files",
 	Long: `Common Command | Update license headers of files
+
 EXAMPLE: nwa update -l mit -c Anmory "**/*.py"
+
 NOTE: Update identifies the content before the first blank line as a license header;
 If your file does not meet the requirements, please use remove + add`,
 	GroupID: _common,

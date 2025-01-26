@@ -132,8 +132,9 @@ func setupCommonCmd(common *cobra.Command) {
 }
 
 func setupConfigCmd(config *cobra.Command) {
-	config.Flags().StringVarP(&defaultConfig.Nwa.Cmd, "command", "c", defaultConfig.Nwa.Cmd, "command")
 	rootCmd.AddCommand(config)
+
+	config.Flags().StringVarP(&defaultConfigFlags.Command, "command", "c", defaultConfigFlags.Command, "command to execute")
 }
 
 func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation internal.Operation) {

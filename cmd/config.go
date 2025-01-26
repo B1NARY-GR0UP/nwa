@@ -32,28 +32,41 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "edit the files according to the configuration file",
 	Long: `Config Command | Edit files according to the configuration file
-EXAMPLE: nwa config config.yaml -c check
-NOTE: This command only supports the command flag;
-You can only specify the path of the configuration file, and everything depends on the configuration file;
-If some configuration are not configured, the default configuration will be used;
-The command can be set on the command line
-SAMPLE CONFIGURATION FILE(YAML):
+
+EXAMPLE: nwa config -c check config.yaml
+
+NOTE: This command only supports the --command (-c) flag;
+You can only specify the path of the configuration file, and everything depends on the configuration file.
+If some configuration are not configured, the default configuration will be used.
+
+The command can also be set on the command line.
+command priority:
+1. --command (-c) flag
+2. value configured for cmd in the configuration file
+3. default value of cmd in the configuration file (add)
+
+SAMPLE CONFIGURATION FILE (YAML):
 nwa:
-  cmd: "add"
   holder: "RHINE LAB.LLC."
   year: "2077"
   license: "apache"
-  spdxids: ""
-  mute: false
-  path: ["server/**", "client/**", "pkg/**"]
-  skip: ["**.py"]
-  tmpl: "nwa.txt"
+  path: ["server/**/*.go", "client/**/*.go", "pkg/**"]
+  skip: ["**/*.py"]
 `,
 	GroupID: _config,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := defaultConfig.readInConfig(args[0]); err != nil {
 			cobra.CheckErr(err)
+		}
+
+		// command priority:
+		// 1. --command (-c) flag
+		// 2. value configured for `cmd` in the configuration file
+		// 3. default value of `cmd` in the configuration file (add)
+		operation := internal.Operation(defaultConfig.Nwa.Cmd)
+		if defaultConfigFlags.Command != "" {
+			operation = internal.Operation(defaultConfigFlags.Command)
 		}
 
 		slog.SetLogLoggerLevel(slog.LevelWarn)
@@ -102,7 +115,7 @@ nwa:
 				cobra.CheckErr(err)
 			}
 			// determine files need to be added
-			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, internal.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
 		} else {
 			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
 			if err != nil {
@@ -112,14 +125,22 @@ nwa:
 			if rawTmpl {
 				_, _ = fmt.Fprintln(buf)
 			}
-			internal.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), internal.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), operation, defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
 		}
-		internal.ExecuteTasks(internal.Operation(defaultConfig.Nwa.Cmd), defaultConfig.Nwa.Mute)
+		internal.ExecuteTasks(operation, defaultConfig.Nwa.Mute)
 	},
 }
 
 func init() {
 	setupConfigCmd(configCmd)
+}
+
+type ConfigFlags struct {
+	Command string
+}
+
+var defaultConfigFlags = ConfigFlags{
+	Command: "", // empty if user not specified
 }
 
 type Config struct {
