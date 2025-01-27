@@ -54,9 +54,9 @@ nwa:
   skip: ["**/*.py"]
 `,
 	GroupID: _config,
-	Args:    cobra.ExactArgs(1),
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := defaultConfig.readInConfig(args[0]); err != nil {
+		if err := defaultConfig.readInConfig(args); err != nil {
 			cobra.CheckErr(err)
 		}
 
@@ -177,8 +177,16 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	RawTmpl: "",
 }}
 
-func (cfg *Config) readInConfig(path string) error {
-	viper.SetConfigFile(path)
+func (cfg *Config) readInConfig(args []string) error {
+	if len(args) == 0 {
+		// default configuration path: ./.nwa-config.yaml
+		viper.SetConfigName(".nwa-config")
+		viper.SetConfigType("yaml")
+		viper.AddConfigPath(".")
+	} else {
+		viper.SetConfigFile(args[0])
+	}
+
 	if err := viper.ReadInConfig(); err != nil {
 		return err
 	}
