@@ -203,18 +203,21 @@ regardless of the previous license header.
 - **Usage**
 
 ```shell
-nwa config [flags] path
+nwa config [flags] [path]
 ```
 
-**NOTE: Path is the configuration file path.**
+**NOTE: Path is the configuration file path. If not specified, `.nwa-config.yaml` will be used as the default configuration file path.**
 
 - **Example**
 
 ```shell
-nwa config config.yaml
+nwa config -c check
 ```
 
-The command in the example above reads the `config.yaml` **configuration file** and edits the license header of the specified files according to its content. The structure of the configuration file will be provided below.
+The command in the example above reads the `.nwa-config.yaml` configuration file in the current directory 
+and checks whether the license headers of the specified files meet the requirements based on its content. 
+
+The structure of the configuration file will be provided below.
 
 - **Sample Configuration file**
 
@@ -222,14 +225,14 @@ The command in the example above reads the `config.yaml` **configuration file** 
 
 ```yaml
 nwa:
-  cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update" 
+  cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update", can be overwritten by --command (-c) flag
   holder: "RHINE LAB.LLC."          # Default: "<COPYRIGHT HOLDER>"
   year: "2077"                      # Default: Current Year
   license: "apache"                 # Default: "apache"
   spdxids: ""                       # Default: ""
   mute: false                       # Default: false (unspecified)
   verbose: false                    # Default: false (unspecified)
-  fuzzy: false                      # Default: false (unspecified)
+  fuzzy: false                      # Default: false (unspecified), only used for "check" command
   path: ["server/**", "example/**"] # Default: []
   skip: ["**.py"]                   # Default: []
   tmpl: "nwa.txt"                   # Default: ""                                                       

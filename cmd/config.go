@@ -33,14 +33,16 @@ var configCmd = &cobra.Command{
 	Short: "edit the files according to the configuration file",
 	Long: `Config Command | Edit files according to the configuration file
 
-EXAMPLE: nwa config -c check config.yaml
+EXAMPLE: nwa config -c check sample-config.yaml
 
-NOTE: This command only supports the --command (-c) flag;
-You can only specify the path of the configuration file, and everything depends on the configuration file.
-If some configuration are not configured, the default configuration will be used.
+NOTE: You can specify the path of the configuration file. 
+If not specified, .nwa-config.yaml will be used as the default configuration file path. 
+The behavior of NWA depends entirely on the configuration file. 
+If some configurations are not set, the default configurations will be used.  
 
-The command can also be set on the command line.
-command priority:
+The cmd field value can also be set by --command (-c) flag.
+
+Priority:
 1. --command (-c) flag
 2. value configured for cmd in the configuration file
 3. default value of cmd in the configuration file (add)
