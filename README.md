@@ -174,6 +174,13 @@ nwa update [flags] path...
 
 **NOTE: Update identifies the content before the first blank line as a license header; If your file does not meet the requirements, please use `remove` + `add` command.**
 
+> If your files use the following types of comment styles, the `update` command may not work properly (refer to [#18](https://github.com/B1NARY-GR0UP/nwa/issues/18)):
+> 
+> - `<!-- -->`: .html, .md, .vue, etc.
+> - `{# #}`: .j2, .twig, etc.
+> - `(** *)`: .ml, .mli, etc.
+>  
+> Please use the `remove` + `add` commands instead of the `update` command.
 
 - **Example**
 
@@ -296,7 +303,6 @@ nwa add --rawtmpl myrawtmpl.txt "**"
 `myrawtmpl.txt` is as follows:
 
 ```txt
-
 // Copyright 2077 RHINE LAB.LLC.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -310,7 +316,6 @@ nwa add --rawtmpl myrawtmpl.txt "**"
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 ```
 
 This command example uses the content in `myrawtmpl.txt` as the license header. NWA will **not** generate license headers with different comment types based on the file type **but** will instead add the content of `myrawtmpl.txt` directly to each file (include blank line).
