@@ -1,0 +1,24 @@
+name: License Header Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.23
+
+      - name: Install NWA
+        run: go install github.com/B1NARY-GR0UP/nwa@latest
+
+      - name: Run License Header Check
+        run: nwa check -c "BINARY Members" -s "internal/header.go" -f -V "**/*.go"
