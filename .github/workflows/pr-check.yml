@@ -11,15 +11,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.23
+
+      - name: Install NWA
+        run: go install github.com/B1NARY-GR0UP/nwa@latest
 
       - name: Build
         run: go build -v ./...
 
       - name: Test
         run: go test -v ./...
+
+      - name: License Header Check
+        run: nwa check -c "BINARY Members" -s "internal/header.go" -f -V "**/*.go"
