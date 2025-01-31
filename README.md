@@ -6,13 +6,24 @@ A Simple Yet Powerful Tool for License Header Management: Effortlessly Add, Chec
 
 ## Install
 
+### Homebrew
+
+```shell
+brew tap B1NARY-GR0UP/nwa
+brew install nwa
+```
+
+### Go
+
 ```shell
 go install github.com/B1NARY-GR0UP/nwa@latest
 ```
 
-Do not have a Go environment? Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment) section.
+### Docker
 
-Or 
+Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment) section.
+
+### Other
 
 - [Use NWA in CI](#used-in-ci).
 - [Use NWA in pre-commit](#used-in-pre-commit).
