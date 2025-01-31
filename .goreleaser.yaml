@@ -1,0 +1,52 @@
+version: 2
+
+project_name: nwa
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+
+archives:
+  - formats: [ 'tar.gz' ]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [ 'zip' ]
+
+checksum:
+  name_template: "checksums.txt"
+
+release:
+  name_template: "{{ .Version }} ({{ .Env.CURRENT_DATE }})"
+
+brews:
+  - description: "NWA - A More Powerful License Header Management Tool"
+    homepage: https://github.com/B1NARY-GR0UP/nwa
+    repository:
+      owner: B1NARY-GR0UP
+      name: homebrew-nwa
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    directory: Formula
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    license: Apache-2.0
+    install: |
+      bin.install "nwa"
+    test: |
+      system "#{bin}/nwa --version"
