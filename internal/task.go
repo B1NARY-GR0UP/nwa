@@ -16,7 +16,6 @@ package internal
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 	"sync"
 )
@@ -60,6 +59,6 @@ func ExecuteTasks(operation Operation, muteF bool) {
 			os.Exit(1)
 		}
 	default:
-		slog.Warn("not a valid operation")
+		panic("not a valid operation")
 	}
 }
