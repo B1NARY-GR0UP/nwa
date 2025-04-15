@@ -136,16 +136,21 @@ func hasHeader(b []byte) bool {
 	if len(b) < n {
 		n = len(b)
 	}
-	return bytes.Contains(bytes.ToLower(b[:n]), []byte("copyright")) ||
-		bytes.Contains(bytes.ToLower(b[:n]), []byte("mozilla public")) ||
-		bytes.Contains(bytes.ToLower(b[:n]), []byte("spdx-license-identifier"))
+
+	lowerHeader := bytes.ToLower(b[:n])
+
+	return bytes.Contains(lowerHeader, []byte("copyright")) ||
+		bytes.Contains(lowerHeader, []byte("©")) ||
+		bytes.Contains(lowerHeader, []byte("copr.")) ||
+		bytes.Contains(lowerHeader, []byte("mozilla public")) ||
+		bytes.Contains(lowerHeader, []byte("spdx-license-identifier"))
 }
 
 func matchShebang(b []byte) []byte {
 	var line []byte
 	fls := []string{
 		"#!",                       // shell script
-		"<?xml",                    // XML declaratioon
+		"<?xml",                    // XML declaration
 		"<!doctype",                // HTML doctype
 		"# encoding:",              // Ruby encoding
 		"# frozen_string_literal:", // Ruby interpreter instruction
