@@ -65,9 +65,9 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 		return h, nil
 	}
 	switch ext {
-	case ".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php":
+	case ".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php", ".thrift":
 		header = doGenerate(tmpl, "/*", " * ", " */")
-		put(header, []string{".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php"})
+		put(header, []string{".c", ".h", ".gv", ".java", ".scala", ".kt", ".kts", ".php", ".thrift"})
 	case ".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts", ".cts", ".mts":
 		header = doGenerate(tmpl, "/**", " * ", " */")
 		put(header, []string{".js", ".mjs", ".cjs", ".jsx", ".tsx", ".css", ".scss", ".sass", ".ts", ".cts", ".mts"})
