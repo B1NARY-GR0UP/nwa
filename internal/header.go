@@ -77,7 +77,7 @@ var (
 			top:  "",
 			mid:  "# ",
 			bot:  "",
-			exts: []string{".py", ".sh", ".yaml", ".yml", "makefile", ".mk", "containerfile", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml"},
+			exts: []string{".py", ".sh", ".yaml", ".yml", "makefile", ".mk", "containerfile", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml", ".nix"},
 		},
 		{
 			top:  "",
