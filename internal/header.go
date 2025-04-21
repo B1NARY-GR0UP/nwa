@@ -118,12 +118,6 @@ var (
 	}
 )
 
-func put(exts []string, header []byte) {
-	for _, ext := range exts {
-		cache[ext] = header
-	}
-}
-
 func generateHeader(path string, tmpl []byte) ([]byte, error) {
 	var header []byte
 
@@ -143,7 +137,7 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 		if slices.Contains(extMap.exts, ext) {
 			header = doGenerate(tmpl, extMap.top, extMap.mid, extMap.bot)
 			// cache generated header
-			put(extMap.exts, header)
+			cache[ext] = header
 			return header, nil
 		}
 	}
