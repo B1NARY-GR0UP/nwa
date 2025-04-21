@@ -14,7 +14,9 @@
 
 package internal
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestHasHeader(t *testing.T) {
 	tests := []struct {
