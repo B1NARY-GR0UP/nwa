@@ -209,6 +209,9 @@ func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 			slog.Error("file close error")
 		}
 
+		// add a blank line at the end of the header
+		header = append(header, '\n')
+
 		// assemble license header and modify the file
 		b := assemble(shebang, header, afterBlankLine, true)
 
@@ -244,6 +247,9 @@ func operationRemove(path string, d fs.DirEntry, header []byte) func() {
 		// standardize line separator
 		content = standardizeLineSeparator(content)
 		header = standardizeLineSeparator(header)
+
+		// add a blank line at the end of the header
+		header = append(header, '\n')
 
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
@@ -290,6 +296,10 @@ func operationAdd(path string, d fs.DirEntry, header []byte) func() {
 
 		// get the shebang of the special file
 		shebang := matchShebang(content)
+
+		// add a blank line at the end of the header
+		header = append(header, '\n')
+
 		// assemble license header and modify the file
 		b := assemble(shebang, header, content, false)
 

@@ -163,8 +163,6 @@ func doGenerate(tmpl []byte, top, mid, bot string) []byte {
 	if bot != "" {
 		_, _ = fmt.Fprintln(buf, bot)
 	}
-	// add blank line at the end
-	_, _ = fmt.Fprintln(buf)
 	return buf.Bytes()
 }
 
