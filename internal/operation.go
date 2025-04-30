@@ -136,6 +136,10 @@ func operationCheck(path string, header []byte, fuzzy bool) func() {
 			return
 		}
 
+		// standardize line separator
+		content = standardizeLineSeparator(content)
+		header = standardizeLineSeparator(header)
+
 		// fuzzy matching
 		if fuzzy {
 			header = removeYear(header)
@@ -305,6 +309,15 @@ func isSkip(path string, pattern []string) bool {
 		}
 	}
 	return false
+}
+
+// convert CR and CRLF line separator to LF
+func standardizeLineSeparator(b []byte) []byte {
+	// CRLF => LF
+	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+	// CR => LF
+	b = bytes.ReplaceAll(b, []byte("\r"), []byte("\n"))
+	return b
 }
 
 func removeYear(b []byte) []byte {
