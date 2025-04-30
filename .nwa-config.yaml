@@ -1,0 +1,10 @@
+nwa:
+  holder: BINARY Members
+  license: apache-2.0
+  verbose: true
+  fuzzy: true
+  skip:
+    - "internal/header.go"
+    - "testdata/**"
+  path:
+    - "**/*.go"
