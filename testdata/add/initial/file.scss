@@ -1,0 +1,17 @@
+$primary-color: #3498db;
+$font-stack: Helvetica, sans-serif;
+
+.hello-world {
+  color: $primary-color;
+  font-family: $font-stack;
+  text-align: center;
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+  }
+
+  p {
+    font-size: 1.2em;
+  }
+}

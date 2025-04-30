@@ -1,0 +1,7 @@
+hello:
+  world:
+    message: "Hello, World!"
+    author: "Example User"
+  configuration:
+    enabled: true
+    output: "console"

@@ -1,0 +1,15 @@
+module HelloWorld {
+    -- Define a simple type
+    type Greeting {
+        required property message -> str;
+        required property language -> str;
+    }
+
+    -- Create a hello world instance
+    function get_greeting() -> Greeting {
+        return Greeting {
+            message := "Hello, World!",
+            language := "English"
+        };
+    }
+}

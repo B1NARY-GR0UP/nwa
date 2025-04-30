@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+    <!-- String resources -->
+    <String Id="ApplicationName">Hello World</String>
+    <String Id="ManufacturerName">Example Company</String>
+    <String Id="WelcomeText">Welcome to the Hello World application!</String>
+    <String Id="DescriptionText">A simple hello world application.</String>
+</WixLocalization>

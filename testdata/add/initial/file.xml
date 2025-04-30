@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hello>
+    <message>Hello, World!</message>
+    <details>
+        <language>English</language>
+    </details>
+    <author>
+        <name>Example User</name>
+    </author>
+</hello>

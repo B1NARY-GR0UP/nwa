@@ -1,0 +1,13 @@
+title = "Hello World Example"
+
+[greeting]
+text = "Hello, World!"
+language = "English"
+
+[author]
+name = "Example User"
+role = "Developer"
+
+[dependencies]
+lib1 = "1.0.0"
+lib2 = "2.3.4"

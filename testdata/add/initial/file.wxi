@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!-- Define variables -->
+    <?define ProductName="Hello World" ?>
+    <?define ProductVersion="1.0.0.0" ?>
+
+    <!-- Define a component -->
+    <Fragment>
+        <ComponentGroup Id="HelloWorldComponents">
+            <Component Id="HelloWorldExecutable" Guid="*" Directory="INSTALLFOLDER">
+                <File Id="HelloExe" Source="hello.exe" KeyPath="yes" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Include>

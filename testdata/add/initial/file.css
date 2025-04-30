@@ -1,0 +1,12 @@
+.hello-world {
+    color: blue;
+    font-size: 24px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+#greeting {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+}

@@ -1,0 +1,6 @@
+digraph HelloWorld {
+    node [shape=box];
+    Hello -> World [label="says"];
+    World [style=filled, color=lightblue];
+    label = "Hello World Graph";
+}
