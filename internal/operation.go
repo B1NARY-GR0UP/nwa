@@ -37,29 +37,6 @@ const (
 
 const _root = "."
 
-// lock-free because of serial
-//
-// Add, Update, Remove:
-// - scanned
-// - modified
-// - skipped
-// - failed
-//
-// Check:
-// - scanned
-// - matched
-// - mismatched
-// - skipped
-// - failed
-var counter = struct {
-	scanned    int // files have been read
-	matched    int // files license headers matched as required
-	mismatched int // files license headers do not match as required
-	modified   int // files have been modified (e.g. add, update, remove license header)
-	skipped    int // file paths match the skip pattern
-	failed     int // unexpected error occurred
-}{}
-
 func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {

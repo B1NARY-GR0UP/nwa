@@ -27,8 +27,39 @@ var (
 	taskWG sync.WaitGroup
 )
 
+// lock-free because of serial
+//
+// Add, Update, Remove:
+// - scanned
+// - modified
+// - skipped
+// - failed
+//
+// Check:
+// - scanned
+// - matched
+// - mismatched
+// - skipped
+// - failed
+var counter struct {
+	scanned    int // files have been read
+	matched    int // files license headers matched as required
+	mismatched int // files license headers do not match as required
+	modified   int // files have been modified (e.g. add, update, remove license header)
+	skipped    int // file paths match the skip pattern
+	failed     int // unexpected error occurred
+}
+
 // PrepareTasks walk through the dir and add tasks into task chan
 func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
+	counter = struct {
+		scanned    int
+		matched    int
+		mismatched int
+		modified   int
+		skipped    int
+		failed     int
+	}{}
 	taskC = make(chan func(), _size)
 
 	for _, path := range paths {
