@@ -78,7 +78,7 @@ Use "nwa [command] --help" for more information about a command.
 | -i    | --spdxids   | `""`                               | SPDX IDs                                                                                                       |
 | -t    | --tmpl      | `""`                               | template file path                                                                                             |
 | -r    | --rawtmpl   | `""`                               | template file path (enable raw template)                                                                       |
-| -f    | --fuzzy     | `false` (unspecified)              | `nwa check` will ignore differences in the **year** within the license header                                  |
+| -f    | --fuzzy     | `false` (unspecified)              | commands `check` and `remove` will ignore differences in the **year** within the license header                |
 | -h    | --help      | null                               | help for command                                                                                               |
 
 ### DoubleStar(**) Patterns
@@ -264,7 +264,7 @@ nwa:
   spdxids: ""                       # Default: ""
   mute: false                       # Default: false (unspecified)
   verbose: false                    # Default: false (unspecified)
-  fuzzy: false                      # Default: false (unspecified), only used for "check" command
+  fuzzy: false                      # Default: false (unspecified), used for "check" and "remove" commands
   path: ["server/**", "example/**"] # Default: []
   skip: ["**.py"]                   # Default: []
   tmpl: "nwa.txt"                   # Default: ""                                                       
