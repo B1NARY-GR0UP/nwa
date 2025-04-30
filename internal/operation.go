@@ -102,7 +102,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- operationRemove(path, d, header)
+				taskC <- operationRemove(path, d, header, fuzzy)
 			}()
 		case Check:
 			taskWG.Add(1)
@@ -225,7 +225,7 @@ func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 	}
 }
 
-func operationRemove(path string, d fs.DirEntry, header []byte) func() {
+func operationRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -241,11 +241,15 @@ func operationRemove(path string, d fs.DirEntry, header []byte) func() {
 			return
 		}
 
-		// TODO: support fuzzy
-
 		// standardize line separator
 		content = standardizeLineSeparator(content)
 		header = standardizeLineSeparator(header)
+
+		// fuzzy matching
+		if fuzzy {
+			header = removeYear(header)
+			content = removeYear(content)
+		}
 
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
