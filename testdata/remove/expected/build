@@ -1,0 +1,16 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "hello_world",
+    srcs = ["hello_world.cc"],
+    deps = [
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+# A simple genrule
+genrule(
+    name = "hello_txt",
+    outs = ["hello.txt"],
+    cmd = "echo 'Hello, World!' > $@",
+)

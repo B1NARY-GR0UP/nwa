@@ -1,0 +1,9 @@
+greeting:
+  message: "Hello, World!"
+  language: "English"
+  versions:
+    - "Hello!"
+    - "Hi there!"
+  settings:
+    display: true
+    format: "text"

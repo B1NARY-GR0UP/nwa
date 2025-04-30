@@ -1,0 +1,13 @@
+FROM alpine:latest
+
+# Set a label
+LABEL description="Hello World container"
+
+# Set environment variable
+ENV GREETING="Hello, World!"
+
+# Create working directory
+WORKDIR /app
+
+# Run command
+CMD echo $GREETING

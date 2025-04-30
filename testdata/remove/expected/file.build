@@ -1,0 +1,15 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "hello_world",
+    srcs = [
+        "hello.txt",
+    ],
+)
+
+# Generate a text file
+genrule(
+    name = "generate_hello",
+    outs = ["generated_hello.txt"],
+    cmd = "echo 'Hello, World!' > $@",
+)
