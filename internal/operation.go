@@ -248,9 +248,6 @@ func operationRemove(path string, d fs.DirEntry, header []byte) func() {
 		content = standardizeLineSeparator(content)
 		header = standardizeLineSeparator(header)
 
-		// add a blank line at the end of the header
-		header = append(header, '\n')
-
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		if idx == -1 {
@@ -259,8 +256,17 @@ func operationRemove(path string, d fs.DirEntry, header []byte) func() {
 			return
 		}
 
+		// if exist a blank line after the header, remove it
+		headerIdx := idx + len(header)
+		if headerIdx < len(content) {
+			nextNewLineIdx := bytes.IndexByte(content[headerIdx:], '\n')
+			if nextNewLineIdx == 0 {
+				headerIdx++
+			}
+		}
+
 		// remove the header of the file
-		content = append(content[:idx], content[idx+len(header):]...)
+		content = append(content[:idx], content[headerIdx:]...)
 		// modify the file
 		err = os.WriteFile(path, content, d.Type())
 		if err != nil {
