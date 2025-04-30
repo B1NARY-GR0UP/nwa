@@ -239,6 +239,12 @@ func operationRemove(path string, d fs.DirEntry, header []byte) func() {
 			return
 		}
 
+		// TODO: support fuzzy
+
+		// standardize line separator
+		content = standardizeLineSeparator(content)
+		header = standardizeLineSeparator(header)
+
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		if idx == -1 {
