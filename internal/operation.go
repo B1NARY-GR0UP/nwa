@@ -345,6 +345,12 @@ func standardizeLineSeparator(b []byte) []byte {
 	return b
 }
 
+var yearRE = regexp.MustCompile(`\b\d{4}\b`)
+
 func removeYear(b []byte) []byte {
-	return regexp.MustCompile(`\b\d{4}\b`).ReplaceAll(b, []byte{})
+	loc := yearRE.FindIndex(b)
+	if loc == nil {
+		return b
+	}
+	return append(b[:loc[0]], b[loc[1]:]...)
 }
