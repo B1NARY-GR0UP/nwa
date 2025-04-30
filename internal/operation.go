@@ -46,7 +46,6 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 		}
 
 		// convert Windows path separators
-		// TODO: add doc
 		path = filepath.ToSlash(path)
 
 		// match glob pattern

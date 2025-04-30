@@ -89,6 +89,8 @@ However, some shells may interpret these patterns (e.g. `**`), which could cause
 
 The best way to resolve this issue is to **wrap your paths in double quotes (`""`)**.
 
+Additionally, since Windows uses a different path separator (`\`) compared to Linux and macOS, NWA internally converts `\` to `/` when traversing files to match doublestar patterns. Therefore, make sure to **use `/` as the path separator** in both `--skip` (`-s`) and the working path.
+
 **NOTE: Since NWA always operates from the current directory (`.`), parent directories are not visible to NWA. Make sure not to use paths like `../path/to/file`.**
 
 <details>
