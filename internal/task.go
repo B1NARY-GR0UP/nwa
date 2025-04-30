@@ -23,15 +23,18 @@ import (
 const _size = 1000
 
 var (
-	taskC  = make(chan func(), _size)
+	taskC  chan func()
 	taskWG sync.WaitGroup
 )
 
 // PrepareTasks walk through the dir and add tasks into task chan
 func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
+	taskC = make(chan func(), _size)
+
 	for _, path := range paths {
 		walkDir(path, tmpl, operation, skips, raw, fuzzy)
 	}
+
 	go func() {
 		taskWG.Wait()
 		close(taskC)
@@ -42,6 +45,7 @@ func ExecuteTasks(operation Operation, muteF bool) {
 	for task := range taskC {
 		task()
 	}
+
 	switch operation {
 	case Add, Update, Remove:
 		if !muteF {
