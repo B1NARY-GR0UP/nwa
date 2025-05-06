@@ -111,6 +111,110 @@ func TestRemoveLicenseHeader(t *testing.T) {
 	compareResults(t, temp, expectedDir)
 }
 
+//func TestCommonTmpl(t *testing.T) {
+//	temp, cleanup := tempDir(t, "testdata/temp")
+//	defer cleanup()
+//
+//	initialDir := "testdata/tmpl/initial"
+//	expectedDir := "testdata/tmpl/expected"
+//
+//	if _, err := os.Stat(initialDir); os.IsNotExist(err) {
+//		t.Skip("Test data directory does not exist")
+//	}
+//
+//	err := cp(temp, initialDir)
+//	if err != nil {
+//		t.Fatalf("Failed to copy files to temporary directory: %v", err)
+//	}
+//
+//	origArgs := os.Args
+//	defer func() { os.Args = origArgs }()
+//
+//	os.Args = []string{"nwa", "add", "-t", "testdata/tmpl/.tmpl-test.txt", temp + "/**"}
+//
+//	cmd.Execute()
+//
+//	compareResults(t, temp, expectedDir)
+//}
+//
+//func TestCommonRawTmpl(t *testing.T) {
+//	temp, cleanup := tempDir(t, "testdata/temp")
+//	defer cleanup()
+//
+//	initialDir := "testdata/tmpl/initial"
+//	expectedDir := "testdata/tmpl/expected"
+//
+//	if _, err := os.Stat(initialDir); os.IsNotExist(err) {
+//		t.Skip("Test data directory does not exist")
+//	}
+//
+//	err := cp(temp, initialDir)
+//	if err != nil {
+//		t.Fatalf("Failed to copy files to temporary directory: %v", err)
+//	}
+//
+//	origArgs := os.Args
+//	defer func() { os.Args = origArgs }()
+//
+//	os.Args = []string{"nwa", "add", "-r", "testdata/tmpl/.rawtmpl-test.txt", temp + "/**"}
+//
+//	cmd.Execute()
+//
+//	compareResults(t, temp, expectedDir)
+//}
+
+func TestConfigTmpl(t *testing.T) {
+	temp, cleanup := tempDir(t, "testdata/temp")
+	defer cleanup()
+
+	initialDir := "testdata/tmpl/initial"
+	expectedDir := "testdata/tmpl/expected"
+
+	if _, err := os.Stat(initialDir); os.IsNotExist(err) {
+		t.Skip("Test data directory does not exist")
+	}
+
+	err := cp(temp, initialDir)
+	if err != nil {
+		t.Fatalf("Failed to copy files to temporary directory: %v", err)
+	}
+
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	os.Args = []string{"nwa", "config", "-c", "add", "testdata/tmpl/.tmpl-test.yaml"}
+
+	cmd.Execute()
+
+	compareResults(t, temp, expectedDir)
+}
+
+//func TestConfigRawTmpl(t *testing.T) {
+//	temp, cleanup := tempDir(t, "testdata/temp")
+//	defer cleanup()
+//
+//	initialDir := "testdata/tmpl/initial"
+//	expectedDir := "testdata/tmpl/expected"
+//
+//	if _, err := os.Stat(initialDir); os.IsNotExist(err) {
+//		t.Skip("Test data directory does not exist")
+//	}
+//
+//	err := cp(temp, initialDir)
+//	if err != nil {
+//		t.Fatalf("Failed to copy files to temporary directory: %v", err)
+//	}
+//
+//	origArgs := os.Args
+//	defer func() { os.Args = origArgs }()
+//
+//	os.Args = []string{"nwa", "config", "-c", "add", "testdata/tmpl/.rawtmpl-test.yaml"}
+//
+//	cmd.Execute()
+//
+//	compareResults(t, temp, expectedDir)
+//}
+
 func tempDir(t *testing.T, dir string) (string, func()) {
 	err := os.MkdirAll(dir, 0755)
 	if err != nil {

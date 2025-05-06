@@ -15,10 +15,8 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"log/slog"
-	"os"
 	"time"
 
 	"github.com/B1NARY-GR0UP/nwa/internal"
@@ -75,7 +73,7 @@ nwa:
 		if defaultConfig.Nwa.Verbose {
 			slog.SetLogLoggerLevel(slog.LevelInfo)
 		}
-		// mute has higher priority
+		// mute has a higher priority
 		if defaultConfig.Nwa.Mute {
 			slog.SetLogLoggerLevel(_levelMute)
 		}
@@ -96,39 +94,37 @@ nwa:
 		if defaultConfig.Nwa.Tmpl != "" && defaultConfig.Nwa.RawTmpl != "" {
 			cobra.CheckErr("tmpl flag should not be used with rawtmpl flag")
 		}
+
 		// check if enable rawtmpl
-		var rawTmpl bool
+		var useRawTmpl bool
 		if defaultConfig.Nwa.RawTmpl != "" {
 			defaultConfig.Nwa.Tmpl = defaultConfig.Nwa.RawTmpl
-			rawTmpl = true
+			useRawTmpl = true
 		}
+
 		if defaultConfig.Nwa.Tmpl == "" {
 			tmpl, err := internal.MatchTmpl(defaultConfig.Nwa.License, defaultConfig.Nwa.SPDXIDs != "")
 			if err != nil {
 				cobra.CheckErr(err)
 			}
+
 			tmplData := &internal.TmplData{
 				Holder:  defaultConfig.Nwa.Holder,
 				Year:    defaultConfig.Nwa.Year,
 				SPDXIDs: defaultConfig.Nwa.SPDXIDs,
 			}
+
 			renderedTmpl, err := tmplData.RenderTmpl(tmpl)
 			if err != nil {
 				cobra.CheckErr(err)
 			}
-			// determine files need to be added
-			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
+
+			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, useRawTmpl, defaultConfig.Nwa.Fuzzy)
 		} else {
-			content, err := os.ReadFile(defaultConfig.Nwa.Tmpl)
-			if err != nil {
-				cobra.CheckErr(err)
-			}
-			buf := bytes.NewBuffer(content)
-			if rawTmpl {
-				_, _ = fmt.Fprintln(buf)
-			}
-			internal.PrepareTasks(defaultConfig.Nwa.Path, buf.Bytes(), operation, defaultConfig.Nwa.Skip, rawTmpl, defaultConfig.Nwa.Fuzzy)
+			// use customize template
+			internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, useRawTmpl, defaultConfig.Nwa.Fuzzy)
 		}
+
 		internal.ExecuteTasks(operation, defaultConfig.Nwa.Mute)
 	},
 }
@@ -192,7 +188,7 @@ func (cfg *Config) readInConfig(args []string) error {
 	if err := viper.ReadInConfig(); err != nil {
 		return err
 	}
-	// will overwrite default config if some fields is declared
+	// will overwrite the default config if some fields are declared
 	if err := viper.Unmarshal(cfg); err != nil {
 		return err
 	}

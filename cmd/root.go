@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"log/slog"
 	"os"
@@ -72,6 +71,8 @@ func init() {
 	})
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
+
+// TODO: -T (--type): live, raw, mix
 
 type CommonFlags struct {
 	Mute    bool
@@ -160,36 +161,37 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 	}
 
 	// check if enable rawtmpl
-	var rawTmpl bool
+	var useRawTmpl bool
 	if flags.RawTmpl != "" && flags.Tmpl == "" {
 		flags.Tmpl = flags.RawTmpl
-		rawTmpl = true
+		useRawTmpl = true
 	}
+
 	if flags.Tmpl == "" {
 		tmpl, err := internal.MatchTmpl(flags.License, flags.SPDXIDs != "")
 		if err != nil {
 			cobra.CheckErr(err)
 		}
+
 		tmplData := &internal.TmplData{
 			Holder:  flags.Holder,
 			Year:    flags.Year,
 			SPDXIDs: flags.SPDXIDs,
 		}
+
 		renderedTmpl, err := tmplData.RenderTmpl(tmpl)
 		if err != nil {
 			cobra.CheckErr(err)
 		}
-		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, rawTmpl, flags.Fuzzy)
+
+		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, useRawTmpl, flags.Fuzzy)
 	} else {
 		content, err := os.ReadFile(flags.Tmpl)
 		if err != nil {
 			cobra.CheckErr(err)
 		}
-		buf := bytes.NewBuffer(content)
-		if rawTmpl {
-			_, _ = fmt.Fprintln(buf)
-		}
-		internal.PrepareTasks(args, buf.Bytes(), operation, flags.Skip, rawTmpl, flags.Fuzzy)
+
+		internal.PrepareTasks(args, content, operation, flags.Skip, useRawTmpl, flags.Fuzzy)
 	}
 	internal.ExecuteTasks(operation, flags.Mute)
 }
