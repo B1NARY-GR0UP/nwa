@@ -72,32 +72,36 @@ func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
-// TODO: -T (--type): live, raw, mix
+const (
+	_live   = "live"
+	_static = "static"
+	_raw    = "raw"
+)
 
 type CommonFlags struct {
-	Mute    bool
-	Verbose bool
-	Fuzzy   bool
-	Holder  string
-	Year    string
-	License string
-	Tmpl    string
-	RawTmpl string
-	Skip    []string
-	SPDXIDs string
+	Mute     bool
+	Verbose  bool
+	Fuzzy    bool
+	Holder   string
+	Year     string
+	License  string
+	TmplType string
+	Tmpl     string // template file path
+	Skip     []string
+	SPDXIDs  string
 }
 
 var defaultCommonFlags = CommonFlags{
-	Mute:    false,
-	Verbose: false,
-	Fuzzy:   false,
-	Holder:  "<COPYRIGHT HOLDER>",
-	Year:    fmt.Sprint(time.Now().Year()),
-	License: "apache",
-	Tmpl:    "",
-	RawTmpl: "",
-	Skip:    []string{},
-	SPDXIDs: "",
+	Mute:     false,
+	Verbose:  false,
+	Fuzzy:    false,
+	Holder:   "<COPYRIGHT HOLDER>",
+	Year:     fmt.Sprint(time.Now().Year()),
+	License:  "apache",
+	TmplType: "",
+	Tmpl:     "",
+	Skip:     []string{},
+	SPDXIDs:  "",
 }
 
 func setupCommonCmd(common *cobra.Command) {
@@ -109,27 +113,25 @@ func setupCommonCmd(common *cobra.Command) {
 	common.Flags().StringVarP(&defaultCommonFlags.Holder, "copyright", "c", defaultCommonFlags.Holder, "copyright holder")
 	common.Flags().StringVarP(&defaultCommonFlags.Year, "year", "y", defaultCommonFlags.Year, "copyright year")
 	common.Flags().StringVarP(&defaultCommonFlags.License, "license", "l", defaultCommonFlags.License, "license type")
+	common.Flags().StringVarP(&defaultCommonFlags.TmplType, "tmpl-type", "T", defaultCommonFlags.TmplType, "template type (live, static, raw)")
 	common.Flags().StringVarP(&defaultCommonFlags.Tmpl, "tmpl", "t", defaultCommonFlags.Tmpl, "template file path")
-	common.Flags().StringVarP(&defaultCommonFlags.RawTmpl, "rawtmpl", "r", defaultCommonFlags.RawTmpl, "template file path (enable raw template)")
 	common.Flags().StringSliceVarP(&defaultCommonFlags.Skip, "skip", "s", defaultCommonFlags.Skip, "skip file path")
 	common.Flags().StringVarP(&defaultCommonFlags.SPDXIDs, "spdxids", "i", defaultCommonFlags.SPDXIDs, "spdx ids")
 
 	common.MarkFlagsMutuallyExclusive("mute", "verbose")
-	common.MarkFlagsMutuallyExclusive("tmpl", "rawtmpl")
+
+	// tmpl-type
+	common.MarkFlagsRequiredTogether("tmpl", "tmpl-type")
 
 	// tmpl
+	// TODO: remove?? or just ignore if set
 	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
 	common.MarkFlagsMutuallyExclusive("year", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
-	// rawtmpl
-	common.MarkFlagsMutuallyExclusive("copyright", "rawtmpl")
-	common.MarkFlagsMutuallyExclusive("year", "rawtmpl")
-	common.MarkFlagsMutuallyExclusive("license", "rawtmpl")
 
 	// SPDX IDs
 	common.MarkFlagsMutuallyExclusive("license", "spdxids")
 	common.MarkFlagsMutuallyExclusive("tmpl", "spdxids")
-	common.MarkFlagsMutuallyExclusive("rawtmpl", "spdxids")
 }
 
 func setupConfigCmd(config *cobra.Command) {
@@ -160,13 +162,6 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		}
 	}
 
-	// check if enable rawtmpl
-	var useRawTmpl bool
-	if flags.RawTmpl != "" && flags.Tmpl == "" {
-		flags.Tmpl = flags.RawTmpl
-		useRawTmpl = true
-	}
-
 	if flags.Tmpl == "" {
 		tmpl, err := internal.MatchTmpl(flags.License, flags.SPDXIDs != "")
 		if err != nil {
@@ -184,14 +179,36 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			cobra.CheckErr(err)
 		}
 
-		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, useRawTmpl, flags.Fuzzy)
+		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, false, flags.Fuzzy)
 	} else {
+		// use customize template
 		content, err := os.ReadFile(flags.Tmpl)
 		if err != nil {
 			cobra.CheckErr(err)
 		}
 
-		internal.PrepareTasks(args, content, operation, flags.Skip, useRawTmpl, flags.Fuzzy)
+		switch flags.TmplType {
+		case _live:
+			tmplData := &internal.TmplData{
+				Holder:  flags.Holder,
+				Year:    flags.Year,
+				SPDXIDs: flags.SPDXIDs,
+			}
+
+			renderedTmpl, err := tmplData.RenderTmpl(string(content))
+			if err != nil {
+				cobra.CheckErr(err)
+			}
+
+			internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, false, flags.Fuzzy)
+		case _static:
+			internal.PrepareTasks(args, content, operation, flags.Skip, false, flags.Fuzzy)
+		case _raw:
+			internal.PrepareTasks(args, content, operation, flags.Skip, true, flags.Fuzzy)
+		default:
+			cobra.CheckErr(fmt.Errorf("invalid template type: %v", flags.TmplType))
+		}
 	}
+
 	internal.ExecuteTasks(operation, flags.Mute)
 }

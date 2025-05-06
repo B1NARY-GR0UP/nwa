@@ -91,15 +91,8 @@ nwa:
 			}
 		}
 
-		if defaultConfig.Nwa.Tmpl != "" && defaultConfig.Nwa.RawTmpl != "" {
-			cobra.CheckErr("tmpl flag should not be used with rawtmpl flag")
-		}
-
-		// check if enable rawtmpl
-		var useRawTmpl bool
-		if defaultConfig.Nwa.RawTmpl != "" {
-			defaultConfig.Nwa.Tmpl = defaultConfig.Nwa.RawTmpl
-			useRawTmpl = true
+		if (defaultConfig.Nwa.TmplType == "") != (defaultConfig.Nwa.Tmpl == "") {
+			cobra.CheckErr("tmpl-type (-T) and tmpl (-t) must be set together")
 		}
 
 		if defaultConfig.Nwa.Tmpl == "" {
@@ -119,10 +112,30 @@ nwa:
 				cobra.CheckErr(err)
 			}
 
-			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, useRawTmpl, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, false, defaultConfig.Nwa.Fuzzy)
 		} else {
 			// use customize template
-			internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, useRawTmpl, defaultConfig.Nwa.Fuzzy)
+			switch defaultConfig.Nwa.TmplType {
+			case _live:
+				tmplData := &internal.TmplData{
+					Holder:  defaultConfig.Nwa.Holder,
+					Year:    defaultConfig.Nwa.Year,
+					SPDXIDs: defaultConfig.Nwa.SPDXIDs,
+				}
+
+				renderedTmpl, err := tmplData.RenderTmpl(defaultConfig.Nwa.Tmpl)
+				if err != nil {
+					cobra.CheckErr(err)
+				}
+
+				internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, false, defaultConfig.Nwa.Fuzzy)
+			case _static:
+				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, false, defaultConfig.Nwa.Fuzzy)
+			case _raw:
+				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, true, defaultConfig.Nwa.Fuzzy)
+			default:
+				cobra.CheckErr(fmt.Errorf("invalid template type: %v", defaultConfig.Nwa.TmplType))
+			}
 		}
 
 		internal.ExecuteTasks(operation, defaultConfig.Nwa.Mute)
@@ -146,38 +159,38 @@ type Config struct {
 }
 
 type NwaConfig struct {
-	Cmd     string   `yaml:"cmd"`
-	Holder  string   `yaml:"holder"`
-	Year    string   `yaml:"year"`
-	License string   `yaml:"license"`
-	Mute    bool     `yaml:"mute"`
-	Verbose bool     `yaml:"verbose"`
-	Fuzzy   bool     `yaml:"fuzzy"`
-	Path    []string `yaml:"path"`
-	Skip    []string `yaml:"skip"`
-	SPDXIDs string   `yaml:"spdxids"`
-	Tmpl    string   `yaml:"tmpl"`
-	RawTmpl string   `yaml:"rawtmpl"`
+	Cmd      string   `yaml:"cmd"`
+	Holder   string   `yaml:"holder"`
+	Year     string   `yaml:"year"`
+	License  string   `yaml:"license"`
+	Mute     bool     `yaml:"mute"`
+	Verbose  bool     `yaml:"verbose"`
+	Fuzzy    bool     `yaml:"fuzzy"`
+	Path     []string `yaml:"path"`
+	Skip     []string `yaml:"skip"`
+	SPDXIDs  string   `yaml:"spdxids"`
+	TmplType string   `yaml:"tmpl-type"`
+	Tmpl     string   `yaml:"tmpl"`
 }
 
 var defaultConfig = &Config{Nwa: NwaConfig{
-	Cmd:     "add",
-	Holder:  "<COPYRIGHT HOLDER>",
-	Year:    fmt.Sprint(time.Now().Year()),
-	License: "apache",
-	Mute:    false,
-	Verbose: false,
-	Fuzzy:   false,
-	Path:    []string{},
-	Skip:    []string{},
-	SPDXIDs: "",
-	Tmpl:    "",
-	RawTmpl: "",
+	Cmd:      "add",
+	Holder:   "<COPYRIGHT HOLDER>",
+	Year:     fmt.Sprint(time.Now().Year()),
+	License:  "apache",
+	Mute:     false,
+	Verbose:  false,
+	Fuzzy:    false,
+	Path:     []string{},
+	Skip:     []string{},
+	SPDXIDs:  "",
+	TmplType: "",
+	Tmpl:     "",
 }}
 
 func (cfg *Config) readInConfig(args []string) error {
 	if len(args) == 0 {
-		// default configuration path: ./.nwa-config.yaml
+		// default configuration path: `./.nwa-config.yaml`
 		viper.SetConfigName(".nwa-config")
 		viper.SetConfigType("yaml")
 		viper.AddConfigPath(".")
