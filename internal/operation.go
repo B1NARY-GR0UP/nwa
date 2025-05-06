@@ -90,25 +90,25 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- operationAdd(path, d, header)
+				taskC <- doAdd(path, d, header)
 			}()
 		case Update:
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- operationUpdate(path, d, header)
+				taskC <- doUpdate(path, d, header)
 			}()
 		case Remove:
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- operationRemove(path, d, header, fuzzy)
+				taskC <- doRemove(path, d, header, fuzzy)
 			}()
 		case Check:
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- operationCheck(path, header, fuzzy)
+				taskC <- doCheck(path, header, fuzzy)
 			}()
 		default:
 			slog.Warn("not a valid operation")
@@ -119,7 +119,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 	}
 }
 
-func operationCheck(path string, header []byte, fuzzy bool) func() {
+func doCheck(path string, header []byte, fuzzy bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -159,7 +159,7 @@ func operationCheck(path string, header []byte, fuzzy bool) func() {
 	}
 }
 
-func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
+func doUpdate(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -225,7 +225,7 @@ func operationUpdate(path string, d fs.DirEntry, header []byte) func() {
 	}
 }
 
-func operationRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
+func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -282,7 +282,7 @@ func operationRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func
 	}
 }
 
-func operationAdd(path string, d fs.DirEntry, header []byte) func() {
+func doAdd(path string, d fs.DirEntry, header []byte) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
