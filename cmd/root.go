@@ -128,7 +128,6 @@ func setupCommonCmd(common *cobra.Command) {
 
 	// SPDX IDs
 	common.MarkFlagsMutuallyExclusive("license", "spdxids")
-	common.MarkFlagsMutuallyExclusive("tmpl", "spdxids")
 }
 
 func setupConfigCmd(config *cobra.Command) {
