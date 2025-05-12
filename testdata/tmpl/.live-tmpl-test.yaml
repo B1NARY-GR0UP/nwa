@@ -1,9 +1,12 @@
 nwa:
+  holder: BINARY Members
+  year: 2025
   verbose: true
   fuzzy: true
+  tmpltype: live
   # `|-` means: `|` keeps line breaks, `-` removes the final newline.
   tmpl: |-
-    Copyright 2025 BINARY Members
+    Copyright {{ .Year }} {{ .Holder }}
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

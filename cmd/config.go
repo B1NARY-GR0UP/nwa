@@ -92,7 +92,7 @@ nwa:
 		}
 
 		if (defaultConfig.Nwa.TmplType == "") != (defaultConfig.Nwa.Tmpl == "") {
-			cobra.CheckErr("tmpl-type (-T) and tmpl (-t) must be set together")
+			cobra.CheckErr("tmpltype and tmpl must be set together")
 		}
 
 		if defaultConfig.Nwa.Tmpl == "" {
@@ -169,7 +169,7 @@ type NwaConfig struct {
 	Path     []string `yaml:"path"`
 	Skip     []string `yaml:"skip"`
 	SPDXIDs  string   `yaml:"spdxids"`
-	TmplType string   `yaml:"tmpl-type"`
+	TmplType string   `yaml:"tmpltype"`
 	Tmpl     string   `yaml:"tmpl"`
 }
 

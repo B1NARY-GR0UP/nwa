@@ -113,20 +113,17 @@ func setupCommonCmd(common *cobra.Command) {
 	common.Flags().StringVarP(&defaultCommonFlags.Holder, "copyright", "c", defaultCommonFlags.Holder, "copyright holder")
 	common.Flags().StringVarP(&defaultCommonFlags.Year, "year", "y", defaultCommonFlags.Year, "copyright year")
 	common.Flags().StringVarP(&defaultCommonFlags.License, "license", "l", defaultCommonFlags.License, "license type")
-	common.Flags().StringVarP(&defaultCommonFlags.TmplType, "tmpl-type", "T", defaultCommonFlags.TmplType, "template type (live, static, raw)")
+	common.Flags().StringVarP(&defaultCommonFlags.TmplType, "tmpltype", "T", defaultCommonFlags.TmplType, "template type (live, static, raw)")
 	common.Flags().StringVarP(&defaultCommonFlags.Tmpl, "tmpl", "t", defaultCommonFlags.Tmpl, "template file path")
 	common.Flags().StringSliceVarP(&defaultCommonFlags.Skip, "skip", "s", defaultCommonFlags.Skip, "skip file path")
 	common.Flags().StringVarP(&defaultCommonFlags.SPDXIDs, "spdxids", "i", defaultCommonFlags.SPDXIDs, "spdx ids")
 
 	common.MarkFlagsMutuallyExclusive("mute", "verbose")
 
-	// tmpl-type
-	common.MarkFlagsRequiredTogether("tmpl", "tmpl-type")
+	// tmpltype
+	common.MarkFlagsRequiredTogether("tmpl", "tmpltype")
 
 	// tmpl
-	// TODO: remove?? or just ignore if set
-	common.MarkFlagsMutuallyExclusive("copyright", "tmpl")
-	common.MarkFlagsMutuallyExclusive("year", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
 
 	// SPDX IDs

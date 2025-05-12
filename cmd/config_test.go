@@ -21,7 +21,7 @@ import (
 func TestMultilineTmpl(t *testing.T) {
 	cfg := &Config{Nwa: NwaConfig{}}
 
-	err := cfg.readInConfig([]string{"../testdata/tmpl/.tmpl-test.yaml"})
+	err := cfg.readInConfig([]string{"../testdata/tmpl/.static-tmpl-test.yaml"})
 	if err != nil {
 		t.Fatalf("read config file failed: %v", err)
 	}
