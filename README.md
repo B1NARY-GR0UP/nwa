@@ -336,7 +336,7 @@ The above command uses the `holder` and `year` specified in the `.nwa-config.yam
 - **Example**
 
 ```shell
-nwa add -t mytmpl.txt "**/*.py"
+nwa add -T static -t mytmpl.txt "**/*.py"
 ```
 
 `mytmpl.txt` is as follows:
@@ -367,7 +367,7 @@ This command example uses the content in `mytmpl.txt` as the license header, and
 - **Example**
 
 ```shell
-nwa add --rawtmpl myrawtmpl.txt "**/*.java"
+nwa add -T raw -t myrawtmpl.txt "**/*.java"
 ```
 
 `myrawtmpl.txt` is as follows:

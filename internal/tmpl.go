@@ -21,7 +21,7 @@ import (
 	"strings"
 )
 
-var errLicenseNotSupported = errors.New("license not supported, please use custom tmpl with --tmpl(-t) or --rawtmpl(-r) flag")
+var errLicenseNotSupported = errors.New("license not supported, please use custom template")
 
 var spdxids bool
 
