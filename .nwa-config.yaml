@@ -4,7 +4,6 @@ nwa:
   verbose: true
   fuzzy: true
   skip:
-    - "internal/header.go"
     - "testdata/**"
   path:
     - "**/*.go"
