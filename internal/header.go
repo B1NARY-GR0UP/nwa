@@ -115,6 +115,12 @@ var (
 			bot:  "*)",
 			exts: []string{".ml", ".mli", ".mll", ".mly"},
 		},
+		{
+			top:  "",
+			mid:  "# ",
+			bot:  "",
+			exts: []string{".ps1", ".psm1"},
+		},
 	}
 )
 
