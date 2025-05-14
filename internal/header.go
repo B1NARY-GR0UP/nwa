@@ -77,7 +77,7 @@ var (
 			top:  "",
 			mid:  "# ",
 			bot:  "",
-			exts: []string{".py", ".sh", ".yaml", ".yml", "makefile", ".mk", "containerfile", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml", ".nix"},
+			exts: []string{".py", ".sh", ".yaml", ".yml", "makefile", ".mk", "containerfile", ".dockerfile", "dockerfile", ".rb", "gemfile", ".tcl", ".tf", ".bzl", ".pl", ".pp", "build", ".build", ".toml", ".nix", ".ps1", ".psm1"},
 		},
 		{
 			top:  "",
@@ -114,12 +114,6 @@ var (
 			mid:  "   ",
 			bot:  "*)",
 			exts: []string{".ml", ".mli", ".mll", ".mly"},
-		},
-		{
-			top:  "",
-			mid:  "# ",
-			bot:  "",
-			exts: []string{".ps1", ".psm1"},
 		},
 	}
 )
