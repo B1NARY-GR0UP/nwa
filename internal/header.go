@@ -219,6 +219,16 @@ func matchShebang(b []byte) []byte {
 }
 
 func assemble(shebang, header, content []byte, isUpdate bool) []byte {
+	// Check for UTF-8 BOM at the start of content
+	utf8BOM := []byte{0xEF, 0xBB, 0xBF}
+	hasBOM := len(content) >= 3 && bytes.Equal(content[:3], utf8BOM)
+	var body []byte
+
+	if hasBOM {
+		body = append(body, utf8BOM...)
+		content = content[3:]
+	}
+
 	if shebang != nil {
 		if !isUpdate {
 			// get content exclude the shebang
@@ -231,9 +241,11 @@ func assemble(shebang, header, content []byte, isUpdate bool) []byte {
 		}
 		header = append(shebang, header...)
 	}
-	// 1. shebang
-	// 2. header
-	// 3. content
-	header = append(header, content...)
-	return header
+	// 1. BOM (if present)
+	// 2. shebang
+	// 3. header
+	// 4. content
+	body = append(body, header...)
+	body = append(body, content...)
+	return body
 }
