@@ -69,14 +69,14 @@ Use "nwa [command] --help" for more information about a command.
 
 - **Basic**
 
-| Short | Long        | Default                            | Description                                                                                                    |
-|-------|-------------|------------------------------------|----------------------------------------------------------------------------------------------------------------|
-| -h    | --help      | null                               | help for command                                                                                               |
-| -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                                                                                               |
-| -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                                                                                 |
-| -l    | --license   | `apache`                           | license type                                                                                                   |
-| -i    | --spdxids   | `""`                               | SPDX IDs                                                                                                       |
-| -s    | --skip      | `[]`                               | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
+| Short | Long        | Default              | Description                                                                                                    |
+|-------|-------------|----------------------|----------------------------------------------------------------------------------------------------------------|
+| -h    | --help      | null                 | help for command                                                                                               |
+| -c    | --copyright | `<COPYRIGHT HOLDER>` | copyright holder                                                                                               |
+| -y    | --year      | Current Year         | copyright year                                                                                                 |
+| -l    | --license   | `apache`             | license type                                                                                                   |
+| -i    | --spdxids   | `""`                 | SPDX IDs                                                                                                       |
+| -s    | --skip      | `[]`                 | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
 
 - **Advanced**
 
