@@ -67,19 +67,27 @@ Use "nwa [command] --help" for more information about a command.
 
 ### Flags
 
+- **Basic**
+
 | Short | Long        | Default                            | Description                                                                                                    |
 |-------|-------------|------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| -h    | --help      | null                               | help for command                                                                                               |
 | -c    | --copyright | `<COPYRIGHT HOLDER>`               | copyright holder                                                                                               |
 | -y    | --year      | `time.Now().Year()` (Current Year) | copyright year                                                                                                 |
 | -l    | --license   | `apache`                           | license type                                                                                                   |
-| -s    | --skip      | `[]`                               | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
-| -V    | --verbose   | `false` (unspecified)              | verbose mode (Allow log output below the **WARN** level)                                                       |
-| -m    | --mute      | `false` (unspecified)              | mute mode (Disable all log output)                                                                             |
 | -i    | --spdxids   | `""`                               | SPDX IDs                                                                                                       |
-| -t    | --tmpl      | `""`                               | template file path                                                                                             |
-| -T    | --tmpltype  | `""`                               | template type (`live`, `static`, `raw`)                                                                        |
-| -f    | --fuzzy     | `false` (unspecified)              | commands `check` and `remove` will ignore differences in the **year** within the license header                |
-| -h    | --help      | null                               | help for command                                                                                               |
+| -s    | --skip      | `[]`                               | skip file paths, can use any pattern [supported by doublestar](https://github.com/bmatcuk/doublestar#patterns) |
+
+- **Advanced**
+
+| Short | Long       | Default               | Description                                                                                         |
+|-------|------------|-----------------------|-----------------------------------------------------------------------------------------------------|
+| -V    | --verbose  | `false` (unspecified) | verbose mode (Allow log output below the **WARN** level)                                            |
+| -m    | --mute     | `false` (unspecified) | mute mode (Disable all log output)                                                                  |
+| -t    | --tmpl     | `""`                  | template file path                                                                                  |
+| -T    | --tmpltype | `""`                  | template type (`live`, `static`, `raw`)                                                             |
+| -f    | --fuzzy    | `false` (unspecified) | commands `check` and `remove` will ignore differences in the **year** within the license header     |
+| -k    | --keyword  | `[]`                  | keyword used to confirm the existence of license headers (only used in commands `add` and `update`) |
 
 ### DoubleStar(**) Patterns
 
@@ -260,23 +268,26 @@ The structure of the configuration file will be provided below.
 
 ```yaml
 nwa:
-  cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update", can be overwritten by --command (-c) flag
+  # basic
+  cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update"; can be overwritten by --command (-c) flag
   holder: "RHINE LAB.LLC."          # Default: "<COPYRIGHT HOLDER>"
   year: "2077"                      # Default: Current Year
   license: "apache"                 # Default: "apache"
   spdxids: ""                       # Default: ""
+  skip: ["**.py"]                   # Default: []
+  path: ["server/**", "example/**"] # Default: []
+  # advanced
   mute: false                       # Default: false (unspecified)
   verbose: false                    # Default: false (unspecified)
   fuzzy: false                      # Default: false (unspecified), used for "check" and "remove" commands
-  path: ["server/**", "example/**"] # Default: []
-  skip: ["**.py"]                   # Default: []
   tmpltype: ""                      # Default: "" Optional: "live", "static", "raw"
   tmpl: ""                          # Default: ""                                                       
+  keyword: []                       # Default: [], used for "add" and "update" commands
 ```
 
 ### Built-in License Header Templates and Custom Templates
 
-- Built-in License Header Templates
+- **Built-in License Header Templates**
 
 | License           | Option (ignore case)                                          |
 |-------------------|---------------------------------------------------------------|
@@ -287,7 +298,7 @@ nwa:
 | AGPL-3.0 or Later | `agpl-3.0-or-later`                                           |
 | AGPL-3.0 Only     | `agpl-3.0-only`                                               |
 
-- Custom Templates
+- **Custom Templates**
 
 > **NOTE: When using a custom template, you must specify both the template type and the template itself (use a file path in common mode, and template content in config mode).**
 
