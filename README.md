@@ -173,6 +173,11 @@ Verbose mode:
 [NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
 
+Mute mode:
+
+```txt
+```
+
 </details>
 
 <details>
