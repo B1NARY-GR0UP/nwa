@@ -174,13 +174,23 @@ func isGenerated(b []byte) bool {
 	return goGenerated.Match(b) || cargoRazeGenerated.Match(b)
 }
 
-func hasHeader(b []byte) bool {
+func hasHeader(b []byte, keywords []string) bool {
 	n := 1000
 	if len(b) < n {
 		n = len(b)
 	}
 
 	lowerHeader := bytes.ToLower(b[:n])
+
+	if len(keywords) != 0 {
+		for _, keyword := range keywords {
+			lowerKeyword := bytes.ToLower([]byte(keyword))
+			if bytes.Contains(lowerHeader, lowerKeyword) {
+				return true
+			}
+		}
+		return false
+	}
 
 	return bytes.Contains(lowerHeader, []byte("copyright")) ||
 		bytes.Contains(lowerHeader, []byte("©")) ||

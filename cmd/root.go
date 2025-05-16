@@ -79,54 +79,58 @@ const (
 )
 
 type CommonFlags struct {
+	// Basic Flags
+	Holder  string
+	Year    string
+	License string
+	SPDXIDs string
+	Skip    []string
+
+	// Advanced Flags
 	Mute     bool
 	Verbose  bool
 	Fuzzy    bool
-	Holder   string
-	Year     string
-	License  string
 	TmplType string
 	Tmpl     string // template file path
-	Skip     []string
-	SPDXIDs  string
+	Keyword  []string
 }
 
 var defaultCommonFlags = CommonFlags{
-	Mute:     false,
-	Verbose:  false,
-	Fuzzy:    false,
 	Holder:   "<COPYRIGHT HOLDER>",
 	Year:     fmt.Sprint(time.Now().Year()),
 	License:  "apache",
+	SPDXIDs:  "",
+	Skip:     []string{},
+	Mute:     false,
+	Verbose:  false,
+	Fuzzy:    false,
 	TmplType: "",
 	Tmpl:     "",
-	Skip:     []string{},
-	SPDXIDs:  "",
+	Keyword:  []string{},
 }
 
 func setupCommonCmd(common *cobra.Command) {
 	rootCmd.AddCommand(common)
 
-	common.Flags().BoolVarP(&defaultCommonFlags.Mute, "mute", "m", defaultCommonFlags.Mute, "mute mode")
-	common.Flags().BoolVarP(&defaultCommonFlags.Verbose, "verbose", "V", defaultCommonFlags.Verbose, "verbose mode")
-	common.Flags().BoolVarP(&defaultCommonFlags.Fuzzy, "fuzzy", "f", defaultCommonFlags.Fuzzy, "fuzzy matching")
+	// basic
 	common.Flags().StringVarP(&defaultCommonFlags.Holder, "copyright", "c", defaultCommonFlags.Holder, "copyright holder")
 	common.Flags().StringVarP(&defaultCommonFlags.Year, "year", "y", defaultCommonFlags.Year, "copyright year")
 	common.Flags().StringVarP(&defaultCommonFlags.License, "license", "l", defaultCommonFlags.License, "license type")
+	common.Flags().StringVarP(&defaultCommonFlags.SPDXIDs, "spdxids", "i", defaultCommonFlags.SPDXIDs, "spdx ids")
+	common.Flags().StringSliceVarP(&defaultCommonFlags.Skip, "skip", "s", defaultCommonFlags.Skip, "skip file path")
+
+	// advanced
+	common.Flags().BoolVarP(&defaultCommonFlags.Mute, "mute", "m", defaultCommonFlags.Mute, "mute mode")
+	common.Flags().BoolVarP(&defaultCommonFlags.Verbose, "verbose", "V", defaultCommonFlags.Verbose, "verbose mode")
+	common.Flags().BoolVarP(&defaultCommonFlags.Fuzzy, "fuzzy", "f", defaultCommonFlags.Fuzzy, "fuzzy matching")
 	common.Flags().StringVarP(&defaultCommonFlags.TmplType, "tmpltype", "T", defaultCommonFlags.TmplType, "template type (live, static, raw)")
 	common.Flags().StringVarP(&defaultCommonFlags.Tmpl, "tmpl", "t", defaultCommonFlags.Tmpl, "template file path")
-	common.Flags().StringSliceVarP(&defaultCommonFlags.Skip, "skip", "s", defaultCommonFlags.Skip, "skip file path")
-	common.Flags().StringVarP(&defaultCommonFlags.SPDXIDs, "spdxids", "i", defaultCommonFlags.SPDXIDs, "spdx ids")
+	common.Flags().StringSliceVarP(&defaultCommonFlags.Keyword, "keyword", "k", defaultCommonFlags.Keyword, "keyword used to confirm the existence of license headers")
 
+	// flag rules
 	common.MarkFlagsMutuallyExclusive("mute", "verbose")
-
-	// tmpltype
 	common.MarkFlagsRequiredTogether("tmpl", "tmpltype")
-
-	// tmpl
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
-
-	// SPDX IDs
 	common.MarkFlagsMutuallyExclusive("license", "spdxids")
 }
 
@@ -175,7 +179,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			cobra.CheckErr(err)
 		}
 
-		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, false, flags.Fuzzy)
+		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, false, flags.Fuzzy)
 	} else {
 		// use customize template
 		content, err := os.ReadFile(flags.Tmpl)
@@ -196,11 +200,11 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 				cobra.CheckErr(err)
 			}
 
-			internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, false, flags.Fuzzy)
+			internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, false, flags.Fuzzy)
 		case _static:
-			internal.PrepareTasks(args, content, operation, flags.Skip, false, flags.Fuzzy)
+			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, false, flags.Fuzzy)
 		case _raw:
-			internal.PrepareTasks(args, content, operation, flags.Skip, true, flags.Fuzzy)
+			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, true, flags.Fuzzy)
 		default:
 			cobra.CheckErr(fmt.Errorf("invalid template type: %v", flags.TmplType))
 		}

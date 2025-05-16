@@ -73,7 +73,80 @@ func TestHasHeader(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := hasHeader(tt.content)
+			actual := hasHeader(tt.content, []string{})
+			if actual != tt.expected {
+				t.Errorf("expected %v, actual %v", tt.expected, actual)
+			}
+		})
+	}
+}
+
+func TestHasHeaderWithKeywords(t *testing.T) {
+	tests := []struct {
+		name     string
+		content  []byte
+		keywords []string
+		expected bool
+	}{
+		{
+			name:     "empty content with keywords",
+			content:  []byte(""),
+			keywords: []string{"license", "copyright"},
+			expected: false,
+		},
+		{
+			name:     "content with matching keyword",
+			content:  []byte("This file has a license notice"),
+			keywords: []string{"license", "copyright"},
+			expected: true,
+		},
+		{
+			name:     "content with matching uppercase keyword",
+			content:  []byte("This file has a LICENSE notice"),
+			keywords: []string{"license"},
+			expected: true,
+		},
+		{
+			name:     "content with matching mixed case keyword",
+			content:  []byte("This file has a LiCeNsE notice"),
+			keywords: []string{"license"},
+			expected: true,
+		},
+		{
+			name:     "content without matching keywords",
+			content:  []byte("This file has no matching words"),
+			keywords: []string{"license", "copyright"},
+			expected: false,
+		},
+		{
+			name:     "keyword beyond first 1000 bytes",
+			content:  []byte(string(make([]byte, 1100)) + "license"),
+			keywords: []string{"license"},
+			expected: false,
+		},
+		{
+			name:     "multiple keywords with one match",
+			content:  []byte("This file has an apache notice"),
+			keywords: []string{"mit", "apache", "gpl"},
+			expected: true,
+		},
+		{
+			name:     "empty keywords list falls back to default checks",
+			content:  []byte("This file has Copyright 2023 notice"),
+			keywords: []string{},
+			expected: true,
+		},
+		{
+			name:     "empty keywords list with no default matches",
+			content:  []byte("This file has no info"),
+			keywords: []string{},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := hasHeader(tt.content, tt.keywords)
 			if actual != tt.expected {
 				t.Errorf("expected %v, actual %v", tt.expected, actual)
 			}

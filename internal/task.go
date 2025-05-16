@@ -51,7 +51,7 @@ var counter struct {
 }
 
 // PrepareTasks walk through the dir and add tasks into task chan
-func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
+func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips, keywords []string, raw, fuzzy bool) {
 	counter = struct {
 		scanned    int
 		matched    int
@@ -63,7 +63,7 @@ func PrepareTasks(paths []string, tmpl []byte, operation Operation, skips []stri
 	taskC = make(chan func(), _size)
 
 	for _, path := range paths {
-		walkDir(path, tmpl, operation, skips, raw, fuzzy)
+		walkDir(path, tmpl, operation, skips, keywords, raw, fuzzy)
 	}
 
 	go func() {

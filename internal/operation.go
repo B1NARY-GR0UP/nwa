@@ -37,7 +37,7 @@ const (
 
 const _root = "."
 
-func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, raw, fuzzy bool) {
+func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords []string, raw, fuzzy bool) {
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
@@ -90,13 +90,13 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips []string, r
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- doAdd(path, d, header)
+				taskC <- doAdd(path, d, header, keywords)
 			}()
 		case Update:
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- doUpdate(path, d, header)
+				taskC <- doUpdate(path, d, header, keywords)
 			}()
 		case Remove:
 			taskWG.Add(1)
@@ -159,7 +159,7 @@ func doCheck(path string, header []byte, fuzzy bool) func() {
 	}
 }
 
-func doUpdate(path string, d fs.DirEntry, header []byte) func() {
+func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -175,7 +175,7 @@ func doUpdate(path string, d fs.DirEntry, header []byte) func() {
 			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
-		if !hasHeader(content) {
+		if !hasHeader(content, keywords) {
 			slog.Warn("file does not have a header", slog.String("path", path))
 			return
 		}
@@ -282,7 +282,7 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 	}
 }
 
-func doAdd(path string, d fs.DirEntry, header []byte) func() {
+func doAdd(path string, d fs.DirEntry, header []byte, keywords []string) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -298,7 +298,7 @@ func doAdd(path string, d fs.DirEntry, header []byte) func() {
 			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
-		if hasHeader(content) {
+		if hasHeader(content, keywords) {
 			slog.Warn("file already has a header", slog.String("path", path))
 			return
 		}
