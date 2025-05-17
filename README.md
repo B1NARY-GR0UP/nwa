@@ -274,20 +274,23 @@ The structure of the configuration file will be provided below.
 ```yaml
 nwa:
   # basic
-  cmd: "add"                        # Default: "add" Optional: "add", "check", "remove", "update"; can be overwritten by --command (-c) flag
+  cmd: "add"                        # Default: "add"; Can be overwritten by --command (-c) flag; Optional: "add", "check", "remove", "update"
   holder: "RHINE LAB.LLC."          # Default: "<COPYRIGHT HOLDER>"
   year: "2077"                      # Default: Current Year
   license: "apache"                 # Default: "apache"
   spdxids: ""                       # Default: ""
-  skip: ["**.py"]                   # Default: []
-  path: ["server/**", "example/**"] # Default: []
+  skip:                             # Default: []
+    - "**.py"
+  path:                             # Default: []
+    - "src/**/*.go"
+    - "example/**/*.go"
   # advanced
   mute: false                       # Default: false (unspecified)
   verbose: false                    # Default: false (unspecified)
-  fuzzy: false                      # Default: false (unspecified), used for "check" and "remove" commands
-  tmpltype: ""                      # Default: "" Optional: "live", "static", "raw"
+  fuzzy: false                      # Default: false (unspecified); Used for "check" and "remove" commands
+  tmpltype: ""                      # Default: ""; Optional: "live", "static", "raw"
   tmpl: ""                          # Default: ""                                                       
-  keyword: []                       # Default: [], used for "add" and "update" commands
+  keyword: []                       # Default: []; Used for "add" and "update" commands
 ```
 
 ### Built-in License Header Templates and Custom Templates
