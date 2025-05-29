@@ -1,0 +1,32 @@
+name: NWA License Header Management
+description: A Simple Yet Powerful Tool for License Header Management
+branding:
+  icon: eye
+  color: orange
+inputs:
+  version:
+    description: version to use
+    required: false
+    default: latest
+  cmd:
+    description: command to execute, options `check`, `add`, `update`, `remove`
+    required: false
+    default: check
+  path:
+    description: configuration file path
+    required: false
+    default: .nwa-config.yaml
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.23
+        cache-dependency-path: ${{ github.action_path }}/go.sum
+    - name: Install NWA
+      shell: bash
+      run: go install github.com/B1NARY-GR0UP/nwa@${{ inputs.version }}
+    - name: Run NWA
+      shell: bash
+      run: nwa config -c ${{ inputs.cmd }} ${{ inputs.path }}
