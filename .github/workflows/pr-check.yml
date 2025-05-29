@@ -18,9 +18,6 @@ jobs:
         with:
           go-version: 1.23
 
-      - name: Install NWA
-        run: go install github.com/B1NARY-GR0UP/nwa@latest
-
       - name: Build
         run: go build -v ./...
 
@@ -28,4 +25,4 @@ jobs:
         run: go test -v ./...
 
       - name: License Header Check
-        run: nwa config -c check
+        uses: B1NARY-GR0UP/nwa@main
