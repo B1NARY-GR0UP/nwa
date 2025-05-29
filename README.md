@@ -19,14 +19,28 @@ brew install nwa
 go install github.com/B1NARY-GR0UP/nwa@latest
 ```
 
+### GitHub Actions
+
+- [Use NWA in CI](#used-in-ci).
+ 
+```yaml
+- name: License Header Check
+  uses: B1NARY-GR0UP/nwa@main
+  with:
+    version: latest        # (optional) version of nwa to use; default: latest
+    cmd: check             # (optional) command to execute; options: `check`, `add`, `update`, `remove`; default: check
+    path: .nwa-config.yaml # (optional) configuration file path; default: .nwa-config.yaml
+```
+
+For the configuration file example, please refer to [Config](#config-mode).
+
+### pre-commit
+
+Check the [Use NWA in pre-commit](#used-in-pre-commit) section.
+
 ### Docker
 
 Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment) section.
-
-### Other
-
-- [Use NWA in CI](#used-in-ci).
-- [Use NWA in pre-commit](#used-in-pre-commit).
 
 ## Usage
 
@@ -443,11 +457,26 @@ docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LL
 
 ### Used in CI
 
-- **GitHub Action Example**
+#### Automatic Configuration
 
-When there are **mismatched** or **failed** entries in the result of `nwa check`, `nwa` will return a non-zero exit code, causing the CI to fail.
+For the configuration file example, please refer to [Config](#config-mode).
+
+```yaml
+- name: License Header Check
+  uses: B1NARY-GR0UP/nwa@main
+  with:
+    version: latest        # (optional) version of nwa to use; default: latest
+    cmd: check             # (optional) command to execute; options: `check`, `add`, `update`, `remove`; default: check
+    path: .nwa-config.yaml # (optional) configuration file path; default: .nwa-config.yaml
+```
+
+#### Manual Configuration
+
+When there are **mismatched** or **failed** entries in the result of nwa execution, `nwa` will return a non-zero exit code, causing the CI to fail.
 
 You may refer to the other commands or flags introduced in the [Usage](#usage) section for optimization. 
+
+- **Example**
 
 ```yaml
 name: License Header Check
