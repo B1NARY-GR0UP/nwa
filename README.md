@@ -41,9 +41,9 @@ Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-e
 - **[Update](#update---update-license-headers-of-files)**: Update license headers of files
 - **[Config](#config-mode)**: Edit files according to the configuration file
 - **[Built-in License Header Templates and Custom Templates](#built-in-license-header-templates-and-custom-templates)**: Use custom templates 
-- **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those who do not have a Go environment
-- **[Used in CI](#used-in-ci)**: Use NWA in CI
+- **[Used in GitHub Actions](#used-in-github-actions)**: Use NWA in GitHub Actions
 - **[Used in pre-commit](#used-in-pre-commit)**: Use NWA in pre-commit
+- **[Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-environment)**: Run NWA through docker, for those who do not have a Go environment
 
 ```shell
 Usage:         
@@ -414,36 +414,6 @@ This command example uses the content in `myrawtmpl.txt` as the license header. 
 
 </details>
 
-### Docker - Run NWA through docker, for those do not have a Go environment
-
-- **Install**
-
-Install the nwa docker image directly:
-
-```shell
-docker pull ghcr.io/b1nary-gr0up/nwa:main
-```
-
-**OR**
-
-Build it from source:
-
-```shell
-docker build -t ghcr.io/b1nary-gr0up/nwa:main .
-```
-
-- **Verify if it can work correctly**
-
-```shell
-docker run -it ghcr.io/b1nary-gr0up/nwa:main --version
-```
-
-- **Mount the directory you want NWA to work with to `/src` and use the commands mentions in usage**
-
-```shell
-docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 "**"
-```
-
 ### Used in GitHub Actions
 
 #### Automatic Configuration
@@ -527,6 +497,36 @@ repos:
       hooks:
         -   id: nwa
             args: ["add", "-c", "BINARY Members", "-l", "apache"]
+```
+
+### Docker - Run NWA through docker, for those do not have a Go environment
+
+- **Install**
+
+Install the nwa docker image directly:
+
+```shell
+docker pull ghcr.io/b1nary-gr0up/nwa:main
+```
+
+**OR**
+
+Build it from source:
+
+```shell
+docker build -t ghcr.io/b1nary-gr0up/nwa:main .
+```
+
+- **Verify if it can work correctly**
+
+```shell
+docker run -it ghcr.io/b1nary-gr0up/nwa:main --version
+```
+
+- **Mount the directory you want NWA to work with to `/src` and use the commands mentions in usage**
+
+```shell
+docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 "**"
 ```
 
 ## Blogs
