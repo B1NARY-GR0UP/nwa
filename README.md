@@ -32,7 +32,7 @@ go install github.com/B1NARY-GR0UP/nwa@latest
     path: .nwa-config.yaml # (optional) configuration file path; default: .nwa-config.yaml
 ```
 
-For the configuration file example, please refer to [Config](#config-mode).
+For the configuration file example, please refer to the [Config](#config-mode) section.
 
 ### pre-commit
 
@@ -459,7 +459,7 @@ docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LL
 
 #### Automatic Configuration
 
-For the configuration file example, please refer to [Config](#config-mode).
+For the configuration file example, please refer to the [Config](#config-mode) section.
 
 ```yaml
 - name: License Header Check
