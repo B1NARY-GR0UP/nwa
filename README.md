@@ -21,22 +21,11 @@ go install github.com/B1NARY-GR0UP/nwa@latest
 
 ### GitHub Actions
 
-- [Use NWA in CI](#used-in-ci).
- 
-```yaml
-- name: License Header Check
-  uses: B1NARY-GR0UP/nwa@main
-  with:
-    version: latest        # (optional) version of nwa to use; default: latest
-    cmd: check             # (optional) command to execute; options: `check`, `add`, `update`, `remove`; default: check
-    path: .nwa-config.yaml # (optional) configuration file path; default: .nwa-config.yaml
-```
-
-For the configuration file example, please refer to the [Config](#config-mode) section.
+Check the [Used in GitHub Actions](#used-in-github-actions) section.
 
 ### pre-commit
 
-Check the [Use NWA in pre-commit](#used-in-pre-commit) section.
+Check the [Used in pre-commit](#used-in-pre-commit) section.
 
 ### Docker
 
@@ -455,7 +444,7 @@ docker run -it ghcr.io/b1nary-gr0up/nwa:main --version
 docker run -it -v ${PWD}:/src ghcr.io/b1nary-gr0up/nwa:main add -c "RHINE LAB.LLC." -y 2077 "**"
 ```
 
-### Used in CI
+### Used in GitHub Actions
 
 #### Automatic Configuration
 
