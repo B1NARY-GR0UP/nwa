@@ -95,7 +95,7 @@ var (
 			top:  "",
 			mid:  "-- ",
 			bot:  "",
-			exts: []string{".hs", ".sql", ".sdl"},
+			exts: []string{".hs", ".sql", ".sdl", ".lua"},
 		},
 		{
 			top:  "<!--",
@@ -114,6 +114,12 @@ var (
 			mid:  "   ",
 			bot:  "*)",
 			exts: []string{".ml", ".mli", ".mll", ".mly"},
+		},
+		{
+			top:  "",
+			mid:  `" `,
+			bot:  "",
+			exts: []string{".vim"},
 		},
 	}
 )
