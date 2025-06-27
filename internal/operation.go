@@ -212,7 +212,7 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 		header = append(header, '\n')
 
 		// assemble license header and modify the file
-		b := assemble(shebang, header, afterBlankLine, true)
+		b := assemble(shebang, header, afterBlankLine, false, true)
 
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
@@ -305,12 +305,14 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string) func() 
 
 		// get the shebang of the special file
 		shebang := matchShebang(content)
+		// check if file has a utf8BOM
+		hasBOM := matchBOM(content)
 
 		// add a blank line at the end of the header
 		header = append(header, '\n')
 
 		// assemble license header and modify the file
-		b := assemble(shebang, header, content, false)
+		b := assemble(shebang, header, content, hasBOM, false)
 
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {

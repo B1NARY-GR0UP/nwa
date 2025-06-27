@@ -45,6 +45,8 @@ import (
 
 var errUnsupportedFileType = errors.New("file type not supported, header generated failed")
 
+var utf8BOM = []byte{0xEF, 0xBB, 0xBF}
+
 var (
 	// k: extension
 	// v: header
@@ -234,18 +236,25 @@ func matchShebang(b []byte) []byte {
 	return nil
 }
 
-func assemble(shebang, header, content []byte, isUpdate bool) []byte {
-	// Check for UTF-8 BOM at the start of content
-	utf8BOM := []byte{0xEF, 0xBB, 0xBF}
-	hasBOM := len(content) >= 3 && bytes.Equal(content[:3], utf8BOM)
+// check for UTF-8 BOM at the start of content
+func matchBOM(content []byte) bool {
+	return len(content) >= 3 && bytes.Equal(content[:3], utf8BOM)
+}
+
+func assemble(shebang, header, content []byte, hasBOM, isUpdate bool) []byte {
 	var body []byte
 
-	if hasBOM {
+	// content of update does not contain a BOM
+	if !isUpdate && hasBOM {
 		body = append(body, utf8BOM...)
 		content = content[3:]
 	}
 
 	if shebang != nil {
+		// NOTE:
+		// add - content is the complete file;
+		// update - content is the content after the first blank line;
+		// so if we use add, we need to extract shebang first to avoid inserting shebang twice
 		if !isUpdate {
 			// get content exclude the shebang
 			content = content[len(shebang):]
@@ -255,10 +264,13 @@ func assemble(shebang, header, content []byte, isUpdate bool) []byte {
 		if shebang[len(shebang)-1] != '\n' {
 			shebang = append(shebang, '\n')
 		}
+
+		// this is the header included shebang
 		header = append(shebang, header...)
 	}
+
 	// 1. BOM (if present)
-	// 2. shebang
+	// 2. shebang (if present)
 	// 3. header
 	// 4. content
 	body = append(body, header...)
