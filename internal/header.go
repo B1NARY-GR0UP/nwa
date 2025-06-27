@@ -52,6 +52,7 @@ var (
 	// v: header
 	cache   = make(map[string][]byte)
 	extMaps = []struct {
+		// TODO: comment style name
 		top  string
 		mid  string
 		bot  string
@@ -142,6 +143,7 @@ func generateHeader(path string, tmpl []byte) ([]byte, error) {
 	}
 
 	for _, extMap := range extMaps {
+		// TODO: check if match comment style tag (`ext:style`) first
 		if slices.Contains(extMap.exts, ext) {
 			header = doGenerate(tmpl, extMap.top, extMap.mid, extMap.bot)
 			// cache generated header
