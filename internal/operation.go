@@ -182,6 +182,9 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 
 		// get the shebang of the special file
 		shebang := matchShebang(content)
+		// check if file has a utf8BOM
+		hasBOM := matchBOM(content)
+
 		file, err := os.Open(path)
 		if err != nil {
 			counter.failed++
@@ -212,7 +215,7 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 		header = append(header, '\n')
 
 		// assemble license header and modify the file
-		b := assemble(shebang, header, afterBlankLine, false, true)
+		b := assemble(shebang, header, afterBlankLine, hasBOM, true)
 
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {

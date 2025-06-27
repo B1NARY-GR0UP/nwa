@@ -244,10 +244,12 @@ func matchBOM(content []byte) bool {
 func assemble(shebang, header, content []byte, hasBOM, isUpdate bool) []byte {
 	var body []byte
 
-	// content of update does not contain a BOM
-	if !isUpdate && hasBOM {
+	if hasBOM {
 		body = append(body, utf8BOM...)
-		content = content[3:]
+		// content of update does not contain a BOM
+		if !isUpdate {
+			content = content[3:]
+		}
 	}
 
 	if shebang != nil {
