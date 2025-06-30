@@ -112,7 +112,7 @@ nwa:
 				cobra.CheckErr(err)
 			}
 
-			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, false, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, false, defaultConfig.Nwa.Fuzzy)
 		} else {
 			// use customize template
 			switch defaultConfig.Nwa.TmplType {
@@ -128,11 +128,11 @@ nwa:
 					cobra.CheckErr(err)
 				}
 
-				internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, false, defaultConfig.Nwa.Fuzzy)
+				internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, false, defaultConfig.Nwa.Fuzzy)
 			case _static:
-				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, false, defaultConfig.Nwa.Fuzzy)
+				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, false, defaultConfig.Nwa.Fuzzy)
 			case _raw:
-				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, true, defaultConfig.Nwa.Fuzzy)
+				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, true, defaultConfig.Nwa.Fuzzy)
 			default:
 				cobra.CheckErr(fmt.Errorf("invalid template type: %v", defaultConfig.Nwa.TmplType))
 			}
@@ -175,6 +175,7 @@ type NwaConfig struct {
 	TmplType string   `yaml:"tmpltype"`
 	Tmpl     string   `yaml:"tmpl"`
 	Keyword  []string `yaml:"keyword"`
+	Style    []string `yaml:"style"`
 }
 
 var defaultConfig = &Config{Nwa: NwaConfig{
@@ -191,6 +192,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	TmplType: "",
 	Tmpl:     "",
 	Keyword:  []string{},
+	Style:    []string{},
 }}
 
 func (cfg *Config) readInConfig(args []string) error {

@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -149,6 +150,70 @@ func TestHasHeaderWithKeywords(t *testing.T) {
 			actual := hasHeader(tt.content, tt.keywords)
 			if actual != tt.expected {
 				t.Errorf("expected %v, actual %v", tt.expected, actual)
+			}
+		})
+	}
+}
+
+func TestParseStyles(t *testing.T) {
+	tests := []struct {
+		name     string
+		styles   []string
+		expected map[string]string
+		wantErr  bool
+	}{
+		{
+			name:     "single valid style with dot",
+			styles:   []string{".go:line"},
+			expected: map[string]string{".go": "line"},
+			wantErr:  false,
+		},
+		{
+			name:     "single valid style without dot",
+			styles:   []string{"py:hash"},
+			expected: map[string]string{".py": "hash"},
+			wantErr:  false,
+		},
+		{
+			name:     "multiple valid styles",
+			styles:   []string{"go:block", "py:hash"},
+			expected: map[string]string{".go": "block", ".py": "hash"},
+			wantErr:  false,
+		},
+		{
+			name:     "invalid style missing colon",
+			styles:   []string{"goline"},
+			expected: nil,
+			wantErr:  true,
+		},
+		{
+			name:     "invalid style empty ext",
+			styles:   []string{":block"},
+			expected: nil,
+			wantErr:  true,
+		},
+		{
+			name:     "invalid style empty style",
+			styles:   []string{"go:"},
+			expected: nil,
+			wantErr:  true,
+		},
+		{
+			name:     "empty input",
+			styles:   []string{},
+			expected: map[string]string{},
+			wantErr:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parseStyles(tt.styles)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("expected error: %v, got: %v", tt.wantErr, err)
+			}
+			if !tt.wantErr && !reflect.DeepEqual(got, tt.expected) {
+				t.Errorf("expected: %v, got: %v", tt.expected, got)
 			}
 		})
 	}

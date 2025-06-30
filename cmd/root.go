@@ -92,6 +92,7 @@ type CommonFlags struct {
 	TmplType string
 	Tmpl     string // template file path
 	Keyword  []string
+	Style    []string
 }
 
 var defaultCommonFlags = CommonFlags{
@@ -106,6 +107,7 @@ var defaultCommonFlags = CommonFlags{
 	TmplType: "",
 	Tmpl:     "",
 	Keyword:  []string{},
+	Style:    []string{},
 }
 
 func setupCommonCmd(common *cobra.Command) {
@@ -125,12 +127,14 @@ func setupCommonCmd(common *cobra.Command) {
 	common.Flags().StringVarP(&defaultCommonFlags.TmplType, "tmpltype", "T", defaultCommonFlags.TmplType, "template type (live, static, raw)")
 	common.Flags().StringVarP(&defaultCommonFlags.Tmpl, "tmpl", "t", defaultCommonFlags.Tmpl, "template file path")
 	common.Flags().StringSliceVarP(&defaultCommonFlags.Keyword, "keyword", "k", defaultCommonFlags.Keyword, "keyword used to confirm the existence of license headers")
+	common.Flags().StringSliceVarP(&defaultCommonFlags.Style, "style", "S", defaultCommonFlags.Style, "comment style `extension:style`, e.g. go:block")
 
 	// flag rules
 	common.MarkFlagsMutuallyExclusive("mute", "verbose")
 	common.MarkFlagsRequiredTogether("tmpl", "tmpltype")
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "spdxids")
+	common.MarkFlagsMutuallyExclusive("style", "tmpl")
 }
 
 func setupConfigCmd(config *cobra.Command) {
@@ -178,7 +182,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			cobra.CheckErr(err)
 		}
 
-		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, false, flags.Fuzzy)
+		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, flags.Style, false, flags.Fuzzy)
 	} else {
 		// use customize template
 		content, err := os.ReadFile(flags.Tmpl)
@@ -199,11 +203,11 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 				cobra.CheckErr(err)
 			}
 
-			internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, false, flags.Fuzzy)
+			internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, flags.Style, false, flags.Fuzzy)
 		case _static:
-			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, false, flags.Fuzzy)
+			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, flags.Style, false, flags.Fuzzy)
 		case _raw:
-			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, true, flags.Fuzzy)
+			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, flags.Style, true, flags.Fuzzy)
 		default:
 			cobra.CheckErr(fmt.Errorf("invalid template type: %v", flags.TmplType))
 		}
