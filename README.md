@@ -83,14 +83,15 @@ Use "nwa [command] --help" for more information about a command.
 
 - **Advanced**
 
-| Short | Long       | Default               | Description                                                                                         |
-|-------|------------|-----------------------|-----------------------------------------------------------------------------------------------------|
-| -V    | --verbose  | `false` (unspecified) | verbose mode (Allow log output below the **WARN** level)                                            |
-| -m    | --mute     | `false` (unspecified) | mute mode (Disable all log output)                                                                  |
-| -t    | --tmpl     | `""`                  | template file path                                                                                  |
-| -T    | --tmpltype | `""`                  | template type (`live`, `static`, `raw`)                                                             |
-| -f    | --fuzzy    | `false` (unspecified) | commands `check` and `remove` will ignore differences in the **year** within the license header     |
-| -k    | --keyword  | `[]`                  | keyword used to confirm the existence of license headers (only used in commands `add` and `update`) |
+| Short | Long       | Default               | Description                                                                                                                                            |
+|-------|------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -V    | --verbose  | `false` (unspecified) | verbose mode (Allow log output below the **WARN** level)                                                                                               |
+| -m    | --mute     | `false` (unspecified) | mute mode (Disable all log output)                                                                                                                     |
+| -t    | --tmpl     | `""`                  | template file path                                                                                                                                     |
+| -T    | --tmpltype | `""`                  | template type (`live`, `static`, `raw`)                                                                                                                |
+| -f    | --fuzzy    | `false` (unspecified) | commands `check` and `remove` will ignore differences in the **year** within the license header                                                        |
+| -k    | --keyword  | `[]`                  | keyword used to confirm the existence of license headers (only used in commands `add` and `update`)                                                    |
+| -S    | --style    | `[]`                  | customize the comment style (`line`, `block`, `hash`, `doc`, `starred-block`) for different extensions in the format `extension:style`, e.g.`go:block` |
 
 ### DoubleStar(**) Patterns
 
@@ -294,6 +295,7 @@ nwa:
   tmpltype: ""                      # Default: ""; Optional: "live", "static", "raw"
   tmpl: ""                          # Default: ""                                                       
   keyword: []                       # Default: []; Used for "add" and "update" commands
+  style: []                         # Default: []
 ```
 
 ### Built-in License Header Templates and Custom Templates
