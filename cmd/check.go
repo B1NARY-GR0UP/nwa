@@ -25,9 +25,8 @@ var checkCmd = &cobra.Command{
 	Short: "check license headers of files",
 	Long: `Common Command | Check license headers of files
 
-EXAMPLE: nwa check -t tmpl.txt "src/**"
-
-NOTE: Do not use --mute (-m) flag with the command`,
+NOTE: Do not use --mute(-m) flag with this command`,
+	Example: `nwa check --copyright "BINARY Members" --license apache --fuzzy "**/*.py"`,
 	GroupID: _common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

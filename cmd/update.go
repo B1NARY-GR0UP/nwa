@@ -25,10 +25,9 @@ var updateCmd = &cobra.Command{
 	Short: "update license headers of files",
 	Long: `Common Command | Update license headers of files
 
-EXAMPLE: nwa update -l mit -c Anmory "**/*.py"
-
 NOTE: Update identifies the content before the first blank line as a license header;
 If your file does not meet the requirements, please use remove + add`,
+	Example: `nwa update -l mit -c Anmory "**/*.py"`,
 	GroupID: _common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

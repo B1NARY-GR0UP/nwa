@@ -15,13 +15,22 @@
 package cmd
 
 import (
+	"fmt"
 	"testing"
 )
+
+func TestConfig(t *testing.T) {
+	err := defaultConfig.readInConfig("../testdata/config/config.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(defaultConfig)
+}
 
 func TestMultilineTmpl(t *testing.T) {
 	cfg := &Config{Nwa: NwaConfig{}}
 
-	err := cfg.readInConfig([]string{"../testdata/tmpl/.static-tmpl-test.yaml"})
+	err := cfg.readInConfig("../testdata/tmpl/.static-tmpl-test.yaml")
 	if err != nil {
 		t.Fatalf("read config file failed: %v", err)
 	}

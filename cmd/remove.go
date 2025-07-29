@@ -21,11 +21,10 @@ import (
 
 // removeCmd represents the remove command
 var removeCmd = &cobra.Command{
-	Use:   "remove",
-	Short: "remove license headers of files",
-	Long: `Common Command | Remove licenses headers of files
-
-EXAMPLE: nwa remove -i "Apache and MIT" "src/**/*.go"`,
+	Use:     "remove",
+	Short:   "remove license headers of files",
+	Long:    `Common Command | Remove licenses headers of files`,
+	Example: `nwa remove --spdxids "Apache and MIT" "src/**/*.go"`,
 	GroupID: _common,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

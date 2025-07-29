@@ -31,8 +31,6 @@ var configCmd = &cobra.Command{
 	Short: "edit the files according to the configuration file",
 	Long: `Config Command | Edit files according to the configuration file
 
-EXAMPLE: nwa config -c check sample-config.yaml
-
 NOTE: You can specify the path of the configuration file. 
 If not specified, .nwa-config.yaml will be used as the default configuration file path. 
 The behavior of NWA depends entirely on the configuration file. 
@@ -43,20 +41,28 @@ The cmd field value can also be set by --command (-c) flag.
 Priority:
 1. --command (-c) flag
 2. value configured for cmd in the configuration file
-3. default value of cmd in the configuration file (add)
+3. default value of cmd in the configuration file (add)`,
+	Example: `nwa config -c check sample-config.yaml
 
 SAMPLE CONFIGURATION FILE (YAML):
 nwa:
-  holder: "RHINE LAB.LLC."
-  year: "2077"
-  license: "apache"
-  path: ["server/**/*.go", "client/**/*.go", "pkg/**"]
-  skip: ["**/*.py"]
-`,
+  holder: BINARY Members
+  license: apache-2.0
+  verbose: true
+  fuzzy: true
+  skip:
+    - "testdata/**"
+  path:
+    - "**/*.go"`,
 	GroupID: _config,
 	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := defaultConfig.readInConfig(args); err != nil {
+		// read config
+		var path string
+		if len(args) != 0 {
+			path = args[0]
+		}
+		if err := defaultConfig.readInConfig(path); err != nil {
 			cobra.CheckErr(err)
 		}
 
@@ -112,9 +118,28 @@ nwa:
 				cobra.CheckErr(err)
 			}
 
-			internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, false, defaultConfig.Nwa.Fuzzy)
+			internal.PrepareTasks(&internal.TaskParams{
+				Paths:    defaultConfig.Nwa.Path,
+				Skips:    defaultConfig.Nwa.Skip,
+				Keywords: defaultConfig.Nwa.Keyword,
+				Styles:   defaultConfig.Nwa.Style,
+				Raw:      false,
+				Fuzzy:    defaultConfig.Nwa.Fuzzy,
+				Tmpl:     renderedTmpl,
+				Op:       operation,
+			})
 		} else {
 			// use customize template
+
+			params := &internal.TaskParams{
+				Paths:    defaultConfig.Nwa.Path,
+				Skips:    defaultConfig.Nwa.Skip,
+				Keywords: defaultConfig.Nwa.Keyword,
+				Styles:   defaultConfig.Nwa.Style,
+				Fuzzy:    defaultConfig.Nwa.Fuzzy,
+				Op:       operation,
+			}
+
 			switch defaultConfig.Nwa.TmplType {
 			case _live:
 				tmplData := &internal.TmplData{
@@ -128,11 +153,20 @@ nwa:
 					cobra.CheckErr(err)
 				}
 
-				internal.PrepareTasks(defaultConfig.Nwa.Path, renderedTmpl, operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, false, defaultConfig.Nwa.Fuzzy)
+				params.Tmpl = renderedTmpl
+				params.Raw = false
+
+				internal.PrepareTasks(params)
 			case _static:
-				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, false, defaultConfig.Nwa.Fuzzy)
+				params.Tmpl = []byte(defaultConfig.Nwa.Tmpl)
+				params.Raw = false
+
+				internal.PrepareTasks(params)
 			case _raw:
-				internal.PrepareTasks(defaultConfig.Nwa.Path, []byte(defaultConfig.Nwa.Tmpl), operation, defaultConfig.Nwa.Skip, defaultConfig.Nwa.Keyword, defaultConfig.Nwa.Style, true, defaultConfig.Nwa.Fuzzy)
+				params.Tmpl = []byte(defaultConfig.Nwa.Tmpl)
+				params.Raw = true
+
+				internal.PrepareTasks(params)
 			default:
 				cobra.CheckErr(fmt.Errorf("invalid template type: %v", defaultConfig.Nwa.TmplType))
 			}
@@ -195,14 +229,14 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Style:    []string{},
 }}
 
-func (cfg *Config) readInConfig(args []string) error {
-	if len(args) == 0 {
+func (cfg *Config) readInConfig(path string) error {
+	if path == "" {
 		// default configuration path: `./.nwa-config.yaml`
 		viper.SetConfigName(".nwa-config")
 		viper.SetConfigType("yaml")
 		viper.AddConfigPath(".")
 	} else {
-		viper.SetConfigFile(args[0])
+		viper.SetConfigFile(path)
 	}
 
 	if err := viper.ReadInConfig(); err != nil {

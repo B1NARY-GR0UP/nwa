@@ -182,12 +182,30 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			cobra.CheckErr(err)
 		}
 
-		internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, flags.Style, false, flags.Fuzzy)
+		internal.PrepareTasks(&internal.TaskParams{
+			Paths:    args,
+			Skips:    flags.Skip,
+			Keywords: flags.Keyword,
+			Styles:   flags.Style,
+			Raw:      false,
+			Fuzzy:    flags.Fuzzy,
+			Tmpl:     renderedTmpl,
+			Op:       operation,
+		})
 	} else {
 		// use customize template
 		content, err := os.ReadFile(flags.Tmpl)
 		if err != nil {
 			cobra.CheckErr(err)
+		}
+
+		params := &internal.TaskParams{
+			Paths:    args,
+			Skips:    flags.Skip,
+			Keywords: flags.Keyword,
+			Styles:   flags.Style,
+			Fuzzy:    flags.Fuzzy,
+			Op:       operation,
 		}
 
 		switch flags.TmplType {
@@ -203,11 +221,20 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 				cobra.CheckErr(err)
 			}
 
-			internal.PrepareTasks(args, renderedTmpl, operation, flags.Skip, flags.Keyword, flags.Style, false, flags.Fuzzy)
+			params.Tmpl = renderedTmpl
+			params.Raw = false
+
+			internal.PrepareTasks(params)
 		case _static:
-			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, flags.Style, false, flags.Fuzzy)
+			params.Tmpl = content
+			params.Raw = false
+
+			internal.PrepareTasks(params)
 		case _raw:
-			internal.PrepareTasks(args, content, operation, flags.Skip, flags.Keyword, flags.Style, true, flags.Fuzzy)
+			params.Tmpl = content
+			params.Raw = true
+
+			internal.PrepareTasks(params)
 		default:
 			cobra.CheckErr(fmt.Errorf("invalid template type: %v", flags.TmplType))
 		}
