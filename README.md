@@ -224,6 +224,7 @@ nwa update [flags] path...
 > - `<!-- -->`: .html, .md, .vue, etc.
 > - `{# #}`: .j2, .twig, etc.
 > - `(** *)`: .ml, .mli, etc.
+> - `{{!-- --}}`: .hbs, .handlebars, etc.
 >  
 > Please use the `remove` + `add` commands instead of the `update` command.
 
