@@ -138,6 +138,12 @@ var (
 			bot:  "",
 			exts: []string{".vim"},
 		},
+		{
+			top:  "{{!--",
+			mid:  "  ",
+			bot:  "--}}",
+			exts: []string{".hbs", ".handlebars"},
+		},
 	}
 )
 
