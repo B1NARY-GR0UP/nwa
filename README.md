@@ -504,9 +504,9 @@ repos:
 
 ### Docker - Run NWA through docker, for those do not have a Go environment
 
-> - main: Created/updated on every push to the main branch
-> - latest: Created/updated only when pushing version tags
-> - version tags (e.g., 0.1.3): Created once per version tag push and preserved permanently
+> - main: Created/updated on every push to the main branch.
+> - latest: Created/updated only when pushing version tags.
+> - version tags (e.g., 0.1.3): Created once per version tag push and preserved permanently.
 
 - **Install**
 
