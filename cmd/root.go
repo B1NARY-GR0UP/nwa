@@ -110,6 +110,26 @@ var defaultCommonFlags = CommonFlags{
 	Style:    []string{},
 }
 
+// ResetCommonFlags resets the common flags to their default values.
+// This is needed for testing because cobra does not reset flags between
+// consecutive calls to Execute.
+func ResetCommonFlags() {
+	defaultCommonFlags = CommonFlags{
+		Holder:   "<COPYRIGHT HOLDER>",
+		Year:     fmt.Sprint(time.Now().Year()),
+		License:  "apache",
+		SPDXIDs:  "",
+		Skip:     []string{},
+		Mute:     false,
+		Verbose:  false,
+		Fuzzy:    false,
+		TmplType: "",
+		Tmpl:     "",
+		Keyword:  []string{},
+		Style:    []string{},
+	}
+}
+
 func setupCommonCmd(common *cobra.Command) {
 	rootCmd.AddCommand(common)
 

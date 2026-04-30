@@ -86,3 +86,109 @@ func TestRemoveYear(t *testing.T) {
 		})
 	}
 }
+
+func TestDetectLineEnding(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []byte
+		expected []byte
+	}{
+		{
+			name:     "Pure LF",
+			input:    []byte("line1\nline2\nline3\n"),
+			expected: []byte("\n"),
+		},
+		{
+			name:     "Pure CRLF",
+			input:    []byte("line1\r\nline2\r\nline3\r\n"),
+			expected: []byte("\r\n"),
+		},
+		{
+			name:     "Empty file",
+			input:    []byte(""),
+			expected: []byte("\n"),
+		},
+		{
+			name:     "No line break",
+			input:    []byte("single line"),
+			expected: []byte("\n"),
+		},
+		{
+			name:     "Mixed CRLF majority",
+			input:    []byte("line1\r\nline2\r\nline3\n"),
+			expected: []byte("\r\n"),
+		},
+		{
+			name:     "Mixed LF majority",
+			input:    []byte("line1\nline2\nline3\r\n"),
+			expected: []byte("\n"),
+		},
+		{
+			name:     "Single CRLF",
+			input:    []byte("line1\r\n"),
+			expected: []byte("\r\n"),
+		},
+		{
+			name:     "Single LF",
+			input:    []byte("line1\n"),
+			expected: []byte("\n"),
+		},
+		{
+			name:     "Equal CRLF and LF count defaults to CRLF",
+			input:    []byte("line1\r\nline2\n"),
+			expected: []byte("\r\n"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := detectLineEnding(tt.input)
+			if !bytes.Equal(result, tt.expected) {
+				t.Errorf("actual: %q, expected: %q", result, tt.expected)
+			}
+		})
+	}
+}
+
+func TestConvertLineEnding(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []byte
+		ending   []byte
+		expected []byte
+	}{
+		{
+			name:     "LF to CRLF",
+			input:    []byte("line1\nline2\n"),
+			ending:   []byte("\r\n"),
+			expected: []byte("line1\r\nline2\r\n"),
+		},
+		{
+			name:     "CRLF to LF",
+			input:    []byte("line1\r\nline2\r\n"),
+			ending:   []byte("\n"),
+			expected: []byte("line1\nline2\n"),
+		},
+		{
+			name:     "LF to LF no-op",
+			input:    []byte("line1\nline2\n"),
+			ending:   []byte("\n"),
+			expected: []byte("line1\nline2\n"),
+		},
+		{
+			name:     "Mixed with CR to CRLF",
+			input:    []byte("line1\r\nline2\rline3\n"),
+			ending:   []byte("\r\n"),
+			expected: []byte("line1\r\nline2\r\nline3\r\n"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := convertLineEnding(tt.input, tt.ending)
+			if !bytes.Equal(result, tt.expected) {
+				t.Errorf("actual: %q, expected: %q", result, tt.expected)
+			}
+		})
+	}
+}

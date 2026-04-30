@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
@@ -361,4 +362,171 @@ func cp(dst, src string) error {
 
 		return os.WriteFile(dstPath, data, info.Mode())
 	})
+}
+
+// compareResultsExact compares files byte-by-byte without normalizing line endings.
+func compareResultsExact(t *testing.T, actualDir, expectedDir string) {
+	err := filepath.Walk(expectedDir, func(expectedPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+
+		relPath, err := filepath.Rel(expectedDir, expectedPath)
+		if err != nil {
+			return err
+		}
+
+		actualPath := filepath.Join(actualDir, relPath)
+
+		expectedContent, err := os.ReadFile(expectedPath)
+		if err != nil {
+			t.Errorf("Failed to read expected file %s: %v", expectedPath, err)
+			return nil
+		}
+
+		actualContent, err := os.ReadFile(actualPath)
+		if err != nil {
+			t.Errorf("Failed to read processed file %s: %v", actualPath, err)
+			return nil
+		}
+
+		if !bytes.Equal(expectedContent, actualContent) {
+			t.Errorf("File %s content doesn't match (exact byte comparison)\nExpected %d bytes:\n%q\nActual %d bytes:\n%q",
+				relPath, len(expectedContent), string(expectedContent), len(actualContent), string(actualContent))
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		t.Fatalf("Failed to compare files: %v", err)
+	}
+}
+
+func TestCRLFAddLicenseHeader(t *testing.T) {
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	tests := []struct {
+		name       string
+		srcFile    string
+		expectedDir string
+	}{
+		{
+			name:       "basic_crlf_go",
+			srcFile:    "testdata/crlf/initial/file.go",
+			expectedDir: "testdata/crlf/expected_add",
+		},
+		{
+			name:       "shebang_crlf_sh",
+			srcFile:    "testdata/crlf/initial/file.sh",
+			expectedDir: "testdata/crlf/expected_add",
+		},
+		{
+			name:       "bom_crlf_cs",
+			srcFile:    "testdata/crlf/initial/file.withbom.cs",
+			expectedDir: "testdata/crlf/expected_add",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd.ResetCommonFlags()
+
+			temp, cleanup := tempDir(t, "testdata/temp_crlf_add")
+			defer cleanup()
+
+			data, err := os.ReadFile(tt.srcFile)
+			if err != nil {
+				t.Fatalf("Failed to read source file: %v", err)
+			}
+
+			base := filepath.Base(tt.srcFile)
+			dstPath := filepath.Join(temp, base)
+			err = os.WriteFile(dstPath, data, 0644)
+			if err != nil {
+				t.Fatalf("Failed to write file: %v", err)
+			}
+
+			os.Args = []string{"nwa", "add", "-c", "BINARY Members", "-y", "2025", temp + "/**"}
+			cmd.Execute()
+
+			expectedPath := filepath.Join(tt.expectedDir, base)
+			expectedContent, err := os.ReadFile(expectedPath)
+			if err != nil {
+				t.Fatalf("Failed to read expected file: %v", err)
+			}
+
+			actualContent, err := os.ReadFile(dstPath)
+			if err != nil {
+				t.Fatalf("Failed to read actual file: %v", err)
+			}
+
+			if !bytes.Equal(expectedContent, actualContent) {
+				t.Errorf("File %s content doesn't match (exact byte comparison)\nExpected %d bytes:\n%q\nActual %d bytes:\n%q",
+					base, len(expectedContent), string(expectedContent), len(actualContent), string(actualContent))
+			}
+		})
+	}
+}
+
+func TestCRLFUpdateLicenseHeader(t *testing.T) {
+	temp, cleanup := tempDir(t, "testdata/temp_crlf_update")
+	defer cleanup()
+
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	cmd.ResetCommonFlags()
+
+	// Only file_with_header.go has a header to update
+	srcPath := "testdata/crlf/initial/file_with_header.go"
+	dstPath := filepath.Join(temp, "file_with_header.go")
+
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		t.Fatalf("Failed to read source file: %v", err)
+	}
+	err = os.WriteFile(dstPath, data, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write file: %v", err)
+	}
+
+	os.Args = []string{"nwa", "update", "-c", "BINARY Members", "-y", "2025", temp + "/**"}
+
+	cmd.Execute()
+
+	compareResultsExact(t, temp, "testdata/crlf/expected_update")
+}
+
+func TestCRLFRemoveLicenseHeader(t *testing.T) {
+	temp, cleanup := tempDir(t, "testdata/temp_crlf_remove")
+	defer cleanup()
+
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	cmd.ResetCommonFlags()
+
+	// Only file_with_header.go has a header to remove
+	srcPath := "testdata/crlf/initial/file_with_header.go"
+	dstPath := filepath.Join(temp, "file_with_header.go")
+
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		t.Fatalf("Failed to read source file: %v", err)
+	}
+	err = os.WriteFile(dstPath, data, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write file: %v", err)
+	}
+
+	os.Args = []string{"nwa", "remove", "-c", "BINARY Members", "-y", "2025", temp + "/**"}
+
+	cmd.Execute()
+
+	compareResultsExact(t, temp, "testdata/crlf/expected_remove")
 }

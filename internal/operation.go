@@ -15,7 +15,6 @@
 package internal
 
 import (
-	"bufio"
 	"bytes"
 	"io/fs"
 	"log/slog"
@@ -180,35 +179,25 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 			return
 		}
 
+		// detect line ending style before standardizing
+		ending := detectLineEnding(content)
+
+		// standardize line separator for internal processing
+		stdContent := standardizeLineSeparator(content)
+
 		// get the shebang of the special file
-		shebang := matchShebang(content)
+		shebang := matchShebang(stdContent)
 		// check if file has a utf8BOM
-		hasBOM := matchBOM(content)
+		hasBOM := matchBOM(stdContent)
 
-		file, err := os.Open(path)
-		if err != nil {
-			counter.failed++
-			slog.Error("open file error", slog.String("path", path), slog.String("err", err.Error()))
-			return
-		}
-
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			l := scanner.Bytes()
-			if len(l) == 0 {
-				break
-			}
-		}
-
-		afterBlankLine := make([]byte, 0)
-		// NOTE: scanner will not scan from the beginning
-		for scanner.Scan() {
-			afterBlankLine = append(afterBlankLine, scanner.Bytes()...)
-			afterBlankLine = append(afterBlankLine, '\n')
-		}
-		err = file.Close()
-		if err != nil {
-			slog.Error("file close error")
+		// find the first blank line using bytes.Index on standardized content
+		blankLineIdx := bytes.Index(stdContent, []byte("\n\n"))
+		var afterBlankLine []byte
+		if blankLineIdx == -1 {
+			// no blank line found, entire content is header
+			afterBlankLine = nil
+		} else {
+			afterBlankLine = stdContent[blankLineIdx+2:]
 		}
 
 		// add a blank line at the end of the header
@@ -216,6 +205,9 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 
 		// assemble license header and modify the file
 		b := assemble(shebang, header, afterBlankLine, hasBOM, true)
+
+		// restore original line ending style
+		b = convertLineEnding(b, ending)
 
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
@@ -243,6 +235,9 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
+
+		// detect line ending style before standardizing
+		ending := detectLineEnding(content)
 
 		// standardize line separator
 		content = standardizeLineSeparator(content)
@@ -273,6 +268,10 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 
 		// remove the header of the file
 		content = append(content[:idx], content[headerIdx:]...)
+
+		// restore original line ending style
+		content = convertLineEnding(content, ending)
+
 		// modify the file
 		err = os.WriteFile(path, content, d.Type())
 		if err != nil {
@@ -306,16 +305,25 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string) func() 
 			return
 		}
 
+		// detect line ending style before standardizing
+		ending := detectLineEnding(content)
+
+		// standardize content for shebang matching
+		stdContent := standardizeLineSeparator(content)
+
 		// get the shebang of the special file
-		shebang := matchShebang(content)
+		shebang := matchShebang(stdContent)
 		// check if file has a utf8BOM
-		hasBOM := matchBOM(content)
+		hasBOM := matchBOM(stdContent)
 
 		// add a blank line at the end of the header
 		header = append(header, '\n')
 
 		// assemble license header and modify the file
-		b := assemble(shebang, header, content, hasBOM, false)
+		b := assemble(shebang, header, stdContent, hasBOM, false)
+
+		// restore original line ending style
+		b = convertLineEnding(b, ending)
 
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
@@ -348,6 +356,31 @@ func standardizeLineSeparator(b []byte) []byte {
 	// CR => LF
 	b = bytes.ReplaceAll(b, []byte("\r"), []byte("\n"))
 	return b
+}
+
+// detectLineEnding detects the dominant line ending style in the content.
+// It returns "\r\n" for CRLF or "\n" for LF.
+// Empty files or files with no line breaks default to "\n".
+func detectLineEnding(b []byte) []byte {
+	crlfCount := bytes.Count(b, []byte("\r\n"))
+	lfOnly := bytes.Count(bytes.ReplaceAll(b, []byte("\r\n"), []byte("")), []byte("\n"))
+	if crlfCount == 0 {
+		return []byte("\n")
+	}
+	if crlfCount >= lfOnly {
+		return []byte("\r\n")
+	}
+	return []byte("\n")
+}
+
+// convertLineEnding converts all line endings in the content to the target style.
+// It first standardizes to LF, then replaces LF with the target ending.
+func convertLineEnding(b []byte, ending []byte) []byte {
+	b = standardizeLineSeparator(b)
+	if string(ending) == "\n" {
+		return b
+	}
+	return bytes.ReplaceAll(b, []byte("\n"), ending)
 }
 
 var yearRE = regexp.MustCompile(`\b\d{4}\b`)

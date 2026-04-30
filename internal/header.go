@@ -211,9 +211,9 @@ func doGenerate(tmpl []byte, top, mid, bot string) []byte {
 
 func isGenerated(b []byte) bool {
 	// go generate: ^// Code generated .* DO NOT EDIT\.$
-	goGenerated := regexp.MustCompile(`(?m)^.{1,2} Code generated .* DO NOT EDIT\.$`)
+	goGenerated := regexp.MustCompile(`(?m)^.{1,2} Code generated .* DO NOT EDIT\.\r?$`)
 	// cargo raze: ^DO NOT EDIT! Replaced on runs of cargo-raze$
-	cargoRazeGenerated := regexp.MustCompile(`(?m)^DO NOT EDIT! Replaced on runs of cargo-raze$`)
+	cargoRazeGenerated := regexp.MustCompile(`(?m)^DO NOT EDIT! Replaced on runs of cargo-raze\r?$`)
 	return goGenerated.Match(b) || cargoRazeGenerated.Match(b)
 }
 
