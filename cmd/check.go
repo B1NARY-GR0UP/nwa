@@ -21,13 +21,13 @@ import (
 
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
-	Use:   "check",
+	Use:   _useCheck,
 	Short: "check license headers of files",
 	Long: `Common Command | Check license headers of files
 
 NOTE: Do not use --mute(-m) flag with this command`,
 	Example: `nwa check --copyright "BINARY Members" --license apache --fuzzy "**/*.py"`,
-	GroupID: _common,
+	GroupID: _modeCommon,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		executeCommonCmd(cmd, args, defaultCommonFlags, internal.Check)

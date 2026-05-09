@@ -16,6 +16,7 @@ package internal
 
 import (
 	"bytes"
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -36,7 +37,7 @@ const (
 
 const _root = "."
 
-func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, styles []string, raw, fuzzy bool) {
+func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, styles []string, raw, fuzzy, dryRun bool) {
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
@@ -89,19 +90,19 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- doAdd(path, d, header, keywords)
+				taskC <- doAdd(path, d, header, keywords, dryRun)
 			}()
 		case Update:
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- doUpdate(path, d, header, keywords)
+				taskC <- doUpdate(path, d, header, keywords, dryRun)
 			}()
 		case Remove:
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- doRemove(path, d, header, fuzzy)
+				taskC <- doRemove(path, d, header, fuzzy, dryRun)
 			}()
 		case Check:
 			taskWG.Add(1)
@@ -158,7 +159,7 @@ func doCheck(path string, header []byte, fuzzy bool) func() {
 	}
 }
 
-func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func() {
+func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string, dryRun bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -171,10 +172,16 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 
 		// check generated first
 		if isGenerated(content) {
+			if dryRun {
+				fmt.Printf("[DRY-RUN] SKIP %s: generated file\n", path)
+			}
 			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
 		if !hasHeader(content, keywords) {
+			if dryRun {
+				fmt.Printf("[DRY-RUN] SKIP %s: no header found\n", path)
+			}
 			slog.Warn("file does not have a header", slog.String("path", path))
 			return
 		}
@@ -209,6 +216,11 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 		// restore original line ending style
 		b = convertLineEnding(b, ending)
 
+		if dryRun {
+			counter.wouldModify++
+			fmt.Printf("[DRY-RUN] UPDATE %s\n", path)
+			return
+		}
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			counter.failed++
@@ -220,7 +232,7 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string) func
 	}
 }
 
-func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
+func doRemove(path string, d fs.DirEntry, header []byte, fuzzy, dryRun bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -232,6 +244,9 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 		counter.scanned++
 
 		if isGenerated(content) {
+			if dryRun {
+				fmt.Printf("[DRY-RUN] SKIP %s: generated file\n", path)
+			}
 			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
@@ -252,6 +267,9 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 		// get the first index of the header in the file
 		idx := bytes.Index(content, header)
 		if idx == -1 {
+			if dryRun {
+				fmt.Printf("[DRY-RUN] SKIP %s: no matched header\n", path)
+			}
 			counter.failed++
 			slog.Warn("file does not have a matched header", slog.String("path", path))
 			return
@@ -272,6 +290,11 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 		// restore original line ending style
 		content = convertLineEnding(content, ending)
 
+		if dryRun {
+			counter.wouldModify++
+			fmt.Printf("[DRY-RUN] REMOVE %s\n", path)
+			return
+		}
 		// modify the file
 		err = os.WriteFile(path, content, d.Type())
 		if err != nil {
@@ -284,7 +307,7 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy bool) func() {
 	}
 }
 
-func doAdd(path string, d fs.DirEntry, header []byte, keywords []string) func() {
+func doAdd(path string, d fs.DirEntry, header []byte, keywords []string, dryRun bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -297,10 +320,16 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string) func() 
 
 		// check generated first
 		if isGenerated(content) {
+			if dryRun {
+				fmt.Printf("[DRY-RUN] SKIP %s: generated file\n", path)
+			}
 			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
 		if hasHeader(content, keywords) {
+			if dryRun {
+				fmt.Printf("[DRY-RUN] SKIP %s: already has header\n", path)
+			}
 			slog.Warn("file already has a header", slog.String("path", path))
 			return
 		}
@@ -325,6 +354,11 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string) func() 
 		// restore original line ending style
 		b = convertLineEnding(b, ending)
 
+		if dryRun {
+			counter.wouldModify++
+			fmt.Printf("[DRY-RUN] ADD %s\n", path)
+			return
+		}
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			counter.failed++

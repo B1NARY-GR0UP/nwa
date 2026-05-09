@@ -42,35 +42,40 @@ var (
 // - skipped
 // - failed
 var counter struct {
-	scanned    int // files have been read
-	matched    int // files license headers matched as required
-	mismatched int // files license headers do not match as required
-	modified   int // files have been modified (e.g. add, update, remove license header)
-	skipped    int // file paths match the skip pattern
-	failed     int // unexpected error occurred
+	scanned     int // files have been read
+	matched     int // files license headers matched as required
+	mismatched  int // files license headers do not match as required
+	modified    int // files have been modified (e.g. add, update, remove license header)
+	wouldModify int // dry-run: files would have been modified
+	skipped     int // file paths match the skip pattern
+	failed      int // unexpected error occurred
 }
+
+// TODO: if we need a task struct??
 
 type TaskParams struct {
 	Paths, Skips, Keywords, Styles []string
 	Raw, Fuzzy                     bool
 	Tmpl                           []byte
 	Op                             Operation
+	DryRun                         bool
 }
 
 // PrepareTasks walk through the dir and add tasks into task chan
 func PrepareTasks(params *TaskParams) {
 	counter = struct {
-		scanned    int
-		matched    int
-		mismatched int
-		modified   int
-		skipped    int
-		failed     int
+		scanned     int
+		matched     int
+		mismatched  int
+		modified    int
+		wouldModify int
+		skipped     int
+		failed      int
 	}{}
 	taskC = make(chan func(), _size)
 
 	for _, path := range params.Paths {
-		walkDir(path, params.Tmpl, params.Op, params.Skips, params.Keywords, params.Styles, params.Raw, params.Fuzzy)
+		walkDir(path, params.Tmpl, params.Op, params.Skips, params.Keywords, params.Styles, params.Raw, params.Fuzzy, params.DryRun)
 	}
 
 	go func() {
@@ -79,22 +84,32 @@ func PrepareTasks(params *TaskParams) {
 	}()
 }
 
-func ExecuteTasks(operation Operation, muteF bool) {
+func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 	for task := range taskC {
 		task()
 	}
 
 	switch operation {
 	case Add, Update, Remove:
+		if dryRunF {
+			fmt.Printf("[NWA SUMMARY] scanned=%d would_modify=%d skipped=%d failed=%d\n",
+				counter.scanned, counter.wouldModify, counter.skipped, counter.failed)
+			if counter.failed > 0 {
+				os.Exit(1)
+			}
+			return
+		}
 		if !muteF {
-			fmt.Printf("[NWA SUMMARY] scanned=%d modified=%d skipped=%d failed=%d\n", counter.scanned, counter.modified, counter.skipped, counter.failed)
+			fmt.Printf("[NWA SUMMARY] scanned=%d modified=%d skipped=%d failed=%d\n",
+				counter.scanned, counter.modified, counter.skipped, counter.failed)
 		}
 		if counter.failed > 0 {
 			os.Exit(1)
 		}
 	case Check:
 		if !muteF {
-			fmt.Printf("[NWA SUMMARY] scanned=%d matched=%d mismatched=%d skipped=%d failed=%d\n", counter.scanned, counter.matched, counter.mismatched, counter.skipped, counter.failed)
+			fmt.Printf("[NWA SUMMARY] scanned=%d matched=%d mismatched=%d skipped=%d failed=%d\n",
+				counter.scanned, counter.matched, counter.mismatched, counter.skipped, counter.failed)
 		}
 		// exit 1 to fail ci check
 		if counter.mismatched > 0 || counter.failed > 0 {

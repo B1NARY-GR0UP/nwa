@@ -27,3 +27,7 @@ output/*
 
 # Vscode files
 .vscode
+
+# AI
+.claude/
+.superpowers/

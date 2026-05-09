@@ -27,7 +27,7 @@ import (
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
-	Use:   "config",
+	Use:   _useConfig,
 	Short: "edit the files according to the configuration file",
 	Long: `Config Command | Edit files according to the configuration file
 
@@ -54,7 +54,7 @@ nwa:
     - "testdata/**"
   path:
     - "**/*.go"`,
-	GroupID: _config,
+	GroupID: _modeConfig,
 	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// read config
@@ -75,19 +75,39 @@ nwa:
 			operation = internal.Operation(defaultConfigFlags.Command)
 		}
 
+		// dry-run priority:
+		// 1. --dry-run (-D) flag
+		// 2. value configured for `dryrun` in the configuration file
+		// 3. default value (false)
+		dryRun := defaultConfig.Nwa.DryRun
+		if defaultConfigFlags.DryRun {
+			dryRun = true
+		}
+
+		// runtime dry-run validation
+		if dryRun && operation == internal.Check {
+			cobra.CheckErr("--dry-run (-D) cannot be used with check operation")
+		}
+		if dryRun && defaultConfig.Nwa.Mute {
+			cobra.CheckErr("--dry-run (-D) cannot be used with mute mode")
+		}
+		if dryRun && defaultConfig.Nwa.Verbose {
+			cobra.CheckErr("--dry-run (-D) cannot be used with verbose mode")
+		}
+
 		slog.SetLogLoggerLevel(slog.LevelWarn)
 		if defaultConfig.Nwa.Verbose {
 			slog.SetLogLoggerLevel(slog.LevelInfo)
 		}
-		// mute has a higher priority
-		if defaultConfig.Nwa.Mute {
+		// mute level has a higher priority
+		if defaultConfig.Nwa.Mute || dryRun {
 			slog.SetLogLoggerLevel(_levelMute)
 		}
 
 		// validate skip pattern
 		for _, s := range defaultConfig.Nwa.Skip {
 			if !doublestar.ValidatePattern(s) {
-				cobra.CheckErr(fmt.Errorf("-skip pattern %v is not valid", s))
+				cobra.CheckErr(fmt.Errorf("--skip (-s) pattern %v is not valid", s))
 			}
 		}
 		// validate path pattern
@@ -127,6 +147,7 @@ nwa:
 				Fuzzy:    defaultConfig.Nwa.Fuzzy,
 				Tmpl:     renderedTmpl,
 				Op:       operation,
+				DryRun:   dryRun,
 			})
 		} else {
 			// use customize template
@@ -138,10 +159,11 @@ nwa:
 				Styles:   defaultConfig.Nwa.Style,
 				Fuzzy:    defaultConfig.Nwa.Fuzzy,
 				Op:       operation,
+				DryRun:   dryRun,
 			}
 
 			switch defaultConfig.Nwa.TmplType {
-			case _live:
+			case _tmplLive:
 				tmplData := &internal.TmplData{
 					Holder:  defaultConfig.Nwa.Holder,
 					Year:    defaultConfig.Nwa.Year,
@@ -157,12 +179,12 @@ nwa:
 				params.Raw = false
 
 				internal.PrepareTasks(params)
-			case _static:
+			case _tmplStatic:
 				params.Tmpl = []byte(defaultConfig.Nwa.Tmpl)
 				params.Raw = false
 
 				internal.PrepareTasks(params)
-			case _raw:
+			case _tmplRaw:
 				params.Tmpl = []byte(defaultConfig.Nwa.Tmpl)
 				params.Raw = true
 
@@ -172,7 +194,7 @@ nwa:
 			}
 		}
 
-		internal.ExecuteTasks(operation, defaultConfig.Nwa.Mute)
+		internal.ExecuteTasks(operation, defaultConfig.Nwa.Mute, dryRun)
 	},
 }
 
@@ -182,6 +204,7 @@ func init() {
 
 type ConfigFlags struct {
 	Command string
+	DryRun  bool
 }
 
 var defaultConfigFlags = ConfigFlags{
@@ -204,6 +227,7 @@ type NwaConfig struct {
 
 	// advanced
 	Mute     bool     `yaml:"mute"`
+	DryRun   bool     `yaml:"dryrun"`
 	Verbose  bool     `yaml:"verbose"`
 	Fuzzy    bool     `yaml:"fuzzy"`
 	TmplType string   `yaml:"tmpltype"`
@@ -222,6 +246,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Path:     []string{},
 	Mute:     false,
 	Verbose:  false,
+	DryRun:   false,
 	Fuzzy:    false,
 	TmplType: "",
 	Tmpl:     "",

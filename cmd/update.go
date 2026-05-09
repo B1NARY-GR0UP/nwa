@@ -21,14 +21,14 @@ import (
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
-	Use:   "update",
+	Use:   _useUpdate,
 	Short: "update license headers of files",
 	Long: `Common Command | Update license headers of files
 
 NOTE: Update identifies the content before the first blank line as a license header;
 If your file does not meet the requirements, please use remove + add`,
 	Example: `nwa update -l mit -c Anmory "**/*.py"`,
-	GroupID: _common,
+	GroupID: _modeCommon,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		executeCommonCmd(cmd, args, defaultCommonFlags, internal.Update)

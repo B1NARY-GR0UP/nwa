@@ -44,8 +44,6 @@ var rootCmd = &cobra.Command{
 	Version: Version,
 }
 
-const _levelMute = 12
-
 // Execute executes the root command
 func Execute() {
 	err := rootCmd.Execute()
@@ -55,27 +53,37 @@ func Execute() {
 }
 
 const (
-	_common = "common"
-	_config = "config"
+	_useAdd    = "add"
+	_useCheck  = "check"
+	_useUpdate = "update"
+	_useRemove = "remove"
+	_useConfig = "config"
 )
+
+const (
+	_modeCommon = "common"
+	_modeConfig = "config"
+)
+
+const (
+	_tmplLive   = "live"
+	_tmplStatic = "static"
+	_tmplRaw    = "raw"
+)
+
+const _levelMute = 12
 
 func init() {
 	rootCmd.SetVersionTemplate("{{ .Version }}")
 	rootCmd.AddGroup(&cobra.Group{
-		ID:    _common,
+		ID:    _modeCommon,
 		Title: "Common Mode Commands:",
 	}, &cobra.Group{
-		ID:    _config,
+		ID:    _modeConfig,
 		Title: "Config Mode Commands:",
 	})
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
-
-const (
-	_live   = "live"
-	_static = "static"
-	_raw    = "raw"
-)
 
 type CommonFlags struct {
 	// Basic Flags
@@ -87,6 +95,7 @@ type CommonFlags struct {
 
 	// Advanced Flags
 	Mute     bool
+	DryRun   bool
 	Verbose  bool
 	Fuzzy    bool
 	TmplType string
@@ -102,6 +111,7 @@ var defaultCommonFlags = CommonFlags{
 	SPDXIDs:  "",
 	Skip:     []string{},
 	Mute:     false,
+	DryRun:   false,
 	Verbose:  false,
 	Fuzzy:    false,
 	TmplType: "",
@@ -121,6 +131,7 @@ func ResetCommonFlags() {
 		SPDXIDs:  "",
 		Skip:     []string{},
 		Mute:     false,
+		DryRun:   false,
 		Verbose:  false,
 		Fuzzy:    false,
 		TmplType: "",
@@ -155,12 +166,20 @@ func setupCommonCmd(common *cobra.Command) {
 	common.MarkFlagsMutuallyExclusive("license", "tmpl")
 	common.MarkFlagsMutuallyExclusive("license", "spdxids")
 	common.MarkFlagsMutuallyExclusive("style", "tmpl")
+
+	// for dry-run mode
+	if common.Use != _useCheck {
+		common.Flags().BoolVarP(&defaultCommonFlags.DryRun, "dry-run", "D", defaultCommonFlags.DryRun, "dry-run mode: print operations without modifying files")
+		common.MarkFlagsMutuallyExclusive("dry-run", "mute")
+		common.MarkFlagsMutuallyExclusive("dry-run", "verbose")
+	}
 }
 
 func setupConfigCmd(config *cobra.Command) {
 	rootCmd.AddCommand(config)
 
 	config.Flags().StringVarP(&defaultConfigFlags.Command, "command", "c", defaultConfigFlags.Command, "command to execute")
+	config.Flags().BoolVarP(&defaultConfigFlags.DryRun, "dry-run", "D", defaultConfigFlags.DryRun, "dry-run mode: print operations without modifying files")
 }
 
 func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation internal.Operation) {
@@ -168,7 +187,8 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 	if flags.Verbose {
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
-	if flags.Mute {
+	// dry-run mode uses stdout to print infos, mute slog to avoid duplicate outputs
+	if flags.Mute || flags.DryRun {
 		slog.SetLogLoggerLevel(_levelMute)
 	}
 
@@ -211,6 +231,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			Fuzzy:    flags.Fuzzy,
 			Tmpl:     renderedTmpl,
 			Op:       operation,
+			DryRun:   flags.DryRun,
 		})
 	} else {
 		// use customize template
@@ -226,10 +247,11 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			Styles:   flags.Style,
 			Fuzzy:    flags.Fuzzy,
 			Op:       operation,
+			DryRun:   flags.DryRun,
 		}
 
 		switch flags.TmplType {
-		case _live:
+		case _tmplLive:
 			tmplData := &internal.TmplData{
 				Holder:  flags.Holder,
 				Year:    flags.Year,
@@ -245,12 +267,12 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			params.Raw = false
 
 			internal.PrepareTasks(params)
-		case _static:
+		case _tmplStatic:
 			params.Tmpl = content
 			params.Raw = false
 
 			internal.PrepareTasks(params)
-		case _raw:
+		case _tmplRaw:
 			params.Tmpl = content
 			params.Raw = true
 
@@ -260,5 +282,6 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		}
 	}
 
-	internal.ExecuteTasks(operation, flags.Mute)
+	// mute flag and dry-run flag used to handle SUMMARY output
+	internal.ExecuteTasks(operation, flags.Mute, flags.DryRun)
 }
