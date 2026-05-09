@@ -39,6 +39,7 @@ Check the [Docker](#docker---run-nwa-through-docker-for-those-do-not-have-a-go-e
 - **[Check](#check---check-license-headers-of-files)**: Check license headers of files
 - **[Remove](#remove---remove-licenses-headers-of-files)**: Remove licenses headers of files
 - **[Update](#update---update-license-headers-of-files)**: Update license headers of files
+- **[Dry-Run](#dry-run---preview-operations-without-modifying-files)**: Preview operations without modifying files
 - **[Config](#config-mode)**: Edit files according to the configuration file
 - **[Built-in License Header Templates and Custom Templates](#built-in-license-header-templates-and-custom-templates)**: Use custom templates 
 - **[Used in GitHub Actions](#used-in-github-actions)**: Use NWA in GitHub Actions
@@ -92,6 +93,7 @@ Use "nwa [command] --help" for more information about a command.
 | -f    | --fuzzy    | `false` (unspecified) | commands `check` and `remove` will ignore differences in the **year** within the license header                                                        |
 | -k    | --keyword  | `[]`                  | keyword used to confirm the existence of license headers (only used in commands `add` and `update`)                                                    |
 | -S    | --style    | `[]`                  | customize the comment style (`line`, `block`, `hash`, `doc`, `starred-block`) for different extensions in the format `extension:style`, e.g.`go:block` |
+| -D    | --dry-run  | `false` (unspecified) | dry-run mode: print operations without modifying files (not available for `check` command)                                                               |
 
 ### DoubleStar(**) Patterns
 
@@ -244,6 +246,47 @@ regardless of the previous license header.
 
 </details>
 
+<details>
+<summary><h3>Dry-Run - Preview operations without modifying files</h3></summary>
+
+- **Supported commands in Common Mode**: `add`, `remove`, `update` (the `check` command is already read-only and does **not** accept `--dry-run`)
+
+- **Supported in Config Mode**: `--dry-run` (`-D`) flag and `dryrun` config field are supported; however, when the operation is `check`, `--dry-run` will cause an error
+
+- **Conflicts**: `--dry-run` is mutually exclusive with `--mute` (`-m`) and `--verbose` (`-V`)
+
+- **Usage**
+
+```shell
+nwa add --dry-run -l apache -c "RHINE LAB.LLC." "**/*.go"
+nwa update -D -l mit -c "BINARY Members" "src/**"
+nwa remove -D -l gpl-3.0-only -c "Florwave Members" "**/*.py"
+nwa config --dry-run --command add
+```
+
+- **Output**
+
+In dry-run mode, NWA prints each operation that *would* be performed with a `[DRY-RUN]` prefix, and the summary shows `would_modify` instead of `modified`:
+
+```txt
+[DRY-RUN] ADD src/main.go
+[DRY-RUN] SKIP src/vendor/lib.go: generated file
+[DRY-RUN] SKIP src/utils.go: already has header
+[NWA SUMMARY] scanned=3 would_modify=1 skipped=2 failed=0
+```
+
+NWA exits with code `1` if any failures occur during the dry-run, even though no files were modified.
+
+- **Config Mode Priority**:
+
+In config mode, `dryrun` can also be set in the configuration file. The CLI flag takes priority:
+
+1. `--dry-run` (`-D`) flag
+2. `dryrun` field in the configuration file
+3. default (`false`)
+
+</details>
+
 ### Config Mode
 
 - **Flags**
@@ -292,6 +335,7 @@ nwa:
   # advanced
   mute: false                       # Default: false (unspecified)
   verbose: false                    # Default: false (unspecified)
+  dryrun: false                     # Default: false (unspecified); Cannot be used with check operation
   fuzzy: false                      # Default: false (unspecified); Used for "check" and "remove" commands
   tmpltype: ""                      # Default: ""; Optional: "live", "static", "raw"
   tmpl: ""                          # Default: ""                                                       
