@@ -16,12 +16,12 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 	"time"
 
 	"github.com/B1NARY-GR0UP/nwa/internal"
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -71,8 +71,6 @@ const (
 	_tmplRaw    = "raw"
 )
 
-const _levelMute = 12
-
 func init() {
 	rootCmd.SetVersionTemplate("{{ .Version }}")
 	rootCmd.AddGroup(&cobra.Group{
@@ -102,6 +100,7 @@ type CommonFlags struct {
 	Tmpl     string // template file path
 	Keyword  []string
 	Style    []string
+	NoColor  bool
 }
 
 var defaultCommonFlags = CommonFlags{
@@ -118,6 +117,7 @@ var defaultCommonFlags = CommonFlags{
 	Tmpl:     "",
 	Keyword:  []string{},
 	Style:    []string{},
+	NoColor:  false,
 }
 
 // ResetCommonFlags resets the common flags to their default values.
@@ -138,6 +138,7 @@ func ResetCommonFlags() {
 		Tmpl:     "",
 		Keyword:  []string{},
 		Style:    []string{},
+		NoColor:  false,
 	}
 }
 
@@ -167,6 +168,9 @@ func setupCommonCmd(common *cobra.Command) {
 	common.MarkFlagsMutuallyExclusive("license", "spdxids")
 	common.MarkFlagsMutuallyExclusive("style", "tmpl")
 
+	// no-color
+	common.Flags().BoolVar(&defaultCommonFlags.NoColor, "no-color", false, "disable color output")
+
 	// for dry-run mode
 	if common.Use != _useCheck {
 		common.Flags().BoolVarP(&defaultCommonFlags.DryRun, "dry-run", "D", defaultCommonFlags.DryRun, "dry-run mode: print operations without modifying files")
@@ -180,17 +184,20 @@ func setupConfigCmd(config *cobra.Command) {
 
 	config.Flags().StringVarP(&defaultConfigFlags.Command, "command", "c", defaultConfigFlags.Command, "command to execute")
 	config.Flags().BoolVarP(&defaultConfigFlags.DryRun, "dry-run", "D", defaultConfigFlags.DryRun, "dry-run mode: print operations without modifying files")
+	config.Flags().BoolVar(&defaultConfigFlags.NoColor, "no-color", false, "disable color output")
 }
 
 func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation internal.Operation) {
-	slog.SetLogLoggerLevel(slog.LevelWarn)
+	color.NoColor = flags.NoColor
+
+	level := internal.LvlWarn
 	if flags.Verbose {
-		slog.SetLogLoggerLevel(slog.LevelInfo)
+		level = internal.LvlInfo
 	}
-	// dry-run mode uses stdout to print infos, mute slog to avoid duplicate outputs
 	if flags.Mute || flags.DryRun {
-		slog.SetLogLoggerLevel(_levelMute)
+		level = internal.LvlMute
 	}
+	internal.SetLevel(level)
 
 	// validate skip pattern
 	for _, s := range flags.Skip {

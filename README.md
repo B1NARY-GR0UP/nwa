@@ -279,11 +279,13 @@ NWA exits with code `1` if any failures occur during the dry-run, even though no
 
 - **Config Mode Priority**:
 
-In config mode, `dryrun` can also be set in the configuration file. The CLI flag takes priority:
+In config mode, `dryrun` and `nocolor` can also be set in the configuration file. The CLI flag takes priority:
 
 1. `--dry-run` (`-D`) flag
 2. `dryrun` field in the configuration file
 3. default (`false`)
+
+The same applies to `nocolor` / `--no-color`.
 
 </details>
 
@@ -342,6 +344,7 @@ nwa:
   tmpl: ""                          # Default: ""                                                       
   keyword: []                       # Default: []; Used for "add" and "update" commands
   style: []                         # Default: []
+  nocolor: false                     # Default: false (unspecified); disable color output
 ```
 
 ### Built-in License Header Templates and Custom Templates

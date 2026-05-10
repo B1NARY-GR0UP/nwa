@@ -92,7 +92,8 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 	switch operation {
 	case Add, Update, Remove:
 		if dryRunF {
-			fmt.Printf("[NWA SUMMARY] scanned=%d would_modify=%d skipped=%d failed=%d\n",
+			fmt.Printf("%s scanned=%d would_modify=%d skipped=%d failed=%d\n",
+				SummaryColor.Sprintf("[NWA SUMMARY]"),
 				counter.scanned, counter.wouldModify, counter.skipped, counter.failed)
 			if counter.failed > 0 {
 				os.Exit(1)
@@ -100,7 +101,8 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 			return
 		}
 		if !muteF {
-			fmt.Printf("[NWA SUMMARY] scanned=%d modified=%d skipped=%d failed=%d\n",
+			fmt.Printf("%s scanned=%d modified=%d skipped=%d failed=%d\n",
+				SummaryColor.Sprintf("[NWA SUMMARY]"),
 				counter.scanned, counter.modified, counter.skipped, counter.failed)
 		}
 		if counter.failed > 0 {
@@ -108,7 +110,8 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 		}
 	case Check:
 		if !muteF {
-			fmt.Printf("[NWA SUMMARY] scanned=%d matched=%d mismatched=%d skipped=%d failed=%d\n",
+			fmt.Printf("%s scanned=%d matched=%d mismatched=%d skipped=%d failed=%d\n",
+				SummaryColor.Sprintf("[NWA SUMMARY]"),
 				counter.scanned, counter.matched, counter.mismatched, counter.skipped, counter.failed)
 		}
 		// exit 1 to fail ci check

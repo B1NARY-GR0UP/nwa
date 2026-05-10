@@ -16,11 +16,11 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/B1NARY-GR0UP/nwa/internal"
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -84,6 +84,16 @@ nwa:
 			dryRun = true
 		}
 
+		// no-color priority:
+		// 1. --no-color flag
+		// 2. value configured for `nocolor` in the configuration file
+		// 3. default value (false)
+		noColor := defaultConfig.Nwa.NoColor
+		if defaultConfigFlags.NoColor {
+			noColor = true
+		}
+		color.NoColor = noColor
+
 		// runtime dry-run validation
 		if dryRun && operation == internal.Check {
 			cobra.CheckErr("--dry-run (-D) cannot be used with check operation")
@@ -95,14 +105,14 @@ nwa:
 			cobra.CheckErr("--dry-run (-D) cannot be used with verbose mode")
 		}
 
-		slog.SetLogLoggerLevel(slog.LevelWarn)
+		level := internal.LvlWarn
 		if defaultConfig.Nwa.Verbose {
-			slog.SetLogLoggerLevel(slog.LevelInfo)
+			level = internal.LvlInfo
 		}
-		// mute level has a higher priority
 		if defaultConfig.Nwa.Mute || dryRun {
-			slog.SetLogLoggerLevel(_levelMute)
+			level = internal.LvlMute
 		}
+		internal.SetLevel(level)
 
 		// validate skip pattern
 		for _, s := range defaultConfig.Nwa.Skip {
@@ -205,6 +215,7 @@ func init() {
 type ConfigFlags struct {
 	Command string
 	DryRun  bool
+	NoColor bool
 }
 
 var defaultConfigFlags = ConfigFlags{
@@ -234,6 +245,7 @@ type NwaConfig struct {
 	Tmpl     string   `yaml:"tmpl"`
 	Keyword  []string `yaml:"keyword"`
 	Style    []string `yaml:"style"`
+	NoColor  bool     `yaml:"nocolor"`
 }
 
 var defaultConfig = &Config{Nwa: NwaConfig{

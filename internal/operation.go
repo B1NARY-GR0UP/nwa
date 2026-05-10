@@ -16,14 +16,13 @@ package internal
 
 import (
 	"bytes"
-	"fmt"
 	"io/fs"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"regexp"
 
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/fatih/color"
 )
 
 type Operation string
@@ -38,10 +37,26 @@ const (
 const _root = "."
 
 func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, styles []string, raw, fuzzy, dryRun bool) {
+	tag := string(operation)
+	var tagColor *color.Color
+	switch operation {
+	case Add:
+		tag = "ADD"
+		tagColor = AddTagColor
+	case Update:
+		tag = "UPDATE"
+		tagColor = UpdateTagColor
+	case Remove:
+		tag = "REMOVE"
+		tagColor = RemoveTagColor
+	case Check:
+		tag = "CHECK"
+		tagColor = CheckTagColor
+	}
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			counter.failed++
-			slog.Error("walk dir error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, tag, tagColor, path, "walk dir error: %v", err)
 			return nil
 		}
 
@@ -52,7 +67,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 		match, err := doublestar.Match(pattern, path)
 		if err != nil {
 			counter.failed++
-			slog.Error("match doublestar pattern error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, tag, tagColor, path, "match doublestar pattern error: %v", err)
 			return nil
 		}
 		if !match {
@@ -67,7 +82,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 		// determine if this file needs to be skipped
 		if isSkip(path, skips) {
 			counter.skipped++
-			slog.Info("skip file", slog.String("path", path))
+			Log(LvlInfo, tag, tagColor, path, "skip file")
 			return nil
 		}
 
@@ -79,7 +94,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 			header, err = generateHeader(path, tmpl, styles)
 			if err != nil {
 				counter.failed++
-				slog.Warn(err.Error(), slog.String("path", path))
+				Log(LvlWarn, tag, tagColor, path, err.Error())
 				return nil
 			}
 		}
@@ -111,7 +126,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 				taskC <- doCheck(path, header, fuzzy)
 			}()
 		default:
-			slog.Warn("not a valid operation")
+			Logf(LvlWarn, tag, tagColor, "", "not a valid operation")
 		}
 		return nil
 	}); err != nil {
@@ -124,14 +139,14 @@ func doCheck(path string, header []byte, fuzzy bool) func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
 			counter.failed++
-			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "CHECK", CheckTagColor, path, "read file error: %v", err)
 			return
 		}
 
 		counter.scanned++
 
 		if isGenerated(content) {
-			slog.Warn("file is generated, won't be checked", slog.String("path", path))
+			Log(LvlWarn, "CHECK", CheckTagColor, path, "generated file, won't be checked")
 			return
 		}
 
@@ -150,12 +165,12 @@ func doCheck(path string, header []byte, fuzzy bool) func() {
 		// matched
 		if idx != -1 {
 			counter.matched++
-			slog.Info("file has a matched header", slog.String("path", path))
+			Log(LvlInfo, "CHECK", CheckTagColor, path, "file has a matched header")
 			return
 		}
 		// mismatched
 		counter.mismatched++
-		slog.Warn("file does not have a matched header", slog.String("path", path))
+		Log(LvlWarn, "CHECK", CheckTagColor, path, "file does not have a matched header")
 	}
 }
 
@@ -164,7 +179,7 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string, dryR
 		content, err := os.ReadFile(path)
 		if err != nil {
 			counter.failed++
-			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "UPDATE", UpdateTagColor, path, "read file error: %v", err)
 			return
 		}
 
@@ -173,16 +188,18 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string, dryR
 		// check generated first
 		if isGenerated(content) {
 			if dryRun {
-				fmt.Printf("[DRY-RUN] SKIP %s: generated file\n", path)
+				Log(LvlDryRun, "SKIP", SkipTagColor, path, "generated file")
+			} else {
+				Log(LvlWarn, "UPDATE", UpdateTagColor, path, "generated file, won't be modified")
 			}
-			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
 		if !hasHeader(content, keywords) {
 			if dryRun {
-				fmt.Printf("[DRY-RUN] SKIP %s: no header found\n", path)
+				Log(LvlDryRun, "SKIP", SkipTagColor, path, "no header found")
+			} else {
+				Log(LvlWarn, "UPDATE", UpdateTagColor, path, "file does not have a header")
 			}
-			slog.Warn("file does not have a header", slog.String("path", path))
 			return
 		}
 
@@ -218,17 +235,17 @@ func doUpdate(path string, d fs.DirEntry, header []byte, keywords []string, dryR
 
 		if dryRun {
 			counter.wouldModify++
-			fmt.Printf("[DRY-RUN] UPDATE %s\n", path)
+			Log(LvlDryRun, "UPDATE", UpdateTagColor, path, "")
 			return
 		}
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			counter.failed++
-			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "UPDATE", UpdateTagColor, path, "write file error: %v", err)
 			return
 		}
 		counter.modified++
-		slog.Info("file has been modified", slog.String("path", path))
+		Log(LvlInfo, "UPDATE", UpdateTagColor, path, "file has been modified")
 	}
 }
 
@@ -237,7 +254,7 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy, dryRun bool) fun
 		content, err := os.ReadFile(path)
 		if err != nil {
 			counter.failed++
-			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "REMOVE", RemoveTagColor, path, "read file error: %v", err)
 			return
 		}
 
@@ -245,9 +262,10 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy, dryRun bool) fun
 
 		if isGenerated(content) {
 			if dryRun {
-				fmt.Printf("[DRY-RUN] SKIP %s: generated file\n", path)
+				Log(LvlDryRun, "SKIP", SkipTagColor, path, "generated file")
+			} else {
+				Log(LvlWarn, "REMOVE", RemoveTagColor, path, "generated file, won't be modified")
 			}
-			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
 
@@ -268,10 +286,10 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy, dryRun bool) fun
 		idx := bytes.Index(content, header)
 		if idx == -1 {
 			if dryRun {
-				fmt.Printf("[DRY-RUN] SKIP %s: no matched header\n", path)
+				Log(LvlDryRun, "SKIP", SkipTagColor, path, "no matched header")
+			} else {
+				Log(LvlWarn, "REMOVE", RemoveTagColor, path, "file does not have a matched header")
 			}
-			counter.failed++
-			slog.Warn("file does not have a matched header", slog.String("path", path))
 			return
 		}
 
@@ -292,18 +310,18 @@ func doRemove(path string, d fs.DirEntry, header []byte, fuzzy, dryRun bool) fun
 
 		if dryRun {
 			counter.wouldModify++
-			fmt.Printf("[DRY-RUN] REMOVE %s\n", path)
+			Log(LvlDryRun, "REMOVE", RemoveTagColor, path, "")
 			return
 		}
 		// modify the file
 		err = os.WriteFile(path, content, d.Type())
 		if err != nil {
 			counter.failed++
-			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "REMOVE", RemoveTagColor, path, "write file error: %v", err)
 			return
 		}
 		counter.modified++
-		slog.Info("file has been modified", slog.String("path", path))
+		Log(LvlInfo, "REMOVE", RemoveTagColor, path, "file has been modified")
 	}
 }
 
@@ -312,7 +330,7 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string, dryRun 
 		content, err := os.ReadFile(path)
 		if err != nil {
 			counter.failed++
-			slog.Error("read file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "ADD", AddTagColor, path, "read file error: %v", err)
 			return
 		}
 
@@ -321,16 +339,18 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string, dryRun 
 		// check generated first
 		if isGenerated(content) {
 			if dryRun {
-				fmt.Printf("[DRY-RUN] SKIP %s: generated file\n", path)
+				Log(LvlDryRun, "SKIP", SkipTagColor, path, "generated file")
+			} else {
+				Log(LvlWarn, "ADD", AddTagColor, path, "generated file, won't be modified")
 			}
-			slog.Warn("file is generated, won't be modified", slog.String("path", path))
 			return
 		}
 		if hasHeader(content, keywords) {
 			if dryRun {
-				fmt.Printf("[DRY-RUN] SKIP %s: already has header\n", path)
+				Log(LvlDryRun, "SKIP", SkipTagColor, path, "already has header")
+			} else {
+				Log(LvlWarn, "ADD", AddTagColor, path, "file already has a header")
 			}
-			slog.Warn("file already has a header", slog.String("path", path))
 			return
 		}
 
@@ -356,17 +376,17 @@ func doAdd(path string, d fs.DirEntry, header []byte, keywords []string, dryRun 
 
 		if dryRun {
 			counter.wouldModify++
-			fmt.Printf("[DRY-RUN] ADD %s\n", path)
+			Log(LvlDryRun, "ADD", AddTagColor, path, "")
 			return
 		}
 		err = os.WriteFile(path, b, d.Type())
 		if err != nil {
 			counter.failed++
-			slog.Error("write file error", slog.String("path", path), slog.String("err", err.Error()))
+			Logf(LvlError, "ADD", AddTagColor, path, "write file error: %v", err)
 			return
 		}
 		counter.modified++
-		slog.Info("file has been modified", slog.String("path", path))
+		Log(LvlInfo, "ADD", AddTagColor, path, "file has been modified")
 	}
 }
 
@@ -374,7 +394,7 @@ func isSkip(path string, pattern []string) bool {
 	for _, p := range pattern {
 		if match, err := doublestar.Match(p, path); match {
 			if err != nil {
-				slog.Error("skip pattern match error", slog.String("path", path), slog.String("pattern", p))
+				Logf(LvlError, "", nil, path, "skip pattern match error: %s", p)
 				return false
 			}
 			return true
