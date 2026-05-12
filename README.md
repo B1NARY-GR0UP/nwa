@@ -291,10 +291,11 @@ In config mode, `dryrun` can also be set in the configuration file. The CLI flag
 
 - **Flags**
 
-| Short | Long        | Default                            | Description        |
-|-------|-------------|------------------------------------|--------------------|
-| -c    | --command   | add                                | command to execute |
-| -h    | --help      | null                               | help for config    |
+| Short | Long        | Default                            | Description                                            |
+|-------|-------------|------------------------------------|--------------------------------------------------------|
+| -c    | --command   | add                                | command to execute                                     |
+| -D    | --dry-run   | false (unspecified)                | dry-run mode: print operations without modifying files |
+| -h    | --help      | null                               | help for config                                        |
 
 > **NOTE: If some configuration is not configured, the default configuration will be used.**
 
