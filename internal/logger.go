@@ -21,7 +21,18 @@ import (
 	"github.com/fatih/color"
 )
 
-// label colors (level prefix [ERROR] [WARN] [INFO] [DRY-RUN])
+// Output format:
+//
+//	[LABEL] TAG msg: path        (msg + path)
+//	[LABEL] TAG path             (path only)
+//	[LABEL] TAG msg              (msg only)
+//	[NWA SUMMARY] scanned=...    (summary)
+//
+// Labels: [ERROR] [WARN] [INFO] [DRY-RUN]
+// Tags:   ADD UPDATE REMOVE CHECK SKIP
+//
+// Dry-run output goes to stdout, log output goes to stderr.
+
 var (
 	ErrorLabelColor  = color.New(color.FgRed, color.Bold)    // [ERROR]
 	WarnLabelColor   = color.New(color.FgYellow, color.Bold) // [WARN]
@@ -29,7 +40,6 @@ var (
 	DryRunLabelColor = color.New(color.FgCyan, color.Bold)   // [DRY-RUN]
 )
 
-// tag colors (ADD UPDATE REMOVE CHECK SKIP)
 var (
 	AddTagColor    = color.New(color.FgGreen, color.Bold)   // ADD
 	UpdateTagColor = color.New(color.FgMagenta, color.Bold) // UPDATE
@@ -154,7 +164,7 @@ func printLine(w *os.File, level Level, tag string, tagColor *color.Color, path,
 	var body string
 	switch {
 	case path != "" && msg != "":
-		body = PathColor.Sprint(path) + ": " + msg
+		body = msg + ": " + PathColor.Sprint(path)
 	case path != "":
 		body = PathColor.Sprint(path)
 	case msg != "":
