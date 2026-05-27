@@ -29,13 +29,13 @@ var (
 
 // lock-free because of serial
 //
-// Add, Update, Remove:
+// OpAdd, OpUpdate, OpRemove:
 // - scanned
 // - modified
 // - skipped
 // - failed
 //
-// Check:
+// OpCheck:
 // - scanned
 // - matched
 // - mismatched
@@ -90,7 +90,7 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 	}
 
 	switch operation {
-	case Add, Update, Remove:
+	case OpAdd, OpUpdate, OpRemove:
 		if dryRunF {
 			fmt.Printf("%s scanned=%d would_modify=%d skipped=%d failed=%d\n",
 				SummaryColor.Sprintf("[NWA SUMMARY]"),
@@ -108,7 +108,7 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 		if counter.failed > 0 {
 			os.Exit(1)
 		}
-	case Check:
+	case OpCheck:
 		if !muteF {
 			fmt.Printf("%s scanned=%d matched=%d mismatched=%d skipped=%d failed=%d\n",
 				SummaryColor.Sprintf("[NWA SUMMARY]"),

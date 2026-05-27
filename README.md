@@ -94,6 +94,7 @@ Use "nwa [command] --help" for more information about a command.
 | -k    | --keyword  | `[]`                  | keyword used to confirm the existence of license headers; generally not needed, only use when NWA cannot correctly identify your license header (only used in commands `add` and `update`) |
 | -S    | --style    | `[]`                  | customize the comment style (`line`, `block`, `hash`, `doc`, `starred-block`) for different extensions in the format `extension:style`, e.g.`go:block` |
 | -D    | --dry-run  | `false` (unspecified) | dry-run mode: print operations without modifying files (not available for `check` command)                                                               |
+|       | --no-color | `false` (unspecified) | disable color output                                                                                                                                   |
 
 ### DoubleStar(**) Patterns
 
@@ -297,9 +298,18 @@ The same applies to `nocolor` / `--no-color`.
 |-------|-------------|------------------------------------|--------------------------------------------------------|
 | -c    | --command   | add                                | command to execute                                     |
 | -D    | --dry-run   | false (unspecified)                | dry-run mode: print operations without modifying files |
+|       | --no-color  | false (unspecified)                | disable color output                                   |
 | -h    | --help      | null                               | help for config                                        |
 
 > **NOTE: If some configuration is not configured, the default configuration will be used.**
+
+- **Priority**:
+
+The `cmd` (`--command` / `-c`), `dryrun` (`--dry-run` / `-D`), and `nocolor` (`--no-color`) values can be set both via CLI flag and in the configuration file. In all cases, the CLI flag takes priority:
+
+1. CLI flag
+2. Configuration file field
+3. Default value
 
 - **Usage**
 

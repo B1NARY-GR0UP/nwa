@@ -1,3 +1,17 @@
+// Copyright 2023 BINARY Members
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package internal
 
 import (
@@ -7,27 +21,34 @@ import (
 	"github.com/fatih/color"
 )
 
-// --- Label colors (level prefix [ERROR] [WARN] [INFO] [DRY-RUN]) ---
+// label colors (level prefix [ERROR] [WARN] [INFO] [DRY-RUN])
 var (
-	ErrorLabelColor  = color.New(color.FgRed, color.Bold)  // [ERROR]
-	WarnLabelColor   = color.New(color.FgYellow)           // [WARN]
-	InfoLabelColor   = color.New(color.FgCyan, color.Bold) // [INFO]
-	DryRunLabelColor = color.New(color.FgCyan, color.Bold) // [DRY-RUN]
+	ErrorLabelColor  = color.New(color.FgRed, color.Bold)    // [ERROR]
+	WarnLabelColor   = color.New(color.FgYellow, color.Bold) // [WARN]
+	InfoLabelColor   = color.New(color.FgCyan, color.Bold)   // [INFO]
+	DryRunLabelColor = color.New(color.FgCyan, color.Bold)   // [DRY-RUN]
 )
 
-// --- Tag colors (operation/action: ADD UPDATE REMOVE CHECK SKIP) ---
+// tag colors (ADD UPDATE REMOVE CHECK SKIP)
 var (
 	AddTagColor    = color.New(color.FgGreen, color.Bold)   // ADD
 	UpdateTagColor = color.New(color.FgMagenta, color.Bold) // UPDATE
 	RemoveTagColor = color.New(color.FgRed, color.Bold)     // REMOVE
 	CheckTagColor  = color.New(color.FgCyan, color.Bold)    // CHECK
-	SkipTagColor   = color.New(color.FgYellow)              // SKIP
+	SkipTagColor   = color.New(color.FgYellow, color.Bold)  // SKIP
 )
 
-// --- Other ---
 var (
-	PathColor    = color.New(color.FgWhite)            // file path
-	SummaryColor = color.New(color.FgBlue, color.Bold) // [NWA SUMMARY] header
+	PathColor    = color.New(color.FgHiWhite, color.Bold) // file path
+	SummaryColor = color.New(color.FgBlue, color.Bold)    // [NWA SUMMARY] header
+)
+
+const (
+	TagAdd    = "ADD  "
+	TagUpdate = "UPDATE"
+	TagRemove = "REMOVE"
+	TagCheck  = "CHECK"
+	TagSkip   = "SKIP "
 )
 
 type Level int
@@ -44,6 +65,23 @@ var logLevel = LvlWarn // default: Error + Warn
 
 // SetLevel sets the minimum log level for stderr output.
 func SetLevel(level Level) { logLevel = level }
+
+// opColor returns the tag color for an operation.
+func opColor(op Operation) *color.Color {
+	switch op {
+	case OpAdd:
+		return AddTagColor
+	case OpUpdate:
+		return UpdateTagColor
+	case OpRemove:
+		return RemoveTagColor
+	case OpCheck:
+		return CheckTagColor
+	default:
+		panic("unknown operation")
+	}
+	return nil
+}
 
 func labelColor(level Level) *color.Color {
 	switch level {
@@ -124,8 +162,8 @@ func printLine(w *os.File, level Level, tag string, tagColor *color.Color, path,
 	}
 
 	if tagPart != "" {
-		fmt.Fprintf(w, "%s %s %s\n", lc.Sprintf("[%s]", ls), tagPart, body)
+		_, _ = fmt.Fprintf(w, "%s %s %s\n", lc.Sprintf("[%s]", ls), tagPart, body)
 	} else {
-		fmt.Fprintf(w, "%s %s\n", lc.Sprintf("[%s]", ls), body)
+		_, _ = fmt.Fprintf(w, "%s %s\n", lc.Sprintf("[%s]", ls), body)
 	}
 }

@@ -31,7 +31,7 @@ If your file does not meet the requirements, please use remove + add`,
 	GroupID: _modeCommon,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		executeCommonCmd(cmd, args, defaultCommonFlags, internal.Update)
+		executeCommonCmd(cmd, args, defaultCommonFlags, internal.OpUpdate)
 	},
 }
 

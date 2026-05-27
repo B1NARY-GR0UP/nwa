@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/B1NARY-GR0UP/nwa/internal"
@@ -70,9 +71,9 @@ nwa:
 		// 1. --command (-c) flag
 		// 2. value configured for `cmd` in the configuration file
 		// 3. default value of `cmd` in the configuration file (add)
-		operation := internal.Operation(defaultConfig.Nwa.Cmd)
+		operation := internal.Operation(strings.ToUpper(defaultConfig.Nwa.Cmd))
 		if defaultConfigFlags.Command != "" {
-			operation = internal.Operation(defaultConfigFlags.Command)
+			operation = internal.Operation(strings.ToUpper(defaultConfigFlags.Command))
 		}
 
 		// dry-run priority:
@@ -95,7 +96,7 @@ nwa:
 		color.NoColor = noColor
 
 		// runtime dry-run validation
-		if dryRun && operation == internal.Check {
+		if dryRun && operation == internal.OpCheck {
 			cobra.CheckErr("--dry-run (-D) cannot be used with check operation")
 		}
 		if dryRun && defaultConfig.Nwa.Mute {
@@ -264,6 +265,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Tmpl:     "",
 	Keyword:  []string{},
 	Style:    []string{},
+	NoColor:  false,
 }}
 
 func (cfg *Config) readInConfig(path string) error {

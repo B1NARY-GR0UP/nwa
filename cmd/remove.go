@@ -28,7 +28,7 @@ var removeCmd = &cobra.Command{
 	GroupID: _modeCommon,
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		executeCommonCmd(cmd, args, defaultCommonFlags, internal.Remove)
+		executeCommonCmd(cmd, args, defaultCommonFlags, internal.OpRemove)
 	},
 }
 
