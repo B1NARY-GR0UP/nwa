@@ -552,7 +552,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.23
+          go-version: 1.25
 
       - name: Install NWA
         run: go install github.com/B1NARY-GR0UP/nwa@latest
