@@ -159,7 +159,7 @@ func doCheck(path string, header []byte, fuzzy, diff bool) func() {
 		counter.mismatched++
 
 		Log(LvlWarn, TagCheck, CheckTagColor, path, "file does not have a matched header")
-		if diff {
+		if diff && !IsMuted() {
 			// +1 converts newline count to line count, +5 provides context margin
 			currentHeader := extractHeader(content, bytes.Count(header, []byte("\n"))+1+5)
 			DiffReport(os.Stderr, header, currentHeader)

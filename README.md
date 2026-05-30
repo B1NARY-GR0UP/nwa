@@ -214,7 +214,7 @@ nwa check -c "Lorain" --diff "main.go"
 
 The `--diff` flag displays a colored unified diff showing the difference between the expected license header and the actual header in the file. Red lines (`-`) show what's expected but missing, green lines (`+`) show what's present but unexpected.
 
-Mute mode:
+Mute mode (`--mute` / `-m`):
 
 ```txt
 ```
@@ -491,7 +491,7 @@ nwa add -T raw -t myrawtmpl.txt "**/*.java"
 
 `myrawtmpl.txt` is as follows:
 
-```txt
+```shell
 // Copyright 2077 RHINE LAB.LLC.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");

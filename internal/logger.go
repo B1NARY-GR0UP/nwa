@@ -76,6 +76,9 @@ var logLevel = LvlWarn // default: Error + Warn
 // SetLevel sets the minimum log level for stderr output.
 func SetLevel(level Level) { logLevel = level }
 
+// IsMuted reports whether stderr output is completely silenced.
+func IsMuted() bool { return logLevel == LvlMute }
+
 // opColor returns the tag color for an operation.
 func opColor(op Operation) *color.Color {
 	switch op {
