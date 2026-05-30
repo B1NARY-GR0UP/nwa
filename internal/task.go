@@ -55,7 +55,7 @@ var counter struct {
 
 type TaskParams struct {
 	Paths, Skips, Keywords, Styles []string
-	Raw, Fuzzy                     bool
+	Raw, Fuzzy, Diff               bool
 	Tmpl                           []byte
 	Op                             Operation
 	DryRun                         bool
@@ -75,7 +75,7 @@ func PrepareTasks(params *TaskParams) {
 	taskC = make(chan func(), _size)
 
 	for _, path := range params.Paths {
-		walkDir(path, params.Tmpl, params.Op, params.Skips, params.Keywords, params.Styles, params.Raw, params.Fuzzy, params.DryRun)
+		walkDir(path, params.Tmpl, params.Op, params.Skips, params.Keywords, params.Styles, params.Raw, params.Fuzzy, params.DryRun, params.Diff)
 	}
 
 	go func() {

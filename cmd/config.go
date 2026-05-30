@@ -95,6 +95,20 @@ nwa:
 		}
 		color.NoColor = noColor
 
+		// diff priority:
+		// 1. --diff flag
+		// 2. value configured for `diff` in the configuration file
+		// 3. default value (false)
+		diff := defaultConfig.Nwa.Diff
+		if defaultConfigFlags.Diff {
+			diff = true
+		}
+
+		// runtime diff validation
+		if diff && operation != internal.OpCheck {
+			cobra.CheckErr("--diff can only be used with check operation")
+		}
+
 		// runtime dry-run validation
 		if dryRun && operation == internal.OpCheck {
 			cobra.CheckErr("--dry-run (-D) cannot be used with check operation")
@@ -156,6 +170,7 @@ nwa:
 				Styles:   defaultConfig.Nwa.Style,
 				Raw:      false,
 				Fuzzy:    defaultConfig.Nwa.Fuzzy,
+				Diff:     diff,
 				Tmpl:     renderedTmpl,
 				Op:       operation,
 				DryRun:   dryRun,
@@ -169,6 +184,7 @@ nwa:
 				Keywords: defaultConfig.Nwa.Keyword,
 				Styles:   defaultConfig.Nwa.Style,
 				Fuzzy:    defaultConfig.Nwa.Fuzzy,
+				Diff:     diff,
 				Op:       operation,
 				DryRun:   dryRun,
 			}
@@ -216,6 +232,7 @@ func init() {
 type ConfigFlags struct {
 	Command string
 	DryRun  bool
+	Diff    bool
 	NoColor bool
 }
 
@@ -242,6 +259,7 @@ type NwaConfig struct {
 	DryRun   bool     `yaml:"dryrun"`
 	Verbose  bool     `yaml:"verbose"`
 	Fuzzy    bool     `yaml:"fuzzy"`
+	Diff     bool     `yaml:"diff"`
 	TmplType string   `yaml:"tmpltype"`
 	Tmpl     string   `yaml:"tmpl"`
 	Keyword  []string `yaml:"keyword"`
@@ -261,6 +279,7 @@ var defaultConfig = &Config{Nwa: NwaConfig{
 	Verbose:  false,
 	DryRun:   false,
 	Fuzzy:    false,
+	Diff:     false,
 	TmplType: "",
 	Tmpl:     "",
 	Keyword:  []string{},

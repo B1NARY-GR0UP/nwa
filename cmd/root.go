@@ -96,6 +96,7 @@ type CommonFlags struct {
 	DryRun   bool
 	Verbose  bool
 	Fuzzy    bool
+	Diff     bool
 	TmplType string
 	Tmpl     string // template file path
 	Keyword  []string
@@ -113,6 +114,7 @@ var defaultCommonFlags = CommonFlags{
 	DryRun:   false,
 	Verbose:  false,
 	Fuzzy:    false,
+	Diff:     false,
 	TmplType: "",
 	Tmpl:     "",
 	Keyword:  []string{},
@@ -134,6 +136,7 @@ func ResetCommonFlags() {
 		DryRun:   false,
 		Verbose:  false,
 		Fuzzy:    false,
+		Diff:     false,
 		TmplType: "",
 		Tmpl:     "",
 		Keyword:  []string{},
@@ -177,6 +180,11 @@ func setupCommonCmd(common *cobra.Command) {
 		common.MarkFlagsMutuallyExclusive("dry-run", "mute")
 		common.MarkFlagsMutuallyExclusive("dry-run", "verbose")
 	}
+
+	// for diff report
+	if common.Use == _useCheck {
+		common.Flags().BoolVar(&defaultCommonFlags.Diff, "diff", false, "show unified diff for mismatched headers")
+	}
 }
 
 func setupConfigCmd(config *cobra.Command) {
@@ -185,6 +193,7 @@ func setupConfigCmd(config *cobra.Command) {
 	config.Flags().StringVarP(&defaultConfigFlags.Command, "command", "c", defaultConfigFlags.Command, "command to execute")
 	config.Flags().BoolVarP(&defaultConfigFlags.DryRun, "dry-run", "D", defaultConfigFlags.DryRun, "dry-run mode: print operations without modifying files")
 	config.Flags().BoolVar(&defaultConfigFlags.NoColor, "no-color", false, "disable color output")
+	config.Flags().BoolVar(&defaultConfigFlags.Diff, "diff", false, "show unified diff for mismatched headers (check only)")
 }
 
 func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operation internal.Operation) {
@@ -236,6 +245,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			Styles:   flags.Style,
 			Raw:      false,
 			Fuzzy:    flags.Fuzzy,
+			Diff:     flags.Diff,
 			Tmpl:     renderedTmpl,
 			Op:       operation,
 			DryRun:   flags.DryRun,
@@ -253,6 +263,7 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 			Keywords: flags.Keyword,
 			Styles:   flags.Style,
 			Fuzzy:    flags.Fuzzy,
+			Diff:     flags.Diff,
 			Op:       operation,
 			DryRun:   flags.DryRun,
 		}

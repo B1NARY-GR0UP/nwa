@@ -16,6 +16,7 @@ package internal
 
 import (
 	"bytes"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -35,7 +36,7 @@ const (
 
 const _root = "."
 
-func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, styles []string, raw, fuzzy, dryRun bool) {
+func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, styles []string, raw, fuzzy, dryRun, diff bool) {
 	tag := string(operation)
 	tagColor := opColor(operation)
 
@@ -109,7 +110,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 			taskWG.Add(1)
 			go func() {
 				defer taskWG.Done()
-				taskC <- doCheck(path, header, fuzzy)
+				taskC <- doCheck(path, header, fuzzy, diff)
 			}()
 		default:
 			Logf(LvlWarn, tag, tagColor, "", "not a valid operation")
@@ -120,7 +121,7 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 	}
 }
 
-func doCheck(path string, header []byte, fuzzy bool) func() {
+func doCheck(path string, header []byte, fuzzy, diff bool) func() {
 	return func() {
 		content, err := os.ReadFile(path)
 		if err != nil {
@@ -137,8 +138,8 @@ func doCheck(path string, header []byte, fuzzy bool) func() {
 		}
 
 		// standardize line separator
-		content = standardizeLineSeparator(content)
 		header = standardizeLineSeparator(header)
+		content = standardizeLineSeparator(content)
 
 		// fuzzy matching
 		if fuzzy {
@@ -156,7 +157,14 @@ func doCheck(path string, header []byte, fuzzy bool) func() {
 		}
 		// mismatched
 		counter.mismatched++
+
 		Log(LvlWarn, TagCheck, CheckTagColor, path, "file does not have a matched header")
+		if diff {
+			// +1 converts newline count to line count, +5 provides context margin
+			currentHeader := extractHeader(content, bytes.Count(header, []byte("\n"))+1+5)
+			DiffReport(os.Stderr, header, currentHeader)
+			_, _ = fmt.Fprintln(os.Stderr)
+		}
 	}
 }
 

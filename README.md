@@ -94,6 +94,7 @@ Use "nwa [command] --help" for more information about a command.
 | -k    | --keyword  | `[]`                  | keyword used to confirm the existence of license headers; generally not needed, only use when NWA cannot correctly identify your license header (only used in commands `add` and `update`) |
 | -S    | --style    | `[]`                  | customize the comment style (`line`, `block`, `hash`, `doc`, `starred-block`) for different extensions in the format `extension:style`, e.g.`go:block` |
 | -D    | --dry-run  | `false` (unspecified) | dry-run mode: print operations without modifying files (not available for `check` command)                                                               |
+|       | --diff     | `false` (unspecified) | show unified diff for mismatched headers (only available for `check` command)                                                                             |
 |       | --no-color | `false` (unspecified) | disable color output                                                                                                                                   |
 
 ### DoubleStar(**) Patterns
@@ -164,21 +165,54 @@ The command in the example above **checks** whether the license headers of all P
 After the check is complete, NWA will output the results as logs. A sample output is as follows:
 
 ```txt
-2024/11/24 19:24:29 WARN file does not have a matched header path=dirB\dirC\fileC.go
-2024/11/24 19:24:29 WARN file does not have a matched header path=main.go
+[WARN] CHECK file does not have a matched header: dirB/dirC/fileC.go
+[WARN] CHECK file does not have a matched header: main.go
 [NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
 
-Verbose mode:
+Verbose mode (`--verbose` / `-V`):
 
 ```txt
-2024/11/24 19:24:35 INFO skip file path=README.md
-2024/11/24 19:24:35 INFO file has a matched header path=dirA\fileA.go
-2024/11/24 19:24:35 WARN file does not have a matched header path=dirB\dirC\fileC.go
-2024/11/24 19:24:35 WARN file does not have a matched header path=main.go
-2024/11/24 19:24:35 INFO file has a matched header path=dirB\fileB.go
+[INFO] CHECK skip file: README.md
+[INFO] CHECK file has a matched header: dirA/fileA.go
+[WARN] CHECK file does not have a matched header: dirB/dirC/fileC.go
+[WARN] CHECK file does not have a matched header: main.go
+[INFO] CHECK file has a matched header: dirB/fileB.go
 [NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
+
+Diff mode (`--diff`):
+
+```shell
+nwa check -c "Lorain" --diff "main.go"
+```
+
+```txt
+[WARN] CHECK file does not have a matched header: main.go
+────────────────────────────────────────────────────────────────────────────
+--- expected
++++ actual
+@@ -1,13 +1,13 @@
+-// Copyright 2026 Lorain
++// Copyright 2023 BINARY Members
+ //
+ // Licensed under the Apache License, Version 2.0 (the "License");
+ // you may not use this file except in compliance with the License.
+ // You may obtain a copy of the License at
+ //
+ //     http://www.apache.org/licenses/LICENSE-2.0
+ //
+ // Unless required by applicable law or agreed to in writing, software
+ // distributed under the License is distributed on an "AS IS" BASIS,
+ // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+────────────────────────────────────────────────────────────────────────────
+
+[NWA SUMMARY] scanned=1 matched=0 mismatched=1 skipped=0 failed=0
+```
+
+The `--diff` flag displays a colored unified diff showing the difference between the expected license header and the actual header in the file. Red lines (`-`) show what's expected but missing, green lines (`+`) show what's present but unexpected.
 
 Mute mode:
 
@@ -296,16 +330,17 @@ The same applies to `nocolor` / `--no-color`.
 
 | Short | Long        | Default                            | Description                                            |
 |-------|-------------|------------------------------------|--------------------------------------------------------|
+| -h    | --help      | null                               | help for config                                        |
 | -c    | --command   | add                                | command to execute                                     |
 | -D    | --dry-run   | false (unspecified)                | dry-run mode: print operations without modifying files |
+|       | --diff      | false (unspecified)                | show unified diff for mismatched headers (check only)  |
 |       | --no-color  | false (unspecified)                | disable color output                                   |
-| -h    | --help      | null                               | help for config                                        |
 
 > **NOTE: If some configuration is not configured, the default configuration will be used.**
 
 - **Priority**:
 
-The `cmd` (`--command` / `-c`), `dryrun` (`--dry-run` / `-D`), and `nocolor` (`--no-color`) values can be set both via CLI flag and in the configuration file. In all cases, the CLI flag takes priority:
+The `cmd` (`--command` / `-c`), `dryrun` (`--dry-run` / `-D`), `diff` (`--diff`), and `nocolor` (`--no-color`) values can be set both via CLI flag and in the configuration file. In all cases, the CLI flag takes priority:
 
 1. CLI flag
 2. Configuration file field
@@ -350,6 +385,7 @@ nwa:
   verbose: false                    # Default: false (unspecified)
   dryrun: false                     # Default: false (unspecified); Cannot be used with check operation
   fuzzy: false                      # Default: false (unspecified); Used for "check" and "remove" commands
+  diff: false                       # Default: false (unspecified); Used for "check" command; show unified diff for mismatched headers
   tmpltype: ""                      # Default: ""; Optional: "live", "static", "raw"
   tmpl: ""                          # Default: ""                                                       
   keyword: []                       # Default: []; Used for "add" and "update" commands
