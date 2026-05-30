@@ -165,8 +165,8 @@ The command in the example above **checks** whether the license headers of all P
 After the check is complete, NWA will output the results as logs. A sample output is as follows:
 
 ```txt
-[WARN] CHECK file does not have a matched header: dirB/dirC/fileC.go
-[WARN] CHECK file does not have a matched header: main.go
+[WARN] CHECK file does not have a matched header: dirB/dirC/fileC.py
+[WARN] CHECK file does not have a matched header: main.py
 [NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
 
@@ -174,10 +174,10 @@ Verbose mode (`--verbose` / `-V`):
 
 ```txt
 [INFO] CHECK skip file: README.md
-[INFO] CHECK file has a matched header: dirA/fileA.go
-[WARN] CHECK file does not have a matched header: dirB/dirC/fileC.go
-[WARN] CHECK file does not have a matched header: main.go
-[INFO] CHECK file has a matched header: dirB/fileB.go
+[INFO] CHECK file has a matched header: dirA/fileA.py
+[WARN] CHECK file does not have a matched header: dirB/dirC/fileC.py
+[WARN] CHECK file does not have a matched header: main.py
+[INFO] CHECK file has a matched header: dirB/fileB.py
 [NWA SUMMARY] scanned=4 matched=2 mismatched=2 skipped=1 failed=0
 ```
 
