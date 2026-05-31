@@ -300,6 +300,6 @@ func executeCommonCmd(_ *cobra.Command, args []string, flags CommonFlags, operat
 		}
 	}
 
-	// mute flag and dry-run flag used to handle SUMMARY output
-	internal.ExecuteTasks(operation, flags.Mute, flags.DryRun)
+	// dry-run flag used to handle SUMMARY output; mute is handled via IsMuted()
+	internal.ExecuteTasks(operation, flags.DryRun)
 }

@@ -221,7 +221,7 @@ nwa:
 			}
 		}
 
-		internal.ExecuteTasks(operation, defaultConfig.Nwa.Mute, dryRun)
+		internal.ExecuteTasks(operation, dryRun)
 	},
 }
 

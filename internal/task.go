@@ -84,7 +84,7 @@ func PrepareTasks(params *TaskParams) {
 	}()
 }
 
-func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
+func ExecuteTasks(operation Operation, dryRunF bool) {
 	for task := range taskC {
 		task()
 	}
@@ -100,7 +100,7 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 			}
 			return
 		}
-		if !muteF {
+		if !IsMuted() {
 			fmt.Printf("%s scanned=%d modified=%d skipped=%d failed=%d\n",
 				SummaryColor.Sprintf("[NWA SUMMARY]"),
 				counter.scanned, counter.modified, counter.skipped, counter.failed)
@@ -109,7 +109,7 @@ func ExecuteTasks(operation Operation, muteF, dryRunF bool) {
 			os.Exit(1)
 		}
 	case OpCheck:
-		if !muteF {
+		if !IsMuted() {
 			fmt.Printf("%s scanned=%d matched=%d mismatched=%d skipped=%d failed=%d\n",
 				SummaryColor.Sprintf("[NWA SUMMARY]"),
 				counter.scanned, counter.matched, counter.mismatched, counter.skipped, counter.failed)
