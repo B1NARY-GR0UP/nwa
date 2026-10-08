@@ -2,8 +2,6 @@
 
 A Simple Yet Powerful Tool for License Header Management: Effortlessly Add, Check, Update, and Remove License Headers
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/B1NARY-GR0UP/nwa)](https://goreportcard.com/report/github.com/B1NARY-GR0UP/nwa)
-
 ## Install
 
 ### Homebrew
