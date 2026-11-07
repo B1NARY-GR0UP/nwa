@@ -52,6 +52,7 @@ var counter struct {
 }
 
 // TODO: if we need a task struct??
+// TODO: task handling procedure need reconstruct
 
 type TaskParams struct {
 	Paths, Skips, Keywords, Styles []string
@@ -72,7 +73,13 @@ func PrepareTasks(params *TaskParams) {
 		skipped     int
 		failed      int
 	}{}
+
 	taskC = make(chan func(), _size)
+	// taskC is global and a later PrepareTasks call may replace it. Capture this
+	// call's channel so the goroutine below always closes its own channel; if it
+	// read taskC instead, it could close a newer channel (possibly twice),
+	// panicking with "close of closed channel".
+	ch := taskC
 
 	for _, path := range params.Paths {
 		walkDir(path, params.Tmpl, params.Op, params.Skips, params.Keywords, params.Styles, params.Raw, params.Fuzzy, params.DryRun, params.Diff)
@@ -80,7 +87,7 @@ func PrepareTasks(params *TaskParams) {
 
 	go func() {
 		taskWG.Wait()
-		close(taskC)
+		close(ch)
 	}()
 }
 
