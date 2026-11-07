@@ -27,7 +27,7 @@ import (
 
 const (
 	Name    = "nwa"
-	Version = "v0.8.0"
+	Version = "v0.8.1"
 )
 
 // rootCmd represents the base command when called without any subcommands
