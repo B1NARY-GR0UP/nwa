@@ -3,7 +3,7 @@ module github.com/B1NARY-GR0UP/nwa
 go 1.25.0
 
 require (
-	github.com/bmatcuk/doublestar/v4 v4.8.1
+	github.com/bmatcuk/doublestar/v4 v4.10.4
 	github.com/fatih/color v1.19.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
