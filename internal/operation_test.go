@@ -16,8 +16,198 @@ package internal
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
 )
+
+func TestSkipDirNotWalked(t *testing.T) {
+	temp := t.TempDir()
+
+	dataDir := filepath.Join(temp, "data")
+	if err := os.MkdirAll(filepath.Join(dataDir, "postgres", "18", "docker"), 0755); err != nil {
+		t.Fatalf("failed to create test dirs: %v", err)
+	}
+
+	// Simulate an unreadable volume directory (permission bits are a no-op on Windows)
+	if runtime.GOOS != "windows" {
+		if err := os.Chmod(dataDir, 0000); err != nil {
+			t.Fatalf("failed to chmod data dir: %v", err)
+		}
+		t.Cleanup(func() {
+			_ = os.Chmod(dataDir, 0755)
+		})
+	}
+
+	t.Chdir(temp)
+
+	PrepareTasks(&TaskParams{
+		Paths: []string{"**/*.py"},
+		Skips: []string{"data/**"},
+		Op:    OpAdd,
+	})
+
+	if counter.failed != 0 {
+		t.Errorf("expected failed=0, got %d", counter.failed)
+	}
+	if counter.skipped != 1 {
+		t.Errorf("expected skipped=1 (the data dir), got %d", counter.skipped)
+	}
+}
+
+func TestIsSkip(t *testing.T) {
+	tests := []struct {
+		name     string
+		path     string
+		patterns []string
+		want     bool
+	}{
+		{"empty patterns", "main.py", nil, false},
+		{"exact file match", "main.py", []string{"main.py"}, true},
+		{"glob file match", "src/main.py", []string{"src/*.py"}, true},
+		{"directory pattern matches directory itself", "data", []string{"data/**"}, true},
+		{"directory pattern matches nested path", "data/postgres/18/docker", []string{"data/**"}, true},
+		{"bare directory name matches directory", "vendor", []string{"vendor"}, true},
+		{"bare directory name does not match child", "vendor/lib.go", []string{"vendor"}, false},
+		{"second pattern matches", "src/main.py", []string{"docs/**", "src/**"}, true},
+		{"no match", "src/main.go", []string{"vendor/**", "docs/**"}, false},
+		{"wildcard suffix", "README.md", []string{"*.md"}, true},
+		{"nested glob", "internal/operation.go", []string{"internal/*.go"}, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isSkip(tt.path, tt.patterns); got != tt.want {
+				t.Errorf("isSkip(%q, %v) = %v, want %v", tt.path, tt.patterns, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrepareTasksSkipsFile(t *testing.T) {
+	temp := t.TempDir()
+
+	files := map[string]string{
+		"keep.py": "print('keep')\n",
+		"skip.py": "print('skip')\n",
+		"note.md": "# note\n",
+	}
+	for name, content := range files {
+		if err := os.WriteFile(filepath.Join(temp, name), []byte(content), 0644); err != nil {
+			t.Fatalf("failed to write %s: %v", name, err)
+		}
+	}
+
+	t.Chdir(temp)
+
+	PrepareTasks(&TaskParams{
+		Paths: []string{"**/*.py"},
+		Skips: []string{"skip.py", "**/*.md"},
+		Op:    OpAdd,
+	})
+
+	if counter.failed != 0 {
+		t.Errorf("expected failed=0, got %d", counter.failed)
+	}
+	// skip.py matches both the main pattern and a skip pattern.
+	// note.md does not match the main pattern, so it is never evaluated for skipping.
+	if counter.skipped != 1 {
+		t.Errorf("expected skipped=1, got %d", counter.skipped)
+	}
+}
+
+func TestIsRecursiveSkip(t *testing.T) {
+	tests := []struct {
+		name     string
+		path     string
+		patterns []string
+		want     bool
+	}{
+		{"recursive pattern matches directory", "data", []string{"data/**"}, true},
+		{"recursive pattern matches nested path", "data/postgres/18/docker", []string{"data/**"}, true},
+		{"non-recursive wildcard does not prune", "data/sub", []string{"data/*"}, false},
+		{"bare directory name does not prune", "vendor", []string{"vendor"}, false},
+		{"file pattern does not prune", "foo.py", []string{"*.py"}, false},
+		{"nested recursive pattern", "node_modules", []string{"**/node_modules/**"}, true},
+		{"trailing file segment is not recursive", "data", []string{"data/**/*"}, false},
+		{"non-matching recursive pattern", "src", []string{"data/**"}, false},
+		{"second pattern is recursive", "vendor", []string{"vendor/*", "vendor/**"}, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isRecursiveSkip(tt.path, tt.patterns); got != tt.want {
+				t.Errorf("isRecursiveSkip(%q, %v) = %v, want %v", tt.path, tt.patterns, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSkipNonRecursiveWalkErrorNotFailed(t *testing.T) {
+	temp := t.TempDir()
+
+	subDir := filepath.Join(temp, "data", "sub")
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		t.Fatalf("failed to create test dirs: %v", err)
+	}
+
+	// Simulate an unreadable directory matched by a non-recursive skip pattern
+	// (permission bits are a no-op on Windows)
+	if runtime.GOOS != "windows" {
+		if err := os.Chmod(subDir, 0000); err != nil {
+			t.Fatalf("failed to chmod sub dir: %v", err)
+		}
+		t.Cleanup(func() { _ = os.Chmod(subDir, 0755) })
+	}
+
+	t.Chdir(temp)
+
+	PrepareTasks(&TaskParams{
+		Paths: []string{"**/*.py"},
+		Skips: []string{"data/*"},
+		Op:    OpAdd,
+	})
+
+	if counter.failed != 0 {
+		t.Errorf("expected failed=0 for a skipped path, got %d", counter.failed)
+	}
+	if counter.skipped != 0 {
+		t.Errorf("expected skipped=0 (walk error is ignored, not counted), got %d", counter.skipped)
+	}
+}
+
+func TestWalkErrorNotSkippedFails(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("permission bits are a no-op on Windows")
+	}
+
+	temp := t.TempDir()
+
+	subDir := filepath.Join(temp, "data", "sub")
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		t.Fatalf("failed to create test dirs: %v", err)
+	}
+	if err := os.Chmod(subDir, 0000); err != nil {
+		t.Fatalf("failed to chmod sub dir: %v", err)
+	}
+	t.Cleanup(func() { _ = os.Chmod(subDir, 0755) })
+
+	t.Chdir(temp)
+
+	PrepareTasks(&TaskParams{
+		Paths: []string{"**/*.py"},
+		Skips: []string{"vendor/**"},
+		Op:    OpAdd,
+	})
+
+	if counter.failed != 1 {
+		t.Errorf("expected failed=1 for an unskipped walk error, got %d", counter.failed)
+	}
+	if counter.skipped != 0 {
+		t.Errorf("expected skipped=0, got %d", counter.skipped)
+	}
+}
 
 func TestRemoveYear(t *testing.T) {
 	tests := []struct {

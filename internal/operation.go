@@ -16,11 +16,13 @@ package internal
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 )
@@ -41,14 +43,29 @@ func walkDir(pattern string, tmpl []byte, operation Operation, skips, keywords, 
 	tagColor := opColor(operation)
 
 	if err := filepath.WalkDir(_root, func(path string, d fs.DirEntry, err error) error {
+		// convert Windows path separators
+		path = filepath.ToSlash(path)
+
 		if err != nil {
+			// ignore permission error for skip paths
+			if errors.Is(err, fs.ErrPermission) && isSkip(path, skips) {
+				return nil
+			}
+
 			counter.failed++
 			Logf(LvlError, tag, tagColor, path, "walk dir error: %v", err)
 			return nil
 		}
 
-		// convert Windows path separators
-		path = filepath.ToSlash(path)
+		// recursive skip patterns may prune the whole subtree; see isRecursiveSkip.
+		// WalkDir invokes the callback once before reading a directory (err == nil),
+		// so returning SkipDir here prevents os.ReadDir and the permission error it
+		// would otherwise raise on unreadable directories.
+		if d.IsDir() && isRecursiveSkip(path, skips) {
+			counter.skipped++
+			Log(LvlInfo, tag, tagColor, path, "skip dir")
+			return filepath.SkipDir
+		}
 
 		// match glob pattern
 		match, err := doublestar.Match(pattern, path)
@@ -391,6 +408,36 @@ func isSkip(path string, pattern []string) bool {
 				Logf(LvlError, "", nil, path, "skip pattern match error: %s", p)
 				return false
 			}
+			return true
+		}
+	}
+	return false
+}
+
+// isRecursiveSkip reports whether path matches a skip pattern that covers an
+// entire directory subtree (a pattern ending with "/**", e.g. data/**). Only
+// these patterns may prune a directory before it is walked.
+//
+// Issue #43: walking skipped directories raised permission errors (e.g. a
+// Docker volume owned by root) even though their files were skipped.
+//
+// The two kinds of skip patterns are handled differently on purpose:
+//   - Recursive patterns (data/**) match the directory and every descendant,
+//     so pruning the subtree does not change which files are skipped; it only
+//     avoids reading possibly unreadable directories.
+//   - Non-recursive patterns (data/* or vendor) match the directory but not
+//     necessarily its contents; pruning them would skip files that the old
+//     per-file behaviour still processed, so they are excluded here and remain
+//     file-level skips in isSkip.
+//
+// Permission errors on skipped paths are ignored; all other errors keep the
+// original ERROR + failed behaviour.
+func isRecursiveSkip(path string, patterns []string) bool {
+	for _, p := range patterns {
+		if !strings.HasSuffix(p, "/**") {
+			continue
+		}
+		if match, err := doublestar.Match(p, path); err == nil && match {
 			return true
 		}
 	}

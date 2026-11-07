@@ -411,23 +411,23 @@ func TestCRLFAddLicenseHeader(t *testing.T) {
 	defer func() { os.Args = origArgs }()
 
 	tests := []struct {
-		name       string
-		srcFile    string
+		name        string
+		srcFile     string
 		expectedDir string
 	}{
 		{
-			name:       "basic_crlf_go",
-			srcFile:    "testdata/crlf/initial/file.go",
+			name:        "basic_crlf_go",
+			srcFile:     "testdata/crlf/initial/file.go",
 			expectedDir: "testdata/crlf/expected_add",
 		},
 		{
-			name:       "shebang_crlf_sh",
-			srcFile:    "testdata/crlf/initial/file.sh",
+			name:        "shebang_crlf_sh",
+			srcFile:     "testdata/crlf/initial/file.sh",
 			expectedDir: "testdata/crlf/expected_add",
 		},
 		{
-			name:       "bom_crlf_cs",
-			srcFile:    "testdata/crlf/initial/file.withbom.cs",
+			name:        "bom_crlf_cs",
+			srcFile:     "testdata/crlf/initial/file.withbom.cs",
 			expectedDir: "testdata/crlf/expected_add",
 		},
 	}
@@ -529,4 +529,145 @@ func TestCRLFRemoveLicenseHeader(t *testing.T) {
 	cmd.Execute()
 
 	compareResultsExact(t, temp, "testdata/crlf/expected_remove")
+}
+
+func TestSkipEndToEnd(t *testing.T) {
+	cmd.ResetCommonFlags()
+
+	temp, cleanup := tempDir(t, "testdata/temp_skip_e2e")
+	defer cleanup()
+
+	files := map[string]string{
+		"keep.py":        "print('keep')\n",
+		"skipfile.py":    "print('skip')\n",
+		"vendor/drop.py": "print('vendor')\n",
+		"data/secret.py": "print('data')\n",
+	}
+	for rel, content := range files {
+		path := filepath.Join(temp, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			t.Fatalf("failed to create dirs for %s: %v", rel, err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+			t.Fatalf("failed to write %s: %v", rel, err)
+		}
+	}
+
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	os.Args = []string{"nwa", "add", "-c", "BINARY Members", "-y", "2025",
+		"--skip", temp + "/skipfile.py",
+		"--skip", temp + "/vendor/**",
+		"--skip", temp + "/data/**",
+		temp + "/**"}
+	cmd.Execute()
+
+	keepContent, err := os.ReadFile(filepath.Join(temp, "keep.py"))
+	if err != nil {
+		t.Fatalf("failed to read keep.py: %v", err)
+	}
+	if !bytes.Contains(keepContent, []byte("Licensed under the Apache License")) {
+		t.Errorf("keep.py should have a license header, got:\n%s", keepContent)
+	}
+
+	for _, rel := range []string{"skipfile.py", "vendor/drop.py", "data/secret.py"} {
+		got, err := os.ReadFile(filepath.Join(temp, rel))
+		if err != nil {
+			t.Fatalf("failed to read %s: %v", rel, err)
+		}
+		if string(got) != files[rel] {
+			t.Errorf("%s should be skipped, but its content changed: %q", rel, got)
+		}
+	}
+}
+
+func TestSkipNonRecursiveDirNotPruned(t *testing.T) {
+	cmd.ResetCommonFlags()
+
+	temp, cleanup := tempDir(t, "testdata/temp_skip_bare_dir")
+	defer cleanup()
+
+	files := map[string]string{
+		"keep.py":        "print('keep')\n",
+		"vendor/drop.py": "print('vendor')\n",
+	}
+	for rel, content := range files {
+		path := filepath.Join(temp, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			t.Fatalf("failed to create dirs for %s: %v", rel, err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+			t.Fatalf("failed to write %s: %v", rel, err)
+		}
+	}
+
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	// A bare directory name is not recursive, so it must not prune the subtree:
+	// vendor/drop.py does not match "vendor" and is still processed.
+	os.Args = []string{"nwa", "add", "-c", "BINARY Members", "-y", "2025",
+		"--skip", temp + "/vendor",
+		temp + "/**"}
+	cmd.Execute()
+
+	for _, rel := range []string{"keep.py", "vendor/drop.py"} {
+		got, err := os.ReadFile(filepath.Join(temp, rel))
+		if err != nil {
+			t.Fatalf("failed to read %s: %v", rel, err)
+		}
+		if !bytes.Contains(got, []byte("Licensed under the Apache License")) {
+			t.Errorf("%s should be processed because a bare dir is not recursive, got:\n%s", rel, got)
+		}
+	}
+}
+
+func TestSkipNonRecursivePatternKeepsSubdirContent(t *testing.T) {
+	cmd.ResetCommonFlags()
+
+	temp, cleanup := tempDir(t, "testdata/temp_skip_nonrecursive")
+	defer cleanup()
+
+	files := map[string]string{
+		"keep.py":       "print('keep')\n",
+		"data/a.py":     "print('direct')\n",
+		"data/sub/b.py": "print('nested')\n",
+	}
+	for rel, content := range files {
+		path := filepath.Join(temp, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			t.Fatalf("failed to create dirs for %s: %v", rel, err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+			t.Fatalf("failed to write %s: %v", rel, err)
+		}
+	}
+
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	// data/* matches data/a.py (skipped) but not data/sub/b.py (processed).
+	os.Args = []string{"nwa", "add", "-c", "BINARY Members", "-y", "2025",
+		"--skip", temp + "/data/*",
+		temp + "/**"}
+	cmd.Execute()
+
+	gotDirect, err := os.ReadFile(filepath.Join(temp, "data/a.py"))
+	if err != nil {
+		t.Fatalf("failed to read data/a.py: %v", err)
+	}
+	if string(gotDirect) != files["data/a.py"] {
+		t.Errorf("data/a.py should be skipped, but its content changed: %q", gotDirect)
+	}
+
+	for _, rel := range []string{"keep.py", "data/sub/b.py"} {
+		got, err := os.ReadFile(filepath.Join(temp, rel))
+		if err != nil {
+			t.Fatalf("failed to read %s: %v", rel, err)
+		}
+		if !bytes.Contains(got, []byte("Licensed under the Apache License")) {
+			t.Errorf("%s should be processed, got:\n%s", rel, got)
+		}
+	}
 }

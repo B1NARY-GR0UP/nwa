@@ -47,7 +47,7 @@ var counter struct {
 	mismatched  int // files license headers do not match as required
 	modified    int // files have been modified (e.g. add, update, remove license header)
 	wouldModify int // dry-run: files would have been modified
-	skipped     int // file paths match the skip pattern
+	skipped     int // paths match the skip pattern (files or pruned dirs)
 	failed      int // unexpected error occurred
 }
 
